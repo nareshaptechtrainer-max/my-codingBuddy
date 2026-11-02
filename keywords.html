@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keywords in C | CoddingBuddY</title>
+<style>
+:root{
+  --bg:#060B16;--bg2:#0D1421;--bg3:#111827;
+  --cyan:#00D9FF;--green:#22C55E;--amber:#F59E0B;
+  --purple:#A855F7;--red:#EF4444;--blue:#3B82F6;--pink:#EC4899;
+  --text:#E2E8F0;--muted:#64748B;--border:#1E293B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.7}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(6,11,22,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:999}
+.nav-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-trail{color:var(--muted);font-size:.85rem}
+.nav-trail a{color:var(--cyan);text-decoration:none}
+.nav-trail a:hover{text-decoration:underline}
+
+/* LAYOUT */
+.page-wrap{padding-top:58px;max-width:1000px;margin:0 auto;padding-left:24px;padding-right:24px}
+
+/* HERO */
+.hero{padding:48px 0 32px;text-align:center}
+.topic-badge{display:inline-block;background:linear-gradient(135deg,rgba(0,217,255,.15),rgba(168,85,247,.15));border:1px solid rgba(0,217,255,.3);border-radius:20px;padding:4px 16px;font-size:.8rem;color:var(--cyan);letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#fff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:620px;margin:0 auto}
+
+/* SECTION */
+.section{margin:40px 0}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.section-title .snum{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.section-sub{color:var(--muted);margin-bottom:20px;font-size:.95rem}
+
+/* INFO / NOTE BOXES */
+.info-box{background:rgba(0,217,255,.07);border:1px solid rgba(0,217,255,.2);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:.92rem}
+.info-box strong{color:var(--cyan)}
+.note-box{background:rgba(245,158,11,.07);border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:14px 18px;margin:20px 0;font-size:.92rem}
+.note-box .note-head{color:var(--amber);font-weight:700;font-size:.8rem;letter-spacing:1px;margin-bottom:6px}
+.warn-box{background:rgba(239,68,68,.07);border-left:4px solid var(--red);border-radius:0 10px 10px 0;padding:14px 18px;margin:20px 0;font-size:.92rem}
+.warn-box .note-head{color:var(--red);font-weight:700;font-size:.8rem;letter-spacing:1px;margin-bottom:6px}
+
+/* CONCEPT CARDS */
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+@media(max-width:640px){.concept-grid{grid-template-columns:1fr}}
+.concept-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.concept-card .cc-icon{font-size:1.6rem;margin-bottom:10px}
+.concept-card h4{font-size:.95rem;font-weight:700;margin-bottom:6px}
+.concept-card p{color:var(--muted);font-size:.88rem}
+
+/* KEYWORD CATEGORY */
+.kw-category{margin:28px 0}
+.kw-cat-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.kw-cat-icon{font-size:1.3rem}
+.kw-cat-title{font-size:1.05rem;font-weight:700}
+.kw-cat-count{font-size:.75rem;background:var(--bg3);color:var(--muted);padding:2px 10px;border-radius:10px;font-weight:600}
+.kw-cat-desc{color:var(--muted);font-size:.85rem;margin-top:2px}
+.kw-grid{display:flex;flex-wrap:wrap;gap:10px}
+.kw-chip{display:flex;flex-direction:column;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 16px;min-width:110px;transition:border-color .2s,background .2s;cursor:default}
+.kw-chip:hover{border-color:var(--kw-color, var(--cyan));background:rgba(0,217,255,.05)}
+.kw-chip .kw-word{font-family:'Cascadia Code','Fira Code',monospace;font-size:1rem;font-weight:700;color:var(--kw-color, var(--cyan))}
+.kw-chip .kw-hint{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+/* WRONG / RIGHT */
+.wr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:600px){.wr-grid{grid-template-columns:1fr}}
+.m-wrong{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px}
+.m-right{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:14px}
+.m-label{font-size:.7rem;font-weight:700;margin-bottom:6px;letter-spacing:.5px}
+.m-wrong .m-label{color:var(--red)}
+.m-right .m-label{color:var(--green)}
+pre.mini{font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem;color:var(--text)}
+.m-note{margin-top:6px;font-size:.78rem;color:var(--muted)}
+
+/* CODE */
+pre.code{background:#0A0F1A;border-radius:8px;padding:14px 16px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem;overflow-x:auto;line-height:1.8}
+pre.code .kw{color:#569CD6}
+pre.code .str{color:#CE9178}
+pre.code .num{color:#B5CEA8}
+pre.code .cmt{color:#6A9955}
+pre.code .type{color:#4EC9B0}
+pre.code .fn{color:#DCDCAA}
+pre.code .err{background:rgba(239,68,68,.15);color:var(--red);border-radius:3px;padding:0 3px}
+
+/* SUMMARY TABLE */
+.sum-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:12px}
+.sum-table th{background:var(--bg3);color:var(--muted);padding:10px 14px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+.sum-table td{padding:9px 14px;border-bottom:1px solid var(--border)}
+.sum-table tr:hover td{background:rgba(255,255,255,.02)}
+.sum-table .cat-col{font-weight:700}
+.sum-table .cnt-col{text-align:center;font-family:monospace;color:var(--amber);font-weight:700}
+
+/* NAV BTNS */
+.tnav{display:flex;justify-content:space-between;margin:48px 0 32px;flex-wrap:wrap;gap:12px}
+.tnav-btn{padding:11px 22px;border-radius:8px;font-weight:600;font-size:.9rem;text-decoration:none;border:1px solid var(--border);color:var(--text);background:var(--bg2);transition:all .2s}
+.tnav-btn.next{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border-color:transparent}
+.tnav-btn.prev:hover{background:var(--bg3)}
+.tnav-btn:not(.next):not(.prev):hover{background:var(--bg3)}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="nav-logo">CoddingBuddY</span>
+  <span class="nav-trail">/ <a href="c_learn.html">C Language</a> / Keywords</span>
+</nav>
+
+<div class="page-wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="topic-badge">TOPIC 04 · C LANGUAGE</div>
+  <h1>Keywords in C</h1>
+  <p>32 special words that belong to the C language itself — not yours to name, only yours to use.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §1 · WHAT IS A KEYWORD?
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§1</span> What is a Keyword?</div>
+  <div class="section-sub">The words that C already knows — before you write a single line</div>
+
+  <div class="info-box">
+    A <strong>keyword</strong> is a word that is <strong>pre-defined by the C language</strong>. The compiler already knows what every keyword means and what it should do. You cannot change that meaning. You can only <em>use</em> them.
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="cc-icon">📖</div>
+      <h4>Reserved by the Language</h4>
+      <p>Keywords are "reserved" — the C standard has already claimed them. They are part of the grammar of C itself, not libraries or functions you wrote.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔒</div>
+      <h4>Fixed Meaning — Always</h4>
+      <p><code style="color:var(--cyan)">int</code> will always mean integer. <code style="color:var(--cyan)">if</code> will always mean a condition check. You cannot redefine or override their purpose.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔡</div>
+      <h4>Always Lowercase</h4>
+      <p>Every C keyword is written in <strong>all lowercase</strong>. <code style="color:var(--green)">int</code> is a keyword. <code style="color:var(--red)">Int</code> and <code style="color:var(--red)">INT</code> are NOT — C is case-sensitive.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔢</div>
+      <h4>Exactly 32 in C (C89/C90)</h4>
+      <p>The original C standard defined exactly 32 keywords. Later standards (C99, C11) added a few more, but the core 32 are what every beginner must know.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §2 · WHY DO WE USE KEYWORDS?
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§2</span> Why Do We Use Keywords?</div>
+  <div class="section-sub">Every keyword solves a specific problem in your program</div>
+
+  <p style="color:var(--muted);margin-bottom:16px">Without keywords, you would have no way to tell the compiler: "store this data", "repeat this block", "make a decision here", or "this function returns nothing." Keywords are the <strong style="color:var(--text)">commands</strong> you give to C.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="cc-icon">📦</div>
+      <h4>To Declare Data</h4>
+      <p>You use <code style="color:var(--cyan)">int</code>, <code style="color:var(--cyan)">char</code>, <code style="color:var(--cyan)">float</code> to tell the compiler what kind of data you want to store and how much memory to reserve.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔀</div>
+      <h4>To Make Decisions</h4>
+      <p><code style="color:var(--cyan)">if</code>, <code style="color:var(--cyan)">else</code>, <code style="color:var(--cyan)">switch</code> let your program choose different paths based on conditions.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔁</div>
+      <h4>To Repeat Work</h4>
+      <p><code style="color:var(--cyan)">for</code>, <code style="color:var(--cyan)">while</code>, <code style="color:var(--cyan)">do</code> let you run the same block of code multiple times without writing it again.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🗂️</div>
+      <h4>To Organize Data</h4>
+      <p><code style="color:var(--cyan)">struct</code>, <code style="color:var(--cyan)">union</code>, <code style="color:var(--cyan)">enum</code> let you group related data together under one name.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🏠</div>
+      <h4>To Control Storage</h4>
+      <p><code style="color:var(--cyan)">auto</code>, <code style="color:var(--cyan)">extern</code>, <code style="color:var(--cyan)">static</code>, <code style="color:var(--cyan)">register</code> tell the compiler where and how long to keep a variable in memory.</p>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">↩️</div>
+      <h4>To Return from Functions</h4>
+      <p><code style="color:var(--cyan)">return</code> sends a value back from a function. <code style="color:var(--cyan)">void</code> says a function returns nothing at all.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §3 · ALL 32 KEYWORDS — BY CATEGORY
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§3</span> All 32 Keywords — By Category</div>
+  <div class="section-sub">Grouped by what they do — hover over any keyword to see what it's for</div>
+
+  <!-- Flow Control -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🔀</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--pink)">Flow Control</span>
+          <span class="kw-cat-count">5 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Tell the program which path to take based on a condition</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--pink)"><span class="kw-word">if</span><span class="kw-hint">Execute if condition is true</span></div>
+      <div class="kw-chip" style="--kw-color:var(--pink)"><span class="kw-word">else</span><span class="kw-hint">Execute if condition is false</span></div>
+      <div class="kw-chip" style="--kw-color:var(--pink)"><span class="kw-word">switch</span><span class="kw-hint">Choose from multiple cases</span></div>
+      <div class="kw-chip" style="--kw-color:var(--pink)"><span class="kw-word">case</span><span class="kw-hint">A single option in switch</span></div>
+      <div class="kw-chip" style="--kw-color:var(--pink)"><span class="kw-word">default</span><span class="kw-hint">Fallback when no case matches</span></div>
+    </div>
+  </div>
+
+  <!-- Loops -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🔁</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--green)">Loops</span>
+          <span class="kw-cat-count">3 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Repeat a block of code multiple times</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--green)"><span class="kw-word">for</span><span class="kw-hint">Loop with counter (init;cond;step)</span></div>
+      <div class="kw-chip" style="--kw-color:var(--green)"><span class="kw-word">while</span><span class="kw-hint">Loop while condition is true</span></div>
+      <div class="kw-chip" style="--kw-color:var(--green)"><span class="kw-word">do</span><span class="kw-hint">Loop — runs at least once</span></div>
+    </div>
+  </div>
+
+  <!-- Loop Control -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">⏹️</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--amber)">Loop / Switch Control</span>
+          <span class="kw-cat-count">3 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Control the flow inside loops and switch blocks</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">break</span><span class="kw-hint">Exit loop or switch immediately</span></div>
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">continue</span><span class="kw-hint">Skip to next loop iteration</span></div>
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">goto</span><span class="kw-hint">Jump to a labelled line (avoid!)</span></div>
+    </div>
+  </div>
+
+  <!-- Data Types -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">📦</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--cyan)">Data Type Keywords</span>
+          <span class="kw-cat-count">9 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Specify what type of data a variable will hold</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">int</span><span class="kw-hint">Whole numbers</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">char</span><span class="kw-hint">Single character / byte</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">float</span><span class="kw-hint">Decimal (single precision)</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">double</span><span class="kw-hint">Decimal (double precision)</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">void</span><span class="kw-hint">No value / no type</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">long</span><span class="kw-hint">Larger integer range</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">short</span><span class="kw-hint">Smaller integer range</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">signed</span><span class="kw-hint">Can hold negative values</span></div>
+      <div class="kw-chip" style="--kw-color:var(--cyan)"><span class="kw-word">unsigned</span><span class="kw-hint">Positive values only</span></div>
+    </div>
+  </div>
+
+  <!-- Function & Return -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">↩️</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--purple)">Function Return</span>
+          <span class="kw-cat-count">1 keyword</span>
+        </div>
+        <div class="kw-cat-desc">Send a value back from a function to its caller</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--purple)"><span class="kw-word">return</span><span class="kw-hint">Exit function and send back a value</span></div>
+    </div>
+  </div>
+
+  <!-- Storage Class -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🏠</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--blue)">Storage Class</span>
+          <span class="kw-cat-count">4 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Control where a variable lives in memory and for how long</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--blue)"><span class="kw-word">auto</span><span class="kw-hint">Local variable (default, rarely typed)</span></div>
+      <div class="kw-chip" style="--kw-color:var(--blue)"><span class="kw-word">extern</span><span class="kw-hint">Use a variable from another file</span></div>
+      <div class="kw-chip" style="--kw-color:var(--blue)"><span class="kw-word">static</span><span class="kw-hint">Keeps value between function calls</span></div>
+      <div class="kw-chip" style="--kw-color:var(--blue)"><span class="kw-word">register</span><span class="kw-hint">Hint: store in CPU register (fast)</span></div>
+    </div>
+  </div>
+
+  <!-- Type Qualifiers -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🔒</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--red)">Type Qualifiers</span>
+          <span class="kw-cat-count">2 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Add extra rules about how a variable can be used</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--red)"><span class="kw-word">const</span><span class="kw-hint">Value cannot be changed after init</span></div>
+      <div class="kw-chip" style="--kw-color:var(--red)"><span class="kw-word">volatile</span><span class="kw-hint">Value may change unexpectedly (hardware)</span></div>
+    </div>
+  </div>
+
+  <!-- Derived / User-Defined Types -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🗂️</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--amber)">Derived / Custom Types</span>
+          <span class="kw-cat-count">4 keywords</span>
+        </div>
+        <div class="kw-cat-desc">Create your own complex data types by grouping simpler ones</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">struct</span><span class="kw-hint">Group different types together</span></div>
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">union</span><span class="kw-hint">Same memory, different interpretations</span></div>
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">enum</span><span class="kw-hint">Named integer constants</span></div>
+      <div class="kw-chip" style="--kw-color:var(--amber)"><span class="kw-word">typedef</span><span class="kw-hint">Create a new name for an existing type</span></div>
+    </div>
+  </div>
+
+  <!-- Special -->
+  <div class="kw-category">
+    <div class="kw-cat-head">
+      <span class="kw-cat-icon">🛠️</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="kw-cat-title" style="color:var(--green)">Special Operator Keyword</span>
+          <span class="kw-cat-count">1 keyword</span>
+        </div>
+        <div class="kw-cat-desc">Works like an operator but written as a word</div>
+      </div>
+    </div>
+    <div class="kw-grid">
+      <div class="kw-chip" style="--kw-color:var(--green)"><span class="kw-word">sizeof</span><span class="kw-hint">Returns size in bytes at compile time</span></div>
+    </div>
+  </div>
+
+  <!-- Summary Table -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:24px">
+    <div style="background:var(--bg3);padding:12px 16px;font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.5px">CATEGORY SUMMARY</div>
+    <table class="sum-table">
+      <thead><tr><th>Category</th><th>Keywords</th><th style="text-align:center">Count</th></tr></thead>
+      <tbody>
+        <tr><td class="cat-col" style="color:var(--pink)">Flow Control</td><td style="color:var(--muted)">if, else, switch, case, default</td><td class="cnt-col">5</td></tr>
+        <tr><td class="cat-col" style="color:var(--green)">Loops</td><td style="color:var(--muted)">for, while, do</td><td class="cnt-col">3</td></tr>
+        <tr><td class="cat-col" style="color:var(--amber)">Loop / Switch Control</td><td style="color:var(--muted)">break, continue, goto</td><td class="cnt-col">3</td></tr>
+        <tr><td class="cat-col" style="color:var(--cyan)">Data Types</td><td style="color:var(--muted)">int, char, float, double, void, long, short, signed, unsigned</td><td class="cnt-col">9</td></tr>
+        <tr><td class="cat-col" style="color:var(--purple)">Function Return</td><td style="color:var(--muted)">return</td><td class="cnt-col">1</td></tr>
+        <tr><td class="cat-col" style="color:var(--blue)">Storage Class</td><td style="color:var(--muted)">auto, extern, static, register</td><td class="cnt-col">4</td></tr>
+        <tr><td class="cat-col" style="color:var(--red)">Type Qualifiers</td><td style="color:var(--muted)">const, volatile</td><td class="cnt-col">2</td></tr>
+        <tr><td class="cat-col" style="color:var(--amber)">Derived Types</td><td style="color:var(--muted)">struct, union, enum, typedef</td><td class="cnt-col">4</td></tr>
+        <tr><td class="cat-col" style="color:var(--green)">Special</td><td style="color:var(--muted)">sizeof</td><td class="cnt-col">1</td></tr>
+        <tr style="background:rgba(0,217,255,.04)"><td class="cat-col" style="color:var(--cyan);font-size:1rem">TOTAL</td><td></td><td class="cnt-col" style="color:var(--cyan);font-size:1.1rem">32</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §4 · THE GOLDEN RULE
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§4</span> The Golden Rule — Keywords are NOT Variable Names</div>
+  <div class="section-sub">The most common mistake beginners make</div>
+
+  <div class="warn-box">
+    <div class="note-head">⚠️ IMPORTANT RULE</div>
+    You <strong style="color:var(--red)">cannot</strong> use any keyword as the name of a variable, function, or any identifier you create. Keywords already have a job — you cannot give them a second job. The compiler will throw an error immediately.
+  </div>
+
+  <div class="wr-grid">
+    <div class="m-wrong">
+      <div class="m-label">❌ WRONG — keyword as variable name</div>
+      <pre class="mini">int int = 10;       // ERROR
+int for = 5;        // ERROR
+char return = 'A';  // ERROR
+float if = 3.14;    // ERROR
+int void = 0;       // ERROR</pre>
+      <div class="m-note">Compiler says: "error: expected identifier" — because these words are already taken by C.</div>
+    </div>
+    <div class="m-right">
+      <div class="m-label">✅ CORRECT — your own names</div>
+      <pre class="mini">int number = 10;
+int counter = 5;
+char grade = 'A';
+float pi = 3.14;
+int isEmpty = 0;</pre>
+      <div class="m-note">Choose names that describe what the variable stores. Clear names make code readable.</div>
+    </div>
+  </div>
+
+  <div class="wr-grid">
+    <div class="m-wrong">
+      <div class="m-label">❌ WRONG — tricky case variations</div>
+      <pre class="mini">// Don't try to be clever:
+int Int = 5;    // works but confusing
+int IF = 10;    // works but terrible style
+int While = 3;  // works but BAD practice</pre>
+      <div class="m-note">C is case-sensitive so <code>Int</code> is not <code>int</code> — but it tricks every reader of your code.</div>
+    </div>
+    <div class="m-right">
+      <div class="m-label">✅ CORRECT — descriptive names</div>
+      <pre class="mini">int age = 5;
+int maxScore = 10;
+int loopCount = 3;
+// Names that explain their purpose</pre>
+      <div class="m-note">Good variable names make your intent clear. Future-you will thank present-you.</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <div class="note-head">📌 NOTE — CASE SENSITIVITY</div>
+    <code style="color:var(--cyan)">int</code> is a keyword. &nbsp;<code style="color:var(--green)">Int</code> and <code style="color:var(--green)">INT</code> are technically valid identifiers (not keywords) — but <strong>never use them</strong>. It confuses every developer who reads your code and is considered very bad practice.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §5 · KEYWORDS IN ACTION — A QUICK GLIMPSE
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§5</span> Keywords in Action — A Quick Glimpse</div>
+  <div class="section-sub">See how many keywords appear even in a simple program</div>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div style="background:var(--bg3);padding:10px 16px;font-size:.8rem;color:var(--muted);font-weight:600;display:flex;align-items:center;justify-content:space-between">
+      <span>simple_program.c</span>
+      <span style="color:var(--amber)">↑ keywords highlighted in blue</span>
+    </div>
+    <div style="padding:16px">
+<pre class="code"><span class="kw">int</span> main() {                          <span class="cmt">// int, return type keyword</span>
+
+    <span class="kw">int</span> marks = 85;                   <span class="cmt">// int, data type keyword</span>
+    <span class="kw">float</span> percentage = 85.5f;         <span class="cmt">// float, data type keyword</span>
+    <span class="kw">char</span> grade;                        <span class="cmt">// char, data type keyword</span>
+
+    <span class="kw">if</span> (marks >= 90) {                 <span class="cmt">// if, flow control keyword</span>
+        grade = 'A';
+    } <span class="kw">else if</span> (marks >= 75) {         <span class="cmt">// else, flow control keyword</span>
+        grade = 'B';
+    } <span class="kw">else</span> {
+        grade = 'C';
+    }
+
+    <span class="kw">int</span> i;
+    <span class="kw">for</span> (i = 0; i < 3; i++) {         <span class="cmt">// for, loop keyword</span>
+        <span class="kw">if</span> (i == 1) <span class="kw">continue</span>;          <span class="cmt">// continue, loop control keyword</span>
+        <span class="fn">printf</span>(<span class="str">"Round %d\n"</span>, i);
+    }
+
+    <span class="kw">return</span> 0;                          <span class="cmt">// return, function return keyword</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="note-box" style="margin-top:16px">
+    <div class="note-head">🔍 COUNT THEM</div>
+    In just this small program: <code style="color:var(--cyan)">int</code> × 3, <code style="color:var(--cyan)">float</code>, <code style="color:var(--cyan)">char</code>, <code style="color:var(--cyan)">if</code> × 2, <code style="color:var(--cyan)">else</code> × 2, <code style="color:var(--cyan)">for</code>, <code style="color:var(--cyan)">continue</code>, <code style="color:var(--cyan)">return</code> — that's <strong style="color:var(--amber)">13 keyword uses</strong> from just 8 unique keywords. Keywords are everywhere in your programs.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     §6 · WHAT'S COMING NEXT
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§6</span> What's Coming — Topics Ahead</div>
+  <div class="section-sub">Each group of keywords gets its own dedicated topic page</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="background:var(--bg2);border:1px solid rgba(236,72,153,.3);border-radius:12px;padding:16px">
+      <div style="color:var(--pink);font-weight:700;font-size:.85rem;margin-bottom:8px">NEXT UP → Topic 05</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">Flow Controls</div>
+      <div style="color:var(--muted);font-size:.85rem">Deep dive into <code style="color:var(--pink)">if</code>, <code style="color:var(--pink)">else</code>, <code style="color:var(--pink)">switch</code>, <code style="color:var(--pink)">case</code>, <code style="color:var(--pink)">default</code> — make your program think and decide.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:16px">
+      <div style="color:var(--green);font-weight:700;font-size:.85rem;margin-bottom:8px">Topic 06</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">Loops</div>
+      <div style="color:var(--muted);font-size:.85rem"><code style="color:var(--green)">for</code>, <code style="color:var(--green)">while</code>, <code style="color:var(--green)">do-while</code> with <code style="color:var(--amber)">break</code> and <code style="color:var(--amber)">continue</code> — make your program repeat tasks efficiently.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:16px">
+      <div style="color:var(--purple);font-weight:700;font-size:.85rem;margin-bottom:8px">Topic 07</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">Functions</div>
+      <div style="color:var(--muted);font-size:.85rem"><code style="color:var(--purple)">return</code>, <code style="color:var(--purple)">void</code>, <code style="color:var(--cyan)">int</code> — define reusable blocks of logic and call them from anywhere.</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:16px">
+      <div style="color:var(--amber);font-weight:700;font-size:.85rem;margin-bottom:8px">Topics 09–10</div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:6px">Structures & Unions</div>
+      <div style="color:var(--muted);font-size:.85rem"><code style="color:var(--amber)">struct</code>, <code style="color:var(--amber)">union</code>, <code style="color:var(--amber)">enum</code>, <code style="color:var(--amber)">typedef</code> — build your own data types for real-world problems.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE NAV -->
+<div class="tnav">
+  <a href="operators.html" class="tnav-btn prev">← Prev: Operators</a>
+  <a href="c_learn.html" class="tnav-btn">☰ C Topics</a>
+  <a href="control.html" class="tnav-btn next">Next: Flow Controls →</a>
+</div>
+
+</div><!-- /page-wrap -->
+<script src="chatbot.js"></script>
+</body>
+</html>

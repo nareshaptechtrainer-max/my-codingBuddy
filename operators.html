@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operators in C | CoddingBuddY</title>
+<style>
+:root{
+  --bg:#060B16;--bg2:#0D1421;--bg3:#111827;
+  --cyan:#00D9FF;--green:#22C55E;--amber:#F59E0B;
+  --purple:#A855F7;--red:#EF4444;--blue:#3B82F6;--pink:#EC4899;
+  --text:#E2E8F0;--muted:#64748B;--border:#1E293B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6}
+
+/* NAV */
+.topnav{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(6,11,22,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:999}
+.nav-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-trail{color:var(--muted);font-size:.85rem}
+.nav-trail a{color:var(--cyan);text-decoration:none}
+.nav-trail a:hover{text-decoration:underline}
+
+/* LAYOUT */
+.page-wrap{padding-top:58px;max-width:1100px;margin:0 auto;padding-left:24px;padding-right:24px}
+
+/* HERO */
+.hero{padding:48px 0 32px;text-align:center}
+.topic-badge{display:inline-block;background:linear-gradient(135deg,rgba(0,217,255,.15),rgba(168,85,247,.15));border:1px solid rgba(0,217,255,.3);border-radius:20px;padding:4px 16px;font-size:.8rem;color:var(--cyan);letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.6rem;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#fff,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:600px;margin:0 auto}
+
+/* SECTION */
+.section{margin:40px 0}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.section-title .snum{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.section-sub{color:var(--muted);margin-bottom:20px;font-size:.95rem}
+
+/* PRECEDENCE TABLE */
+.prec-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.prec-table th{background:var(--bg3);color:var(--muted);padding:10px 12px;text-align:left;font-weight:600;border-bottom:2px solid var(--border)}
+.prec-table td{padding:9px 12px;border-bottom:1px solid var(--border)}
+.prec-table tr:hover td{background:rgba(255,255,255,.03)}
+.prec-table .lvl{color:var(--amber);font-weight:700;text-align:center}
+.prec-table .sym{font-family:monospace;font-size:.95rem;font-weight:700}
+.cat-postfix .sym{color:var(--cyan)}
+.cat-unary .sym{color:var(--purple)}
+.cat-mult .sym{color:var(--green)}
+.cat-add .sym{color:var(--amber)}
+.cat-shift .sym{color:var(--blue)}
+.cat-rel .sym{color:var(--pink)}
+.cat-eq .sym{color:var(--cyan)}
+.cat-band .sym{color:var(--green)}
+.cat-bxor .sym{color:var(--amber)}
+.cat-bor .sym{color:var(--purple)}
+.cat-land .sym{color:var(--red)}
+.cat-lor .sym{color:var(--red)}
+.cat-tern .sym{color:var(--pink)}
+.cat-assign .sym{color:var(--amber)}
+.cat-comma .sym{color:var(--muted)}
+.cat-badge{display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.cb-postfix{background:rgba(0,217,255,.15);color:var(--cyan)}
+.cb-unary{background:rgba(168,85,247,.15);color:var(--purple)}
+.cb-mult{background:rgba(34,197,94,.15);color:var(--green)}
+.cb-add{background:rgba(245,158,11,.15);color:var(--amber)}
+.cb-shift{background:rgba(59,130,246,.15);color:var(--blue)}
+.cb-rel{background:rgba(236,72,153,.15);color:var(--pink)}
+.cb-eq{background:rgba(0,217,255,.12);color:var(--cyan)}
+.cb-band{background:rgba(34,197,94,.12);color:var(--green)}
+.cb-bxor{background:rgba(245,158,11,.12);color:var(--amber)}
+.cb-bor{background:rgba(168,85,247,.12);color:var(--purple)}
+.cb-land{background:rgba(239,68,68,.15);color:var(--red)}
+.cb-lor{background:rgba(239,68,68,.1);color:var(--red)}
+.cb-tern{background:rgba(236,72,153,.12);color:var(--pink)}
+.cb-assign{background:rgba(245,158,11,.1);color:var(--amber)}
+.cb-comma{background:rgba(100,116,139,.15);color:var(--muted)}
+
+/* SPLIT SCREEN */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+@media(max-width:760px){.split{grid-template-columns:1fr}}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-head{background:var(--bg3);padding:10px 16px;font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between}
+.panel-head .dot-row{display:flex;gap:6px}
+.panel-head .dot{width:10px;height:10px;border-radius:50%}
+.d-red{background:#EF4444}.d-amb{background:#F59E0B}.d-grn{background:#22C55E}
+.panel-body{padding:16px}
+
+/* CODE */
+pre.code{background:#0A0F1A;border-radius:8px;padding:14px 16px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem;overflow-x:auto;line-height:1.7}
+pre.code .kw{color:#569CD6}
+pre.code .fn{color:#DCDCAA}
+pre.code .str{color:#CE9178}
+pre.code .num{color:#B5CEA8}
+pre.code .cmt{color:#6A9955}
+pre.code .op{color:var(--amber)}
+pre.code .type{color:#4EC9B0}
+pre.code .inc{color:#C586C0}
+.ln{display:block;padding:1px 0}
+.ln.hl{background:rgba(0,217,255,.08);border-left:2px solid var(--cyan);padding-left:6px;margin-left:-6px}
+
+/* EXEC STEPPER */
+.exec-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.exec-btn{padding:7px 16px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--text);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.exec-btn:hover,.exec-btn.active{background:var(--cyan);color:#000;border-color:var(--cyan)}
+.exec-vars{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.exec-var-box{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.exec-var-box .vname{font-size:.75rem;color:var(--muted);margin-bottom:2px}
+.exec-var-box .vval{font-size:1.1rem;font-weight:700;color:var(--cyan);font-family:monospace}
+.exec-var-box .vtype{font-size:.7rem;color:var(--purple)}
+.exec-out{background:#0A0F1A;border-radius:6px;padding:10px 12px;font-family:monospace;font-size:.85rem;color:var(--green);min-height:40px}
+.exec-info{font-size:.82rem;color:var(--amber);margin-bottom:8px;min-height:20px}
+.step-counter{font-size:.75rem;color:var(--muted)}
+
+/* RESULT BOX */
+.result-box{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:12px 16px;margin-top:10px}
+.result-box .label{font-size:.75rem;color:var(--green);font-weight:600;margin-bottom:4px}
+.result-box .val{font-family:monospace;font-size:1rem;color:var(--text)}
+
+/* CATEGORY CARD */
+.cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin:24px 0;overflow:hidden}
+.cat-card-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.cat-card-head .cat-icon{font-size:1.4rem}
+.cat-card-head h3{font-size:1.15rem;font-weight:700}
+.cat-card-head .cat-desc{color:var(--muted);font-size:.85rem;margin-top:2px}
+.cat-card-body{padding:20px}
+
+/* OP EXPLAIN TABLE */
+.op-explain{width:100%;border-collapse:collapse;margin-bottom:16px}
+.op-explain td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:.88rem}
+.op-explain td:first-child{font-family:monospace;font-weight:700;color:var(--amber);font-size:1rem;width:80px}
+.op-explain td:nth-child(2){color:var(--cyan);width:160px}
+.op-explain td:last-child{color:var(--muted)}
+
+/* EXAMPLES GRID */
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:640px){.ex-grid{grid-template-columns:1fr}}
+.ex-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px}
+.ex-card .ex-title{font-size:.75rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:.5px}
+.ex-card pre{font-family:monospace;font-size:.82rem;color:var(--text);overflow-x:auto;white-space:pre-wrap}
+
+/* LOGIC BUILDER */
+.logic-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin:12px 0}
+.logic-q{font-weight:600;margin-bottom:12px;font-size:1rem}
+.logic-steps{margin:10px 0}
+.logic-step{padding:6px 0;display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.9rem}
+.logic-step .sn{background:rgba(0,217,255,.15);color:var(--cyan);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.reveal-wrap{margin-top:12px}
+.reveal-btn{padding:7px 18px;border-radius:6px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:var(--purple);cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.reveal-btn:hover{background:rgba(168,85,247,.3)}
+.reveal-box{display:none;margin-top:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:12px 14px;font-family:monospace;font-size:.88rem}
+.reveal-box.show{display:block}
+
+/* MISTAKES */
+.mistake-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.mistake-grid{grid-template-columns:1fr}}
+.m-wrong{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px}
+.m-right{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:14px}
+.m-label{font-size:.7rem;font-weight:700;margin-bottom:6px;letter-spacing:.5px}
+.m-wrong .m-label{color:var(--red)}
+.m-right .m-label{color:var(--green)}
+.m-wrong pre,.m-right pre{font-family:monospace;font-size:.82rem;overflow-x:auto}
+.m-note{margin-top:8px;font-size:.78rem;color:var(--muted)}
+
+/* PRACTICE */
+.prac-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin:10px 0;overflow:hidden}
+.prac-head{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.prac-head:hover{background:rgba(255,255,255,.03)}
+.prac-head .ptitle{font-weight:600;font-size:.9rem}
+.prac-head .parrow{color:var(--muted);transition:transform .2s}
+.prac-card.open .parrow{transform:rotate(180deg)}
+.prac-body{display:none;padding:16px;border-top:1px solid var(--border)}
+.prac-card.open .prac-body{display:block}
+
+/* INTERVIEW */
+.iq-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:10px 0}
+.iq-q{font-weight:600;margin-bottom:8px;font-size:.9rem}
+.iq-a{color:var(--muted);font-size:.88rem}
+.iq-a code{background:rgba(0,217,255,.1);color:var(--cyan);padding:1px 6px;border-radius:4px;font-family:monospace}
+
+/* RULES CARD */
+.rules-card{background:linear-gradient(135deg,rgba(0,217,255,.07),rgba(168,85,247,.07));border:1px solid rgba(0,217,255,.2);border-radius:14px;padding:28px;margin-top:12px}
+.rules-card h3{font-size:1.1rem;font-weight:700;color:var(--cyan);margin-bottom:16px}
+.rules-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.rules-list li{display:flex;gap:12px;align-items:flex-start;font-size:.9rem}
+.rules-list .ri{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;flex-shrink:0}
+.rules-quote{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-style:italic;font-size:.9rem;text-align:center}
+
+/* NAV BTNS */
+.tnav{display:flex;justify-content:space-between;margin:48px 0 32px;flex-wrap:wrap;gap:12px}
+.tnav-btn{padding:11px 22px;border-radius:8px;font-weight:600;font-size:.9rem;text-decoration:none;border:1px solid var(--border);color:var(--text);background:var(--bg2);transition:all .2s}
+.tnav-btn:hover,.tnav-btn.next{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#000;border-color:transparent}
+.tnav-btn.prev:hover{background:var(--bg3)}
+
+/* HIGHLIGHT BOX */
+.info-box{background:rgba(0,217,255,.07);border:1px solid rgba(0,217,255,.2);border-radius:10px;padding:14px 18px;margin:14px 0;font-size:.9rem}
+.info-box strong{color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="nav-logo">CoddingBuddY</span>
+  <span class="nav-trail">/ <a href="c_learn.html">C Language</a> / Operators</span>
+</nav>
+
+<div class="page-wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="topic-badge">TOPIC 03 · C LANGUAGE</div>
+  <h1>Operators in C</h1>
+  <p>All 45 operators explained — from highest to lowest precedence. Master every symbol, every category, every trick.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 1 · ARITHMETIC OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§1</span> Arithmetic Operators</div>
+  <div class="section-sub">The five operators that do math — the foundation of every calculation in C</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">➕</span>
+      <div>
+        <h3 style="color:var(--amber)">Arithmetic (+  −  *  /  %)</h3>
+        <div class="cat-desc">Perform basic mathematical operations on numeric values</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>+</td><td>Addition</td><td>Adds two operands — a + b</td></tr>
+        <tr><td>-</td><td>Subtraction</td><td>Subtracts right from left — a - b</td></tr>
+        <tr><td>*</td><td>Multiplication</td><td>Multiplies two operands — a * b</td></tr>
+        <tr><td>/</td><td>Division</td><td>Divides left by right — a / b (integer division truncates!)</td></tr>
+        <tr><td>%</td><td>Modulus</td><td>Remainder after division — a % b (works only on integers)</td></tr>
+      </table>
+
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><span>arithmetic_ops.c</span><div class="dot-row"><span class="dot d-red"></span><span class="dot d-amb"></span><span class="dot d-grn"></span></div></div>
+          <div class="panel-body">
+<pre class="code" id="arith-code"><span class="ln" id="al1"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span></span>
+<span class="ln" id="al2"></span>
+<span class="ln" id="al3"><span class="type">int</span> <span class="fn">main</span>() {</span>
+<span class="ln" id="al4">    <span class="type">int</span> a = <span class="num">17</span>, b = <span class="num">5</span>;</span>
+<span class="ln" id="al5"></span>
+<span class="ln" id="al6">    <span class="fn">printf</span>(<span class="str">"Add:  %d\n"</span>, a <span class="op">+</span> b);</span>
+<span class="ln" id="al7">    <span class="fn">printf</span>(<span class="str">"Sub:  %d\n"</span>, a <span class="op">-</span> b);</span>
+<span class="ln" id="al8">    <span class="fn">printf</span>(<span class="str">"Mul:  %d\n"</span>, a <span class="op">*</span> b);</span>
+<span class="ln" id="al9">    <span class="fn">printf</span>(<span class="str">"Div:  %d\n"</span>, a <span class="op">/</span> b);</span>
+<span class="ln" id="al10">    <span class="fn">printf</span>(<span class="str">"Mod:  %d\n"</span>, a <span class="op">%</span> b);</span>
+<span class="ln" id="al11"></span>
+<span class="ln" id="al12">    <span class="cmt">/* float division — cast first! */</span></span>
+<span class="ln" id="al13">    <span class="fn">printf</span>(<span class="str">"Real: %.2f\n"</span>, (<span class="type">float</span>)a <span class="op">/</span> b);</span>
+<span class="ln" id="al14">    <span class="kw">return</span> <span class="num">0</span>;</span>
+<span class="ln" id="al15">}</span></pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>LIVE STEPPER</span><div class="step-counter" id="astep-ctr">Step 0/7</div></div>
+          <div class="panel-body">
+            <div class="exec-controls">
+              <button class="exec-btn" onclick="aRun()">▶ Run</button>
+              <button class="exec-btn" onclick="aStep()">⏭ Step</button>
+              <button class="exec-btn" onclick="aReset()">↺ Reset</button>
+            </div>
+            <div class="exec-info" id="ainfo">Click Step or Run to start</div>
+            <div class="exec-vars" id="avars">
+              <div class="exec-var-box"><div class="vname">a</div><div class="vval" id="ava">?</div><div class="vtype">int</div></div>
+              <div class="exec-var-box"><div class="vname">b</div><div class="vval" id="avb">?</div><div class="vtype">int</div></div>
+            </div>
+            <div class="exec-out" id="aout">Output will appear here...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">EVEN / ODD CHECK WITH %</div>
+          <pre>int n = 27;
+if (n % 2 == 0)
+    printf("Even");
+else
+    printf("Odd");  // → Odd</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">EXTRACT DIGITS WITH %</div>
+          <pre>int n = 4567;
+int units = n % 10;     // 7
+int tens  = (n/10)%10; // 6
+int hund  = (n/100)%10;// 5</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">INTEGER vs FLOAT DIVISION</div>
+          <pre>int a=7, b=2;
+printf("%d",   a/b);        // 3
+printf("%.1f",(float)a/b);  // 3.5</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">TEMPERATURE CONVERSION</div>
+          <pre>float c = 100.0;
+float f = (c * 9/5) + 32;
+printf("%.1f F", f); // 212.0 F</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">CIRCULAR HOUR WRAP</div>
+          <pre>int h = 13;
+int h12 = h % 12;  // 1
+// 12→0→12 correction:
+if (h12 == 0) h12 = 12;</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">NEGATIVE MODULUS</div>
+          <pre>printf("%d", -7 % 3);  // -1
+printf("%d",  7 % -3); // 1
+// Sign follows dividend in C</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 2 · RELATIONAL OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§2</span> Relational Operators</div>
+  <div class="section-sub">Compare two values — always return 1 (true) or 0 (false)</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">⚖️</span>
+      <div>
+        <h3 style="color:var(--pink)">Relational (&lt;  &lt;=  &gt;  &gt;=  ==  !=)</h3>
+        <div class="cat-desc">Ask "is this relationship true?" — the answer drives every if/while decision</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>&lt;</td><td>Less than</td><td>1 if left is strictly smaller than right</td></tr>
+        <tr><td>&lt;=</td><td>Less than or equal</td><td>1 if left ≤ right</td></tr>
+        <tr><td>&gt;</td><td>Greater than</td><td>1 if left is strictly larger</td></tr>
+        <tr><td>&gt;=</td><td>Greater than or equal</td><td>1 if left ≥ right</td></tr>
+        <tr><td>==</td><td>Equal to</td><td>1 if both sides are equal — NOT assignment!</td></tr>
+        <tr><td>!=</td><td>Not equal to</td><td>1 if both sides differ</td></tr>
+      </table>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">BASIC COMPARISONS</div>
+          <pre>int a=10, b=20;
+printf("%d", a &lt; b);  // 1
+printf("%d", a &gt; b);  // 0
+printf("%d", a == b); // 0
+printf("%d", a != b); // 1</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">GRADE CHECK</div>
+          <pre>int marks = 85;
+if (marks >= 90) printf("A+");
+else if (marks >= 80) printf("A"); // ← here
+else if (marks >= 70) printf("B");
+else printf("C");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">RANGE CHECK</div>
+          <pre>int age = 25;
+// Is person eligible to vote?
+if (age >= 18 && age <= 120)
+    printf("Eligible");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">CLASSIC BUG: = vs ==</div>
+          <pre>int x = 5;
+// WRONG — assigns 10, always true!
+if (x = 10) printf("true");
+
+// CORRECT — comparison
+if (x == 10) printf("true");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">CHAR COMPARISON</div>
+          <pre>char c = 'Z';
+if (c >= 'A' && c <= 'Z')
+    printf("Uppercase");
+// Compares ASCII values</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">RETURN VALUE IS INT</div>
+          <pre>int r = (5 > 3);  // r = 1
+int s = (5 < 3);  // s = 0
+// Use in arithmetic too:
+int cnt = (a>b) + (b>c);</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 3 · LOGICAL OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§3</span> Logical Operators</div>
+  <div class="section-sub">Combine conditions — &&, ||, ! — with short-circuit evaluation</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">🔗</span>
+      <div>
+        <h3 style="color:var(--red)">Logical (&amp;&amp;  ||  !)</h3>
+        <div class="cat-desc">Combine multiple boolean conditions into one decision</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>&amp;&amp;</td><td>Logical AND</td><td>1 only if BOTH sides are non-zero. Short-circuits: if left is 0, right is never evaluated</td></tr>
+        <tr><td>||</td><td>Logical OR</td><td>1 if EITHER side is non-zero. Short-circuits: if left is 1, right is never evaluated</td></tr>
+        <tr><td>!</td><td>Logical NOT</td><td>Flips truth: !0 = 1, !1 = 0, !42 = 0</td></tr>
+      </table>
+
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><span>Truth Table — &&</span></div>
+          <div class="panel-body">
+<pre class="code">A=1 B=1  →  A&&B = <span class="num">1</span>
+A=1 B=0  →  A&&B = <span class="num">0</span>
+A=0 B=1  →  A&&B = <span class="num">0</span>
+A=0 B=0  →  A&&B = <span class="num">0</span>
+
+A=1 B=1  →  A||B = <span class="num">1</span>
+A=1 B=0  →  A||B = <span class="num">1</span>
+A=0 B=1  →  A||B = <span class="num">1</span>
+A=0 B=0  →  A||B = <span class="num">0</span></pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>Short-circuit Demo</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="type">int</span> x = <span class="num">0</span>;
+<span class="cmt">// Right side never runs!</span>
+<span class="kw">if</span> (x <span class="op">!=</span> <span class="num">0</span> <span class="op">&&</span> (<span class="num">10</span>/x > <span class="num">2</span>))
+    <span class="fn">printf</span>(<span class="str">"safe"</span>);
+<span class="cmt">// Without short-circuit: div by 0!</span>
+
+<span class="type">int</span> a = <span class="num">5</span>;
+<span class="kw">if</span> (a > <span class="num">0</span> <span class="op">||</span> <span class="fn">expensive_fn</span>())
+    <span class="fn">printf</span>(<span class="str">"fast"</span>);
+<span class="cmt">// expensive_fn() never called!</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">LEAP YEAR (classic)</div>
+          <pre>int y = 2024;
+int leap = (y%4==0 && y%100!=0)
+        || (y%400==0);
+printf("%s", leap?"Leap":"Not leap");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">TRIANGLE VALID CHECK</div>
+          <pre>int a=3,b=4,c=5;
+if(a+b>c && b+c>a && a+c>b)
+    printf("Valid triangle");
+else printf("Invalid");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">LOGIN CHECK</div>
+          <pre>int user_ok = 1, pass_ok = 1;
+if (user_ok && pass_ok)
+    printf("Welcome!");
+else
+    printf("Access denied");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">NOT OPERATOR</div>
+          <pre>int logged_in = 0;
+if (!logged_in)
+    printf("Please login");
+// !0 = 1 (true)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 4 · BITWISE OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§4</span> Bitwise Operators</div>
+  <div class="section-sub">Work at the bit level — the fastest operations a CPU can do</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">🔢</span>
+      <div>
+        <h3 style="color:var(--blue)">Bitwise (&amp;  |  ^  ~  &lt;&lt;  &gt;&gt;)</h3>
+        <div class="cat-desc">Manipulate individual bits — used in embedded systems, compression, cryptography, flags</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>&amp;</td><td>Bitwise AND</td><td>Bit is 1 only if BOTH corresponding bits are 1</td></tr>
+        <tr><td>|</td><td>Bitwise OR</td><td>Bit is 1 if EITHER bit is 1</td></tr>
+        <tr><td>^</td><td>Bitwise XOR</td><td>Bit is 1 if bits are DIFFERENT (exclusive or)</td></tr>
+        <tr><td>~</td><td>Bitwise NOT</td><td>Flips every bit: ~5 = -6 (two's complement)</td></tr>
+        <tr><td>&lt;&lt;</td><td>Left Shift</td><td>Shifts bits left by n positions = multiply by 2ⁿ</td></tr>
+        <tr><td>&gt;&gt;</td><td>Right Shift</td><td>Shifts bits right by n positions = divide by 2ⁿ</td></tr>
+      </table>
+
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><span>Bit Patterns</span></div>
+          <div class="panel-body">
+<pre class="code">a  = 12  = <span class="num">0000 1100</span>
+b  =  5  = <span class="num">0000 0101</span>
+
+a&amp;b = <span class="num">4</span>  = <span class="num">0000 0100</span>  (AND)
+a|b = <span class="num">13</span> = <span class="num">0000 1101</span>  (OR)
+a^b = <span class="num">9</span>  = <span class="num">0000 1001</span>  (XOR)
+~a  = <span class="num">-13</span>= <span class="num">1111 0011</span>  (NOT)
+
+a&lt;&lt;1 = <span class="num">24</span> = <span class="num">0001 1000</span>  (*2)
+a&gt;&gt;1 = <span class="num">6</span>  = <span class="num">0000 0110</span>  (/2)</pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>Common Bit Tricks</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="cmt">// Check if bit 3 is set</span>
+<span class="kw">if</span> (n <span class="op">&amp;</span> (<span class="num">1</span> &lt;&lt; <span class="num">3</span>)) ...
+
+<span class="cmt">// Set bit 2</span>
+n = n <span class="op">|</span> (<span class="num">1</span> &lt;&lt; <span class="num">2</span>);
+
+<span class="cmt">// Clear bit 2</span>
+n = n <span class="op">&amp;</span> ~(<span class="num">1</span> &lt;&lt; <span class="num">2</span>);
+
+<span class="cmt">// Toggle bit 2</span>
+n = n <span class="op">^</span> (<span class="num">1</span> &lt;&lt; <span class="num">2</span>);
+
+<span class="cmt">// Multiply by 8 fast</span>
+n = n <span class="op">&lt;&lt;</span> <span class="num">3</span>;  <span class="cmt">// same as n*8</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">CHECK EVEN/ODD (bit trick)</div>
+          <pre>int n = 7;
+if (n & 1) printf("Odd");
+else printf("Even");
+// Bit 0 = 1 means odd</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">SWAP WITHOUT TEMP</div>
+          <pre>int a=10, b=20;
+a = a ^ b;  // a=30
+b = a ^ b;  // b=10
+a = a ^ b;  // a=20</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">POWER OF 2 CHECK</div>
+          <pre>int n = 16;
+if (n>0 && (n & (n-1)) == 0)
+    printf("Power of 2"); // YES
+// 16=10000, 15=01111 → AND=0</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">COLOR FLAGS (bitmask)</div>
+          <pre>#define RED   1  // 001
+#define GREEN 2  // 010
+#define BLUE  4  // 100
+int color = RED | BLUE; // 101=5
+if (color & RED) printf("Has Red");</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">FAST MULTIPLY / DIVIDE</div>
+          <pre>int n = 6;
+printf("%d", n << 2); // 24 (n*4)
+printf("%d", n >> 1); // 3  (n/2)</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">COUNT SET BITS</div>
+          <pre>int n=13, cnt=0; // 1101
+while(n) {
+    cnt += n & 1;
+    n >>= 1;
+}
+printf("%d",cnt); // 3</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 5 · ASSIGNMENT OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§5</span> Assignment Operators</div>
+  <div class="section-sub">Store values and update in one shot — 11 operators total</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">📝</span>
+      <div>
+        <h3 style="color:var(--amber)">Assignment (=  +=  -=  *=  /=  %=  &amp;=  |=  ^=  &lt;&lt;=  &gt;&gt;=)</h3>
+        <div class="cat-desc">Compound assignment = operation + assignment in one step</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>=</td><td>Assign</td><td>a = 5 → store 5 in a</td></tr>
+        <tr><td>+=</td><td>Add assign</td><td>a += 3 is exactly a = a + 3</td></tr>
+        <tr><td>-=</td><td>Sub assign</td><td>a -= 3 is exactly a = a - 3</td></tr>
+        <tr><td>*=</td><td>Mul assign</td><td>a *= 3 is exactly a = a * 3</td></tr>
+        <tr><td>/=</td><td>Div assign</td><td>a /= 3 is exactly a = a / 3</td></tr>
+        <tr><td>%=</td><td>Mod assign</td><td>a %= 3 is exactly a = a % 3</td></tr>
+        <tr><td>&amp;=</td><td>AND assign</td><td>a &amp;= 3 is exactly a = a &amp; 3</td></tr>
+        <tr><td>|=</td><td>OR assign</td><td>a |= 3 is exactly a = a | 3</td></tr>
+        <tr><td>^=</td><td>XOR assign</td><td>a ^= 3 is exactly a = a ^ 3</td></tr>
+        <tr><td>&lt;&lt;=</td><td>L-shift assign</td><td>a &lt;&lt;= 2 is exactly a = a &lt;&lt; 2</td></tr>
+        <tr><td>&gt;&gt;=</td><td>R-shift assign</td><td>a &gt;&gt;= 2 is exactly a = a &gt;&gt; 2</td></tr>
+      </table>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">ACCUMULATOR PATTERN</div>
+          <pre>int total = 0;
+total += 100;  // 100
+total += 250;  // 350
+total += 75;   // 425
+printf("%d", total);</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">SCORE MULTIPLIER</div>
+          <pre>int score = 50;
+score *= 2;  // 100 (bonus round)
+score -= 10; // 90  (penalty)
+score /= 3;  // 30  (team split)</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">BIT FLAG TOGGLE</div>
+          <pre>int flags = 0b10101010;
+flags |= 0b00000001; // set bit 0
+flags &= ~0b00000010;// clear bit 1
+flags ^= 0b00001100; // toggle 2,3</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">CHAINED ASSIGNMENT</div>
+          <pre>int a, b, c;
+// Right-to-left associativity
+a = b = c = 0;
+// c=0 first, then b=0, then a=0</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 6 · INCREMENT / DECREMENT
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§6</span> Increment &amp; Decrement Operators</div>
+  <div class="section-sub">The ++ and -- operators — pre vs post makes a huge difference</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">🔄</span>
+      <div>
+        <h3 style="color:var(--cyan)">++  and  --</h3>
+        <div class="cat-desc">Add or subtract 1 — but WHEN it happens depends on pre/post position</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>++a</td><td>Pre-increment</td><td>Increment a FIRST, then use the new value in the expression</td></tr>
+        <tr><td>a++</td><td>Post-increment</td><td>Use the current value FIRST, then increment a</td></tr>
+        <tr><td>--a</td><td>Pre-decrement</td><td>Decrement a FIRST, then use the new value</td></tr>
+        <tr><td>a--</td><td>Post-decrement</td><td>Use the current value FIRST, then decrement a</td></tr>
+      </table>
+
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><span>Pre vs Post Comparison</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="type">int</span> a = <span class="num">5</span>;
+<span class="type">int</span> x = <span class="op">++</span>a;  <span class="cmt">// a becomes 6, x=6</span>
+<span class="fn">printf</span>(<span class="str">"%d %d"</span>, a, x); <span class="cmt">// 6 6</span>
+
+<span class="type">int</span> b = <span class="num">5</span>;
+<span class="type">int</span> y = b<span class="op">++</span>;  <span class="cmt">// y=5, then b=6</span>
+<span class="fn">printf</span>(<span class="str">"%d %d"</span>, b, y); <span class="cmt">// 6 5</span></pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>In Loops</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="cmt">// Both print 0 1 2 3 4 — same!</span>
+<span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>; i&lt;<span class="num">5</span>; i++) ...
+<span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>; i&lt;<span class="num">5</span>; <span class="op">++</span>i) ...
+
+<span class="cmt">// But in expression — different!</span>
+<span class="type">int</span> i=<span class="num">3</span>;
+<span class="fn">printf</span>(<span class="str">"%d"</span>, i++); <span class="cmt">// prints 3</span>
+<span class="fn">printf</span>(<span class="str">"%d"</span>, i);   <span class="cmt">// prints 4</span>
+
+<span class="fn">printf</span>(<span class="str">"%d"</span>, <span class="op">++</span>i); <span class="cmt">// prints 5</span>
+<span class="fn">printf</span>(<span class="str">"%d"</span>, i);   <span class="cmt">// prints 5</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">POINTER TRAVERSAL</div>
+          <pre>int arr[] = {10,20,30};
+int *p = arr;
+printf("%d", *p++); // 10 (then p++)
+printf("%d", *p);   // 20</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">ARRAY INDEX TRICK</div>
+          <pre>int a[5]={0}, i=0;
+a[i++] = 10; // a[0]=10, i=1
+a[i++] = 20; // a[1]=20, i=2
+a[i++] = 30; // a[2]=30, i=3</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">COUNTDOWN</div>
+          <pre>int n = 5;
+while(n > 0)
+    printf("%d ", n--); // 5 4 3 2 1</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">TRICKY EXPRESSION</div>
+          <pre>int a = 5;
+int b = a++ + ++a;
+// Undefined behavior! Never do this
+// In real code: avoid mixing ++
+// with same var in one expression</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 7 · TERNARY OPERATOR
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§7</span> Ternary Operator</div>
+  <div class="section-sub">The only C operator with three operands — a compact if-else</div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">🎯</span>
+      <div>
+        <h3 style="color:var(--pink)">condition ? value_if_true : value_if_false</h3>
+        <div class="cat-desc">Evaluate a condition inline — pick one of two values. Cleaner than if-else for simple choices.</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><span>Syntax Explained</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="cmt">// condition ? expr1 : expr2</span>
+<span class="cmt">// If condition != 0 → expr1</span>
+<span class="cmt">// If condition == 0 → expr2</span>
+
+<span class="type">int</span> a=10, b=20;
+<span class="type">int</span> max = (a &gt; b) ? a : b;  <span class="cmt">// 20</span>
+<span class="type">int</span> min = (a &lt; b) ? a : b;  <span class="cmt">// 10</span>
+<span class="type">int</span> abs = (a &lt; <span class="num">0</span>) ? -a : a; <span class="cmt">// 10</span></pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span>Nested Ternary (use carefully)</span></div>
+          <div class="panel-body">
+<pre class="code"><span class="type">int</span> marks = <span class="num">75</span>;
+<span class="type">char</span> *grade = (marks &gt;= <span class="num">90</span>) ? <span class="str">"A"</span>
+            : (marks &gt;= <span class="num">80</span>) ? <span class="str">"B"</span>
+            : (marks &gt;= <span class="num">70</span>) ? <span class="str">"C"</span>
+            : <span class="str">"F"</span>;
+<span class="fn">printf</span>(<span class="str">"%s"</span>, grade); <span class="cmt">// C</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">ODD / EVEN</div>
+          <pre>int n = 7;
+printf("%s", n%2==0 ? "Even":"Odd");
+// Output: Odd</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">SIGN CHECK</div>
+          <pre>int n = -5;
+printf("%s", n>0 ? "Positive"
+           : n<0 ? "Negative"
+           : "Zero"); // Negative</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">MAX OF THREE</div>
+          <pre>int a=3,b=7,c=5;
+int max = (a>b&&a>c)?a:(b>c?b:c);
+printf("%d", max); // 7</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">PRINTF CONDITIONAL</div>
+          <pre>int count = 1;
+printf("%d item%s", count,
+       count==1 ? "" : "s");
+// "1 item" (no extra s)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 8 · SPECIAL OPERATORS
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§8</span> Special Operators</div>
+  <div class="section-sub">sizeof, comma operator, type cast, address-of &amp;, dereference *, member access . and -></div>
+
+  <div class="cat-card">
+    <div class="cat-card-head">
+      <span class="cat-icon">🛠️</span>
+      <div>
+        <h3 style="color:var(--purple)">Special Operators</h3>
+        <div class="cat-desc">Unique operators that don't fit neatly into other categories — but are used constantly</div>
+      </div>
+    </div>
+    <div class="cat-card-body">
+      <table class="op-explain">
+        <tr><td>sizeof</td><td>Size in bytes</td><td>sizeof(int) = 4 bytes. Compile-time, no runtime cost</td></tr>
+        <tr><td>(type)</td><td>Type cast</td><td>(float)5 converts int 5 to float 5.0</td></tr>
+        <tr><td>,</td><td>Comma</td><td>Evaluates left then right, returns right value. Used in for loops</td></tr>
+        <tr><td>&amp;</td><td>Address-of</td><td>&amp;a = memory address where variable a lives</td></tr>
+        <tr><td>*</td><td>Dereference</td><td>*p = value at the address stored in pointer p</td></tr>
+        <tr><td>.</td><td>Dot access</td><td>s.name accesses member name of struct s</td></tr>
+        <tr><td>-></td><td>Arrow access</td><td>p->name same as (*p).name — pointer to struct</td></tr>
+      </table>
+
+      <div class="ex-grid">
+        <div class="ex-card">
+          <div class="ex-title">sizeof</div>
+          <pre>printf("%zu", sizeof(int));   // 4
+printf("%zu", sizeof(char));  // 1
+printf("%zu", sizeof(double));// 8
+int a[10];
+printf("%zu", sizeof(a));     // 40</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">TYPE CAST</div>
+          <pre>int a=7, b=2;
+float r = (float)a / b; // 3.5
+// Without cast: 7/2 = 3 (int!)
+
+int big = 1000000;
+long l = (long)big * big; // safe</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">COMMA OPERATOR</div>
+          <pre>// Multiple inits in for loop:
+for(int i=0,j=10; i<5; i++,j--)
+    printf("%d %d\n", i, j);
+
+int x = (5, 10, 15); // x = 15</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">ADDRESS-OF &amp; DEREFERENCE</div>
+          <pre>int a = 42;
+int *p = &a;      // p = address of a
+printf("%d", *p); // 42 (dereference)
+*p = 100;         // changes a!
+printf("%d", a);  // 100</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">DOT vs ARROW</div>
+          <pre>struct Point { int x, y; };
+struct Point p1 = {3, 4};
+struct Point *ptr = &p1;
+
+printf("%d", p1.x);   // 3 (dot)
+printf("%d", ptr->x); // 3 (arrow)</pre>
+        </div>
+        <div class="ex-card">
+          <div class="ex-title">sizeof ARRAY TRICK</div>
+          <pre>int arr[] = {1,2,3,4,5};
+int len = sizeof(arr)/sizeof(arr[0]);
+printf("%d", len); // 5
+// Works because sizeof gives bytes</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 9 · LOGIC BUILDER
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§9</span> Logic Builder</div>
+  <div class="section-sub">Think through these problems step by step — then reveal the answer</div>
+
+  <div class="logic-card">
+    <div class="logic-q">Problem 1: What does <code style="color:var(--cyan)">printf("%d", 5 + 3 * 2 - 1)</code> print?</div>
+    <div class="logic-steps">
+      <div class="logic-step"><span class="sn">1</span>What are all operators here? (+, *, -)</div>
+      <div class="logic-step"><span class="sn">2</span>Precedence: * is level 3, + and - are level 4. So * runs first.</div>
+      <div class="logic-step"><span class="sn">3</span>3 * 2 = 6 → expression becomes 5 + 6 - 1</div>
+      <div class="logic-step"><span class="sn">4</span>+ and - are same level, L→R: 5+6=11, then 11-1=10</div>
+    </div>
+    <div class="reveal-wrap">
+      <button class="reveal-btn" onclick="toggleReveal('r1',this)">Reveal Answer</button>
+      <div class="reveal-box" id="r1">Output: <strong style="color:var(--green)">10</strong><br>Rule: * before + and −, same-level goes left-to-right.</div>
+    </div>
+  </div>
+
+  <div class="logic-card">
+    <div class="logic-q">Problem 2: <code style="color:var(--cyan)">int a=5; printf("%d %d", a++, a)</code> — what prints?</div>
+    <div class="logic-steps">
+      <div class="logic-step"><span class="sn">1</span>a++ is post-increment: use a (5) now, increment later</div>
+      <div class="logic-step"><span class="sn">2</span>The second argument sees a after the increment? Depends on evaluation order!</div>
+      <div class="logic-step"><span class="sn">3</span>Function argument evaluation order is UNSPECIFIED in C — could be 5 5 or 5 6</div>
+    </div>
+    <div class="reveal-wrap">
+      <button class="reveal-btn" onclick="toggleReveal('r2',this)">Reveal Answer</button>
+      <div class="reveal-box" id="r2"><strong style="color:var(--red)">Undefined / Implementation-defined!</strong><br>Output varies by compiler. Never mix post-increment with the same variable in one printf call.</div>
+    </div>
+  </div>
+
+  <div class="logic-card">
+    <div class="logic-q">Problem 3: <code style="color:var(--cyan)">printf("%d", 7 &amp; 3)</code> — trace the bits</div>
+    <div class="logic-steps">
+      <div class="logic-step"><span class="sn">1</span>7 in binary = 0111</div>
+      <div class="logic-step"><span class="sn">2</span>3 in binary = 0011</div>
+      <div class="logic-step"><span class="sn">3</span>AND: bit is 1 only when BOTH are 1 → 0011 = 3</div>
+    </div>
+    <div class="reveal-wrap">
+      <button class="reveal-btn" onclick="toggleReveal('r3',this)">Reveal Answer</button>
+      <div class="reveal-box" id="r3">Output: <strong style="color:var(--green)">3</strong><br>7 (0111) AND 3 (0011) = 0011 = 3</div>
+    </div>
+  </div>
+
+  <div class="logic-card">
+    <div class="logic-q">Problem 4: What is the value? <code style="color:var(--cyan)">int x = (0 || 5) &amp;&amp; (3 &amp;&amp; 0)</code></div>
+    <div class="logic-steps">
+      <div class="logic-step"><span class="sn">1</span>Evaluate (0 || 5): 0 is false, 5 is true → result = 1</div>
+      <div class="logic-step"><span class="sn">2</span>Evaluate (3 &amp;&amp; 0): 3 is true, 0 is false → result = 0</div>
+      <div class="logic-step"><span class="sn">3</span>Now 1 &amp;&amp; 0 → false = 0</div>
+    </div>
+    <div class="reveal-wrap">
+      <button class="reveal-btn" onclick="toggleReveal('r4',this)">Reveal Answer</button>
+      <div class="reveal-box" id="r4">x = <strong style="color:var(--green)">0</strong><br>(1) &amp;&amp; (0) = 0. Even though left side was true, right side killed it.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 10 · COMMON MISTAKES
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§10</span> Common Mistakes</div>
+  <div class="section-sub">Errors every beginner makes — know them before your compiler surprises you</div>
+
+  <div class="mistake-grid">
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>if (a = 5)   // assignment!
+    printf("five");</pre><div class="m-note">Always true — assigns 5, not compares</div></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>if (a == 5)  // comparison
+    printf("five");</pre><div class="m-note">Use == to compare, = only to assign</div></div>
+    </div>
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>int a=7, b=2;
+float r = a/b; // 3.0 not 3.5!</pre><div class="m-note">Integer / integer = integer (truncates)</div></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>float r = (float)a / b; // 3.5</pre><div class="m-note">Cast at least one operand to float first</div></div>
+    </div>
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>int a=5;
+printf("%d", a+++a); // UB</pre><div class="m-note">Undefined — modifying and reading same var</div></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>int a=5;
+int tmp = a++;
+printf("%d", tmp + a); // 11</pre><div class="m-note">Separate side effects onto different statements</div></div>
+    </div>
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>int n = 5 % 2.0; // compile error
+// % only works on integers</pre></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>int n = 5 % 2;        // 1 ✓
+double r = fmod(5.0, 2.0); // 1.0</pre><div class="m-note">Use fmod() from math.h for float remainder</div></div>
+    </div>
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>if (0 < x < 10)  // always true!
+// Parses as (0 < x) < 10
+// (0 or 1) < 10 is always true</pre></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>if (x > 0 && x < 10) // correct
+    printf("in range");</pre><div class="m-note">C has no chained comparisons — use && to combine</div></div>
+    </div>
+    <div>
+      <div class="m-wrong"><div class="m-label">❌ WRONG</div><pre>int a=2, b=3;
+int c = ~a + b; // not -(2)+3 !
+// ~2 = -3 (two's complement)</pre></div>
+      <div style="height:8px"></div>
+      <div class="m-right"><div class="m-label">✅ CORRECT</div><pre>int neg = -a;       // -2 (unary minus)
+int flip = ~a;      // -3 (bitwise NOT)
+// Know which one you need!</pre><div class="m-note">~ is bitwise flip, not arithmetic negation</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 11 · QUICK PRACTICE
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§11</span> Quick Practice</div>
+  <div class="section-sub">Write the code. Click to reveal the solution.</div>
+
+  <div class="prac-card" id="p1">
+    <div class="prac-head" onclick="togglePrac('p1')"><span class="ptitle">🔢 Print sum, difference, product, quotient, and remainder of two numbers</span><span class="parrow">▼</span></div>
+    <div class="prac-body">
+<pre class="code"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a, b;
+    <span class="fn">printf</span>(<span class="str">"Enter two integers: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d %d"</span>, &amp;a, &amp;b);
+    <span class="fn">printf</span>(<span class="str">"Sum        : %d\n"</span>, a + b);
+    <span class="fn">printf</span>(<span class="str">"Difference : %d\n"</span>, a - b);
+    <span class="fn">printf</span>(<span class="str">"Product    : %d\n"</span>, a * b);
+    <span class="fn">printf</span>(<span class="str">"Quotient   : %d\n"</span>, a / b);
+    <span class="fn">printf</span>(<span class="str">"Remainder  : %d\n"</span>, a % b);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+    </div>
+  </div>
+
+  <div class="prac-card" id="p2">
+    <div class="prac-head" onclick="togglePrac('p2')"><span class="ptitle">🔄 Swap two numbers using XOR (no temp variable)</span><span class="parrow">▼</span></div>
+    <div class="prac-body">
+<pre class="code"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a = <span class="num">25</span>, b = <span class="num">75</span>;
+    <span class="fn">printf</span>(<span class="str">"Before: a=%d b=%d\n"</span>, a, b);
+    a ^= b;  b ^= a;  a ^= b;
+    <span class="fn">printf</span>(<span class="str">"After:  a=%d b=%d\n"</span>, a, b);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+      <div class="result-box"><div class="label">OUTPUT</div><div class="val">Before: a=25 b=75<br>After:  a=75 b=25</div></div>
+    </div>
+  </div>
+
+  <div class="prac-card" id="p3">
+    <div class="prac-head" onclick="togglePrac('p3')"><span class="ptitle">⚡ Use ternary to find the largest of three numbers</span><span class="parrow">▼</span></div>
+    <div class="prac-body">
+<pre class="code"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a=12, b=45, c=33;
+    <span class="type">int</span> max = (a&gt;b &amp;&amp; a&gt;c) ? a : (b&gt;c ? b : c);
+    <span class="fn">printf</span>(<span class="str">"Largest = %d\n"</span>, max);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+      <div class="result-box"><div class="label">OUTPUT</div><div class="val">Largest = 45</div></div>
+    </div>
+  </div>
+
+  <div class="prac-card" id="p4">
+    <div class="prac-head" onclick="togglePrac('p4')"><span class="ptitle">🔍 Check if a number is a power of 2 using bitwise AND</span><span class="parrow">▼</span></div>
+    <div class="prac-body">
+<pre class="code"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> n;
+    <span class="fn">printf</span>(<span class="str">"Enter a number: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;n);
+    <span class="kw">if</span> (n &gt; <span class="num">0</span> &amp;&amp; (n &amp; (n - <span class="num">1</span>)) == <span class="num">0</span>)
+        <span class="fn">printf</span>(<span class="str">"%d is a power of 2\n"</span>, n);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"%d is NOT a power of 2\n"</span>, n);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+    </div>
+  </div>
+
+  <div class="prac-card" id="p5">
+    <div class="prac-head" onclick="togglePrac('p5')"><span class="ptitle">📐 Calculate compound assignment: start=100, tax 18%, discount 10%</span><span class="parrow">▼</span></div>
+    <div class="prac-body">
+<pre class="code"><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">float</span> price = <span class="num">100.0f</span>;
+    price *= <span class="num">1.18f</span>;  <span class="cmt">// add 18% tax → 118</span>
+    price *= <span class="num">0.90f</span>;  <span class="cmt">// apply 10% discount → 106.2</span>
+    <span class="fn">printf</span>(<span class="str">"Final price: %.2f\n"</span>, price);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+      <div class="result-box"><div class="label">OUTPUT</div><div class="val">Final price: 106.20</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 12 · INTERVIEW Q&A
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§12</span> Interview Thinking</div>
+  <div class="section-sub">Questions interviewers actually ask about operators in C</div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q1: What is the difference between = and == in C?</div>
+    <div class="iq-a"><code>=</code> is the assignment operator — it stores a value. <code>==</code> is the equality operator — it compares two values and returns 1 or 0. Using <code>=</code> inside an <code>if</code> assigns the value and evaluates to that value (often a non-zero bug).</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q2: What is operator precedence and why does it matter?</div>
+    <div class="iq-a">Precedence determines which operator runs first when multiple operators appear in one expression. <code>2 + 3 * 4</code> = 14 (not 20) because <code>*</code> has higher precedence than <code>+</code>. Without it, expressions would be ambiguous.</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q3: What is short-circuit evaluation? Give an example.</div>
+    <div class="iq-a">In <code>&&</code>, if the left side is false, the right side is never evaluated. In <code>||</code>, if the left is true, the right is skipped. Example: <code>if (p != NULL && p->val > 0)</code> — if <code>p</code> is NULL, the second part is never reached, preventing a crash.</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q4: What does a++ vs ++a mean? When does it matter?</div>
+    <div class="iq-a"><code>a++</code> (post): use current value, then increment. <code>++a</code> (pre): increment first, then use new value. In a simple statement like <code>a++;</code> both are identical. It matters when the expression's value is used: <code>int x = a++</code> stores old value; <code>int x = ++a</code> stores new value.</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q5: How do you check if the nth bit is set in an integer?</div>
+    <div class="iq-a">Use: <code>if (num & (1 &lt;&lt; n))</code>. This creates a mask with only bit n set, then ANDs with num. If the result is non-zero, bit n is set.</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q6: What is the result of <code>sizeof('A')</code> in C?</div>
+    <div class="iq-a">4 (not 1). In C, character literals like <code>'A'</code> are of type <code>int</code>, not <code>char</code>. So <code>sizeof('A')</code> = <code>sizeof(int)</code> = 4. Only <code>sizeof((char)'A')</code> or <code>sizeof(char)</code> gives 1. (This is different from C++.)</div>
+  </div>
+
+  <div class="iq-card">
+    <div class="iq-q">Q7: Can you use the % operator on floating-point numbers?</div>
+    <div class="iq-a">No. The <code>%</code> operator works only on integer types (<code>int</code>, <code>long</code>, etc.). For floating-point modulus, use <code>fmod()</code> from <code>&lt;math.h&gt;</code>. Example: <code>fmod(5.5, 2.0)</code> = 1.5.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 13 · CODDINGBUDDY RULES
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§13</span> CoddingBuddY Logic Rules</div>
+
+  <div class="rules-card">
+    <h3>🔑 The 5-Question Framework for Every Expression</h3>
+    <ul class="rules-list">
+      <li><span class="ri">01</span><div><strong>What operators are here?</strong> List every symbol in the expression before evaluating anything.</div></li>
+      <li><span class="ri">02</span><div><strong>What are their precedence levels?</strong> Lowest level number wins. Group high-priority operators first.</div></li>
+      <li><span class="ri">03</span><div><strong>What is the associativity?</strong> For equal-priority operators, check if they go L→R or R→L.</div></li>
+      <li><span class="ri">04</span><div><strong>Are there any side effects?</strong> Does ++ or -- appear? Is the same variable used multiple times? Beware undefined behavior.</div></li>
+      <li><span class="ri">05</span><div><strong>What type is the result?</strong> int / int = int. int / float = float. Verify type before printf format.</div></li>
+    </ul>
+    <div class="rules-quote">"An operator is just a question asked to the CPU. Know the question, know the answer." — CoddingBuddY</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 14 · OPERATOR PRECEDENCE & PRIORITY REFERENCE
+     ══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title"><span class="snum">§14</span> Operator Precedence &amp; Priority — Quick Reference</div>
+  <div class="section-sub">Now that you know every operator — see exactly how they rank against each other. Lower level = higher priority = runs first.</div>
+
+  <div class="info-box">
+    <strong>The Golden Rule:</strong> Level 1 runs first, Level 15 runs last. Same level? Check Associativity — <strong>L→R</strong> means left to right, <strong>R→L</strong> means right to left.<br>
+    <span style="color:var(--amber)">When in doubt, add parentheses.</span> They override everything.
+  </div>
+
+  <div style="overflow-x:auto;margin-top:16px">
+  <table class="prec-table">
+    <thead>
+      <tr><th style="text-align:center;width:70px">Priority</th><th>Operators</th><th>Category</th><th>Associativity</th></tr>
+    </thead>
+    <tbody>
+      <tr class="cat-postfix">
+        <td class="lvl">1 ↑ HIGHEST</td>
+        <td><span class="sym">a++</span> &nbsp;<span class="sym">a--</span> &nbsp;<span class="sym">a[i]</span> &nbsp;<span class="sym">f()</span> &nbsp;<span class="sym">a.b</span> &nbsp;<span class="sym">a->b</span></td>
+        <td><span class="cat-badge cb-postfix">Postfix</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-unary">
+        <td class="lvl">2</td>
+        <td><span class="sym">++a</span> &nbsp;<span class="sym">--a</span> &nbsp;<span class="sym">+a</span> &nbsp;<span class="sym">-a</span> &nbsp;<span class="sym">!</span> &nbsp;<span class="sym">~</span> &nbsp;<span class="sym">(type)</span> &nbsp;<span class="sym">*a</span> &nbsp;<span class="sym">&amp;a</span> &nbsp;<span class="sym">sizeof</span></td>
+        <td><span class="cat-badge cb-unary">Unary / Prefix</span></td>
+        <td>R → L</td>
+      </tr>
+      <tr class="cat-mult">
+        <td class="lvl">3</td>
+        <td><span class="sym">*</span> &nbsp;<span class="sym">/</span> &nbsp;<span class="sym">%</span></td>
+        <td><span class="cat-badge cb-mult">Multiplicative</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-add">
+        <td class="lvl">4</td>
+        <td><span class="sym">+</span> &nbsp;<span class="sym">-</span></td>
+        <td><span class="cat-badge cb-add">Additive</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-shift">
+        <td class="lvl">5</td>
+        <td><span class="sym">&lt;&lt;</span> &nbsp;<span class="sym">&gt;&gt;</span></td>
+        <td><span class="cat-badge cb-shift">Bitwise Shift</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-rel">
+        <td class="lvl">6</td>
+        <td><span class="sym">&lt;</span> &nbsp;<span class="sym">&lt;=</span> &nbsp;<span class="sym">&gt;</span> &nbsp;<span class="sym">&gt;=</span></td>
+        <td><span class="cat-badge cb-rel">Relational</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-eq">
+        <td class="lvl">7</td>
+        <td><span class="sym">==</span> &nbsp;<span class="sym">!=</span></td>
+        <td><span class="cat-badge cb-eq">Equality</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-band">
+        <td class="lvl">8</td>
+        <td><span class="sym">&amp;</span></td>
+        <td><span class="cat-badge cb-band">Bitwise AND</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-bxor">
+        <td class="lvl">9</td>
+        <td><span class="sym">^</span></td>
+        <td><span class="cat-badge cb-bxor">Bitwise XOR</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-bor">
+        <td class="lvl">10</td>
+        <td><span class="sym">|</span></td>
+        <td><span class="cat-badge cb-bor">Bitwise OR</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-land">
+        <td class="lvl">11</td>
+        <td><span class="sym">&amp;&amp;</span></td>
+        <td><span class="cat-badge cb-land">Logical AND</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-lor">
+        <td class="lvl">12</td>
+        <td><span class="sym">||</span></td>
+        <td><span class="cat-badge cb-lor">Logical OR</span></td>
+        <td>L → R</td>
+      </tr>
+      <tr class="cat-tern">
+        <td class="lvl">13</td>
+        <td><span class="sym">? :</span></td>
+        <td><span class="cat-badge cb-tern">Ternary</span></td>
+        <td>R → L</td>
+      </tr>
+      <tr class="cat-assign">
+        <td class="lvl">14</td>
+        <td><span class="sym">=</span> &nbsp;<span class="sym">+=</span> &nbsp;<span class="sym">-=</span> &nbsp;<span class="sym">*=</span> &nbsp;<span class="sym">/=</span> &nbsp;<span class="sym">%=</span> &nbsp;<span class="sym">&amp;=</span> &nbsp;<span class="sym">|=</span> &nbsp;<span class="sym">^=</span> &nbsp;<span class="sym">&lt;&lt;=</span> &nbsp;<span class="sym">&gt;&gt;=</span></td>
+        <td><span class="cat-badge cb-assign">Assignment</span></td>
+        <td>R → L</td>
+      </tr>
+      <tr class="cat-comma">
+        <td class="lvl">15 ↓ LOWEST</td>
+        <td><span class="sym">,</span></td>
+        <td><span class="cat-badge cb-comma">Comma</span></td>
+        <td>L → R</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Precedence worked examples -->
+  <div style="margin-top:20px">
+    <div style="font-size:.8rem;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:12px">▸ READ THE TABLE — TRACE THESE EXPRESSIONS</div>
+    <div class="ex-grid">
+      <div class="ex-card">
+        <div class="ex-title">WHICH RUNS FIRST?</div>
+        <pre>2 + 3 * 4
+→ * is level 3, + is level 4
+→ * runs first: 3*4=12
+→ then +: 2+12 = 14</pre>
+      </div>
+      <div class="ex-card">
+        <div class="ex-title">UNARY BEATS ARITHMETIC</div>
+        <pre>-2 * 5
+→ - (unary) is level 2
+→ * is level 3
+→ negate 2 first → -2
+→ then multiply: -2*5 = -10</pre>
+      </div>
+      <div class="ex-card">
+        <div class="ex-title">RELATIONAL BEFORE LOGICAL</div>
+        <pre>a > 0 && b > 0
+→ > is level 6, && is level 11
+→ both > run first
+→ then && combines results</pre>
+      </div>
+      <div class="ex-card">
+        <div class="ex-title">ASSIGNMENT IS LAST</div>
+        <pre>x = a + b * c
+→ * runs (level 3)
+→ + runs (level 4)
+→ = stores result (level 14)</pre>
+      </div>
+      <div class="ex-card">
+        <div class="ex-title">BITWISE ORDER MATTERS</div>
+        <pre>a | b & c
+→ & is level 8, | is level 10
+→ b & c runs first
+→ then a | result
+(same as a | (b & c))</pre>
+      </div>
+      <div class="ex-card">
+        <div class="ex-title">TERNARY vs ASSIGNMENT</div>
+        <pre>x = a > b ? a : b
+→ > runs (level 6)
+→ ?: runs (level 13, R→L)
+→ = stores result (level 14)</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+<!-- PAGE NAV -->
+<div class="tnav">
+  <a href="variables.html" class="tnav-btn prev">← Prev: Variables &amp; Data Types</a>
+  <a href="c_learn.html" class="tnav-btn" style="background:var(--bg3)">☰ C Topics</a>
+  <a href="control.html" class="tnav-btn next">Next: Control Flow →</a>
+</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+/* ── Arithmetic Stepper ── */
+const ASTEPS = [
+  {lines:['al4'], info:'Declare a=17, b=5', va:'17', vb:'5', out:''},
+  {lines:['al6'], info:'a + b = 17 + 5 = 22', va:'17', vb:'5', out:'Add:  22'},
+  {lines:['al7'], info:'a - b = 17 - 5 = 12', va:'17', vb:'5', out:'Add:  22\nSub:  12'},
+  {lines:['al8'], info:'a * b = 17 × 5 = 85', va:'17', vb:'5', out:'Add:  22\nSub:  12\nMul:  85'},
+  {lines:['al9'], info:'a / b = 17 ÷ 5 = 3 (integer truncates!)', va:'17', vb:'5', out:'Add:  22\nSub:  12\nMul:  85\nDiv:  3'},
+  {lines:['al10'], info:'a % b = 17 mod 5 = 2 (remainder)', va:'17', vb:'5', out:'Add:  22\nSub:  12\nMul:  85\nDiv:  3\nMod:  2'},
+  {lines:['al13'], info:'(float)17 / 5 = 3.40 — cast forces float division', va:'17', vb:'5', out:'Add:  22\nSub:  12\nMul:  85\nDiv:  3\nMod:  2\nReal: 3.40'},
+];
+let asi = 0, aRunning = false;
+function aHighlight(step){
+  document.querySelectorAll('#arith-code .ln').forEach(l=>l.classList.remove('hl'));
+  step.lines.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hl');});
+  document.getElementById('ainfo').textContent = step.info;
+  document.getElementById('ava').textContent = step.va||'?';
+  document.getElementById('avb').textContent = step.vb||'?';
+  document.getElementById('aout').textContent = step.out||'Output will appear here...';
+  document.getElementById('astep-ctr').textContent = `Step ${asi}/${ASTEPS.length}`;
+}
+function aStep(){if(asi<ASTEPS.length){aHighlight(ASTEPS[asi]);asi++;}}
+function aReset(){asi=0;document.querySelectorAll('#arith-code .ln').forEach(l=>l.classList.remove('hl'));document.getElementById('ainfo').textContent='Click Step or Run to start';document.getElementById('ava').textContent='?';document.getElementById('avb').textContent='?';document.getElementById('aout').textContent='Output will appear here...';document.getElementById('astep-ctr').textContent='Step 0/7';}
+async function aRun(){if(aRunning)return;aRunning=true;aReset();for(let i=0;i<ASTEPS.length;i++){aHighlight(ASTEPS[i]);asi=i+1;await new Promise(r=>setTimeout(r,800));}aRunning=false;}
+
+/* ── Logic Builder ── */
+function toggleReveal(id, btn){
+  const box = document.getElementById(id);
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? 'Hide Answer' : 'Reveal Answer';
+}
+
+/* ── Practice cards ── */
+function togglePrac(id){
+  document.getElementById(id).classList.toggle('open');
+}
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

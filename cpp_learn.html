@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>C++ — Zero to Master — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--amber);opacity:.12;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--blue);opacity:.13;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--green);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:820px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:100px;font-size:12px;color:var(--amber);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:600px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+
+/* SECTION HEADER BAR */
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* HEADINGS */
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+th.c{color:var(--cyan);}th.p{color:var(--purple);}
+td code, li code, p code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+
+/* BULLETS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+
+/* BADGE */
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.bi{background:rgba(99,102,241,.12);color:var(--indigo);}
+
+/* ALERT */
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* INTERVIEW Q */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* ANIM CONTROLS */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+
+/* ═══ EXEC VIEWER (line-by-line Python runner) ═══ */
+.exec-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:1rem;align-items:start;}
+@media(max-width:820px){.exec-grid{grid-template-columns:1fr;}}
+.exec-code{background:#030608;border:1px solid var(--border2);border-radius:var(--r);padding:.8rem 0;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;line-height:1.6;overflow-x:auto;}
+.xline{display:flex;gap:.9rem;padding:.12rem 1rem .12rem .7rem;white-space:pre;border-left:3px solid transparent;}
+.xline .ln{color:var(--muted);width:1.6em;text-align:right;flex-shrink:0;user-select:none;font-size:11px;padding-top:2px;}
+.xline.on{background:rgba(245,158,11,.13);border-left-color:var(--amber);}
+.xline.on .ln{color:var(--amber);}
+.exec-vt{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase;}
+.exec-vars{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:96px;margin-bottom:.8rem;}
+.vbox{display:inline-flex;flex-direction:column;margin:.25rem;padding:.3rem .7rem;border:1.5px solid var(--cyan);border-radius:8px;background:rgba(0,217,255,.06);animation:vpop .3s ease;vertical-align:top;}
+.vbox .vn{font-size:10px;color:var(--slate);font-family:monospace;}
+.vbox .vv{font-size:13px;font-weight:700;color:var(--cyan);font-family:'Fira Code',monospace;}
+.vbox.chg{border-color:var(--amber);background:rgba(245,158,11,.1);}
+.vbox.chg .vv{color:var(--amber);}
+.vbox.fr{border-color:var(--purple);background:rgba(168,85,247,.08);}
+.vbox.fr .vv{color:var(--purple);}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.exec-out{background:#030608;border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:76px;}
+.exec-out pre{background:none;border:none;padding:0;color:var(--green);font-size:12.5px;line-height:1.8;white-space:pre-wrap;}
+.exec-out pre:empty::before{content:'— nothing printed yet —';color:var(--muted);font-style:italic;}
+
+/* ═══ LABS (interactive playgrounds) ═══ */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:130px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-row input.wide{width:230px;}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.5rem;font-weight:800;font-family:'Fira Code',monospace;word-break:break-all;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+
+/* char / element cells (slice lab, list lab) */
+.cellrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:.6rem 0;}
+.cellcol{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cidx{font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;}
+.cidx.neg{color:#7c5cbf;}
+.cchar{min-width:40px;height:40px;padding:0 6px;display:flex;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid rgba(255,255,255,.14);border-radius:9px;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .25s;}
+.cchar.hit{border-color:var(--amber);background:rgba(245,158,11,.16);color:var(--amber);transform:translateY(-3px);}
+.cchar.new{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);animation:vpop .35s ease;}
+.cchar.dead{border-color:var(--rose);background:rgba(244,63,94,.14);color:var(--rose);opacity:.45;transform:scale(.85);}
+.sitem{display:inline-block;padding:.3rem .75rem;margin:.2rem;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;background:var(--bg4);transition:all .25s;}
+.sitem.hit{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12);}
+.sitem.dim{opacity:.3;}
+.setlabel{font-size:11px;color:var(--slate);font-family:monospace;margin:.5rem 0 .1rem;}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+
+/* PIPELINE DIAGRAM (how python runs) */
+.pipe{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;justify-content:center;padding:1rem 0;}
+.pipe-box{background:var(--bg4);border:1.5px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:center;min-width:118px;}
+.pipe-box .pb-t{font-size:13px;font-weight:700;}
+.pipe-box .pb-s{font-size:10.5px;color:var(--slate);}
+.pipe-arrow{color:var(--muted);font-size:18px;font-weight:700;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· C++</span></div>
+  <div class="nav-links">
+    <a href="#lab">🧪 C++ Lab</a>
+    <a href="#start">Start</a>
+    <a href="#vars">Variables</a>
+    <a href="#flow">Control Flow</a>
+    <a href="#funcs">Functions</a>
+    <a href="#pointers">Pointers</a>
+    <a href="#arrays">Arrays &amp; Vectors</a>
+    <a href="#oop">OOP</a>
+    <a href="#stl">STL</a>
+    <a href="#master">Master Map</a>
+    <a href="#practice">Practice Sheet</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-blob hb1" style="background:var(--cyan);"></div>
+  <div class="hero-blob hb2" style="background:var(--blue);"></div>
+  <div class="hero-blob hb3" style="background:var(--purple);"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge" style="background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.3);color:var(--cyan);">CoddingBuddY · Placement Preparation Series</div>
+    <h1><em style="color:var(--cyan);">C++</em><br/>Zero to Master</h1>
+    <p>The power of C with modern superpowers. Watch every line run — <strong style="color:var(--white)">memory, pointers, references and objects made visible</strong> — from <code style="color:var(--green)">cout</code> to virtual functions and the STL.</p>
+    <div class="chips">
+      <span class="ch ch-c">Compilation</span>
+      <span class="ch ch-a">Static Typing</span>
+      <span class="ch ch-p">Control Flow</span>
+      <span class="ch ch-g">Functions &amp; References</span>
+      <span class="ch ch-r">Pointers</span>
+      <span class="ch ch-i">Arrays &amp; Vectors</span>
+      <span class="ch ch-c">OOP &amp; Virtual</span>
+      <span class="ch ch-a">STL</span>
+      <span class="ch ch-g">Interview Q&amp;A</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 00: C++ LAB ═══ -->
+<div class="sec-bar" id="lab">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">00</div>
+  <div class="sec-info"><h2>The C++ Lab — See Every Line Run</h2><p>Code left, memory &amp; output right — exactly how every lesson on this page works</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="playground">
+    <p style="font-size:13.5px;color:var(--slate);margin-bottom:1rem;">Press <strong style="color:var(--cyan)">▶ Step</strong>: the <span style="color:var(--amber)">highlighted line</span> executes, <strong style="color:var(--cyan)">VARIABLES</strong> shows memory, <strong style="color:var(--green)">OUTPUT</strong> shows the console. Predict each line before stepping — that's how you learn.</p>
+    <div class="anim-wrap" style="background:var(--bg4);">
+      <div class="anim-title">🧪 Demo — restaurant bill splitter in C++</div>
+      <div id="exec-bill"></div>
+      <div class="anim-ctrl">
+        <button class="btn btn-c" onclick="stepExec('exec-bill')">▶ Step</button>
+        <button class="btn btn-a" onclick="autoExec('exec-bill')">⏩ Auto</button>
+        <button class="btn btn-r" onclick="resetExec('exec-bill')">↺ Reset</button>
+      </div>
+      <div class="anim-log" id="exec-bill-cap"></div>
+    </div>
+    <div class="alert ac">
+      <div class="alert-ico">🎯</div>
+      <div><b>Coming from Python?</b>Three big changes: every variable declares its TYPE (<code>int bill</code>), every statement ends with <code>;</code>, and blocks use <code>{ }</code> instead of indentation. The logic is identical — only the grammar is stricter.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 01: GETTING STARTED ═══ -->
+<div class="sec-bar" id="start">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">01</div>
+  <div class="sec-info"><h2>Level 1 — Getting Started</h2><p>What C++ is, how compilation works, and the anatomy of your first program</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Why <span class="hl">C++</span>?</h2>
+      <p class="ss">C's raw speed + objects + a giant standard library</p>
+      <ul class="bl c">
+        <li><strong>Blazing fast:</strong> compiled straight to machine code. Game engines (Unreal), browsers (Chrome), trading systems — all C++.</li>
+        <li><strong>Competitive programming's #1 language:</strong> the STL gives you sorted maps, heaps and sorts in one line, at C speed.</li>
+        <li><strong>You manage memory:</strong> pointers, stack vs heap — you learn what other languages hide. That knowledge transfers everywhere.</li>
+        <li><strong>For placements:</strong> most Indian service + product companies accept C++ everywhere Java/Python are accepted.</li>
+      </ul>
+      <div class="alert aa" style="margin-top:1rem;">
+        <div class="alert-ico">⚙️</div>
+        <div><b>Compiled vs interpreted — the interview line</b>"C++ translates the WHOLE program to machine code once, before running (compile time). Python translates line by line while running. That's why C++ catches type errors before the program ever starts — and why it's 10-100× faster."</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-bottom:.6rem;">⚙️ The compilation pipeline</h3>
+      <div class="pipe">
+        <div class="pipe-box" style="border-color:rgba(0,217,255,.4);"><div class="pb-t" style="color:var(--cyan)">main.cpp</div><div class="pb-s">your source</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(168,85,247,.4);"><div class="pb-t" style="color:var(--purple)">Preprocessor</div><div class="pb-s">pastes #includes</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(245,158,11,.4);"><div class="pb-t" style="color:var(--amber)">Compiler</div><div class="pb-s">→ machine code</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(34,197,94,.4);"><div class="pb-t" style="color:var(--green)">Linker</div><div class="pb-s">→ main.exe</div></div>
+      </div>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2">hello.cpp — every piece explained</span>
+<pre class="cpp">#include &lt;iostream&gt;      // paste the I/O library
+using namespace std;     // so we write cout, not std::cout
+
+int main() {             // execution starts HERE
+    cout &lt;&lt; "Hello, World!";   // print
+    return 0;            // 0 = "ended fine"
+}</pre></div>
+      <div class="alert ag">
+        <div class="alert-ico">▶️</div>
+        <div><b>Run it</b><code>g++ hello.cpp -o hello</code> then <code>./hello</code> — or just use the <a href="compiler.html" style="color:var(--cyan)">CoddingBuddY compiler</a> in your browser.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--amber);">⌨️ Talking to the user — cout &amp; cin</h3>
+  <div class="g3">
+    <div class="cw"><span class="cl2 gr">cout — print with &lt;&lt;</span>
+<pre class="cpp">cout &lt;&lt; "Sum: " &lt;&lt; 5 + 3;   // chain pieces
+cout &lt;&lt; endl;               // newline + flush
+cout &lt;&lt; "a" &lt;&lt; "\n";        // faster newline</pre></div>
+    <div class="cw"><span class="cl2">cin — read with &gt;&gt;</span>
+<pre class="cpp">int age;
+cin &gt;&gt; age;            // waits for input
+int a, b;
+cin &gt;&gt; a &gt;&gt; b;         // reads two numbers
+// arrows point WHERE data flows!</pre></div>
+    <div class="cw"><span class="cl2 am">comments</span>
+<pre class="cpp">// single line comment
+
+/* multi-line
+   comment — same
+   as C */
+int x = 5;  // inline</pre></div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 02: VARIABLES & TYPES ═══ -->
+<div class="sec-bar" id="vars">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">02</div>
+  <div class="sec-info"><h2>Level 1 — Variables &amp; Static Typing</h2><p>Every variable declares its type ONCE and keeps it forever — the compiler is watching</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">The type is a <span class="hl" style="color:var(--green)">contract</span></h2>
+      <p class="ss">In Python a name can point anywhere. In C++ a variable IS a typed box of fixed size — forever.</p>
+      <ul class="bl g">
+        <li><code>int age = 20;</code> reserves exactly 4 bytes shaped like an int. Assign a string to it later? The COMPILER refuses — the program never even builds.</li>
+        <li>That's <strong>static typing</strong>: whole categories of bugs die at compile time instead of exploding at 2 AM in production.</li>
+        <li>Naming rules are the same as everywhere: letters/digits/underscore, no leading digit, case-sensitive. Convention: <code>camelCase</code> or <code>snake_case</code> — pick one and stay consistent.</li>
+        <li><code>const double PI = 3.14159;</code> — a variable that can never change. Use it for every fixed value.</li>
+      </ul>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Type</th><th>Size</th><th>Holds</th><th>Example</th></tr>
+        <tr><td><strong style="color:var(--amber)">int</strong></td><td>4 bytes</td><td>±2.1 billion</td><td><code>int marks = 87;</code></td></tr>
+        <tr><td><strong style="color:var(--amber)">long long</strong></td><td>8 bytes</td><td>±9.2 × 10¹⁸ (use in CP!)</td><td><code>long long big = 1e18;</code></td></tr>
+        <tr><td><strong style="color:var(--cyan)">double</strong></td><td>8 bytes</td><td>decimals (use over float)</td><td><code>double gpa = 8.75;</code></td></tr>
+        <tr><td><strong style="color:var(--purple)">char</strong></td><td>1 byte</td><td>ONE character</td><td><code>char grade = 'A';</code></td></tr>
+        <tr><td><strong style="color:var(--green)">bool</strong></td><td>1 byte</td><td>true / false</td><td><code>bool passed = true;</code></td></tr>
+        <tr><td><strong style="color:var(--rose)">string</strong></td><td>dynamic</td><td>text (needs &lt;string&gt;)</td><td><code>string name = "Asha";</code></td></tr>
+      </table></div>
+    </div>
+    <div>
+      <h3 class="g">🎬 Animation — the compiler catches a type crime</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">The same experiment we ran on the Python page — with a very different ending. This is static typing in action.</p>
+      <div class="anim-wrap">
+        <div id="exec-static"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-static')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-static')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-static')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-static-cap"></div>
+      </div>
+      <div class="g2" style="margin-top:1rem;">
+        <div class="cw"><span class="cl2 am">int division trap</span>
+<pre class="cpp">int a = 7, b = 2;
+cout &lt;&lt; a / b;      // 3 !!
+cout &lt;&lt; 7.0 / 2;    // 3.5
+cout &lt;&lt; (double)a / b; // 3.5 — cast</pre></div>
+        <div class="cw"><span class="cl2 pu">auto — modern C++</span>
+<pre class="cpp">auto x = 42;      // int
+auto pi = 3.14;   // double
+auto s = "hi";    // deduced!
+// type still FIXED after
+// deduction — not Python!</pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 03: CONTROL FLOW ═══ -->
+<div class="sec-bar" id="flow">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">03</div>
+  <div class="sec-info"><h2>Level 2 — Control Flow</h2><p>if / else, the three loops, and switch — with braces instead of indentation</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--rose);">🎬 Animation — if / else if / else picks ONE path</h3>
+      <div class="anim-wrap">
+        <div id="exec-if"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-if')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-if')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-if')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-if-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="a" style="margin-top:0;">🎬 Animation — the classic for loop</h3>
+      <div class="anim-wrap">
+        <div id="exec-for"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-for')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-for')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-for')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-for-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2rem;align-items:start;">
+    <div>
+      <h3 class="p">🎬 Animation — switch jumps straight to its case</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Python needs an if/elif chain — C++ has a dedicated jump table. Watch the <code>break</code> do its job.</p>
+      <div class="anim-wrap">
+        <div id="exec-switch"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-switch')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-switch')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-switch')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-switch-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">The loop family</h3>
+      <div class="cw"><span class="cl2 gr">three loops, one meaning</span>
+<pre class="cpp">for (int i = 0; i &lt; 5; i++)   // known count
+    cout &lt;&lt; i &lt;&lt; " ";
+
+int n = 5;
+while (n &gt; 0) {               // condition first
+    cout &lt;&lt; n--;
+}
+
+do {                          // runs AT LEAST once
+    cout &lt;&lt; "menu";
+} while (false);
+
+for (int x : {10, 20, 30})    // range-based —
+    cout &lt;&lt; x;                // Python's for-in!</pre></div>
+      <div class="alert ar">
+        <div class="alert-ico">⚠️</div>
+        <div><b>The 3 classic traps</b><code>if (x = 5)</code> assigns and is always true (use ==)! · <code>for(...);</code> — that stray semicolon makes an empty loop · forgetting <code>break</code> in switch → fall-through runs EVERY case below.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 04: FUNCTIONS ═══ -->
+<div class="sec-bar" id="funcs">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--indigo);">04</div>
+  <div class="sec-info"><h2>Level 2 — Functions &amp; References</h2><p>Pass by value vs pass by reference — the difference every interviewer probes</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--indigo);">🎬 Animation — value vs reference, side by side</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Two nearly identical functions. One gets a COPY, one gets the REAL variable. Watch <code>a</code> in memory.</p>
+      <div class="anim-wrap">
+        <div id="exec-ref"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-ref')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-ref')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-ref')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-ref-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-top:0;">Function anatomy + overloading</h3>
+      <div class="cw"><span class="cl2">return type · name · typed params</span>
+<pre class="cpp">double average(int a, int b) {
+    return (a + b) / 2.0;
+}
+
+// OVERLOADING — same name, different params
+int    biggest(int a, int b);
+double biggest(double a, double b);
+int    biggest(int a, int b, int c);
+// compiler picks by the arguments —
+// impossible in Python or C!
+
+// default arguments (rightmost first)
+void greet(string name, string hi = "Hello");</pre></div>
+      <ul class="bl c" style="margin-top:.6rem;">
+        <li><strong>Declare before use</strong> — or put a prototype (<code>int f(int);</code>) above main.</li>
+        <li><code>void</code> = returns nothing.</li>
+        <li>Pass big objects (strings, vectors) as <code>const string&amp; s</code> — no copy, no accidental change. Interviewers love hearing this.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 05: POINTERS ═══ -->
+<div class="sec-bar" id="pointers">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">05</div>
+  <div class="sec-info"><h2>Level 3 — Pointers</h2><p>The topic that scares everyone — until you SEE it. A pointer is just a variable holding an address.</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">A pointer stores an <span class="hl" style="color:var(--rose)">address</span></h2>
+      <p class="ss">Two operators, two meanings: &amp; = "address of", * = "value at"</p>
+      <ul class="bl r">
+        <li><code>int* p = &amp;age;</code> — p holds WHERE age lives, not its value.</li>
+        <li><code>*p</code> (dereference) follows the address → gives you age itself. <code>*p = 21</code> changes age remotely!</li>
+        <li>References (<code>int&amp; r = age;</code>) are friendlier pointers: no * needed, can't be null, can't be reseated. Prefer them; know both.</li>
+        <li><strong>Heap memory:</strong> <code>new int[1000]</code> allocates at runtime → YOU must <code>delete[]</code> it, or the memory leaks. (Modern C++: use vectors/smart pointers instead.)</li>
+      </ul>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Expression</th><th>Reads as</th><th>Value</th></tr>
+        <tr><td><code>age</code></td><td>the variable</td><td>20</td></tr>
+        <tr><td><code>&amp;age</code></td><td>address of age</td><td>0x7ffe...4</td></tr>
+        <tr><td><code>p</code></td><td>the pointer's content</td><td>0x7ffe...4</td></tr>
+        <tr><td><code>*p</code></td><td>value AT that address</td><td>20</td></tr>
+      </table></div>
+    </div>
+    <div>
+      <h3 class="r">🎬 Animation — watch a pointer reach into memory</h3>
+      <div class="anim-wrap">
+        <div id="exec-ptr"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-ptr')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-ptr')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-ptr')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-ptr-cap"></div>
+      </div>
+      <div class="alert ar">
+        <div class="alert-ico">💀</div>
+        <div><b>The 3 pointer crimes</b>Dereferencing a null/uninitialized pointer (crash) · using memory after <code>delete</code> (dangling pointer) · forgetting <code>delete</code> (leak). Interviewers ask for all three — now you know them.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 06: ARRAYS & VECTORS ═══ -->
+<div class="sec-bar" id="arrays">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">06</div>
+  <div class="sec-info"><h2>Level 3 — Arrays &amp; Vectors</h2><p>Fixed C arrays vs the resizable std::vector — and why vector wins</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h3 class="a">C-style array — fixed at birth</h3>
+      <div class="cw"><span class="cl2 am">raw arrays</span>
+<pre class="cpp">int marks[5] = {90, 85, 78, 92, 88};
+marks[0]           // 90 — same O(1) indexing
+marks[5]           // ☠️ UNDEFINED BEHAVIOR —
+                   // no error, just garbage/crash!
+int n = sizeof(marks) / sizeof(marks[0]); // 5
+
+// 2D
+int grid[3][4] = {};       // all zeros
+grid[1][2] = 7;</pre></div>
+      <div class="alert ar">
+        <div class="alert-ico">☠️</div>
+        <div><b>No safety net</b>Python throws IndexError; C++ raw arrays silently read garbage memory. This is THE classic C++ bug. Vectors + <code>.at()</code> give you bounds checking when you want it.</div>
+      </div>
+      <div class="alert ac">
+        <div class="alert-ico">🧭</div>
+        <div><b>Master the patterns</b>Every array technique — two pointers, sliding window, prefix sum, Kadane, binary search — is taught with animations on the <a href="arrays_learn.html" style="color:var(--cyan)">Arrays Zero to Master</a> page. The patterns are language-independent; the C++ syntax is what you're learning here.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">🎬 Animation — vector grows on demand</h3>
+      <div class="anim-wrap">
+        <div id="exec-vec"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-vec')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-vec')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-vec')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-vec-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th></th><th style="color:var(--amber)">int arr[10]</th><th style="color:var(--green)">vector&lt;int&gt;</th></tr>
+        <tr><td>Size</td><td class="no">fixed forever</td><td class="yes">grows/shrinks</td></tr>
+        <tr><td>Knows its length?</td><td class="no">No</td><td class="yes">.size()</td></tr>
+        <tr><td>Bounds check</td><td class="no">never</td><td class="yes">.at(i) throws</td></tr>
+        <tr><td>Pass to function</td><td>decays to pointer</td><td class="yes">clean reference</td></tr>
+        <tr><td>Use when</td><td>size known &amp; tiny</td><td class="yes">everything else</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 07: OOP ═══ -->
+<div class="sec-bar" id="oop">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">07</div>
+  <div class="sec-info"><h2>Level 4 — Object-Oriented C++</h2><p>Classes, constructors, inheritance and the star of every interview: virtual functions</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--amber);">🎬 Animation — constructor builds the object</h3>
+      <div class="anim-wrap">
+        <div id="exec-class"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-class')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-class')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-class')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-class-cap"></div>
+      </div>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">access specifiers — the encapsulation tools</span>
+<pre class="cpp">class BankAccount {
+private:                  // hidden from outside
+    double balance = 0;
+public:                   // the official doorway
+    void deposit(double amt) {
+        if (amt &gt; 0) balance += amt;
+    }
+    double getBalance() { return balance; }
+};
+// acc.balance = -999;   ❌ compiler blocks it!</pre></div>
+    </div>
+    <div>
+      <h3 class="p" style="margin-top:0;">Inheritance + virtual = runtime polymorphism</h3>
+      <div class="cw"><span class="cl2 pu">the interview classic</span>
+<pre class="cpp">class Animal {
+public:
+    virtual string speak() {   // virtual!
+        return "...";
+    }
+};
+class Dog : public Animal {
+public:
+    string speak() override { return "Woof!"; }
+};
+class Cat : public Animal {
+public:
+    string speak() override { return "Meow!"; }
+};
+
+Animal* pets[] = { new Dog(), new Cat() };
+for (Animal* p : pets)
+    cout &lt;&lt; p-&gt;speak();   // Woof! Meow!
+// WITHOUT virtual: "..." "..." — base version!</pre></div>
+      <div class="alert ap">
+        <div class="alert-ico">🧠</div>
+        <div><b>Why virtual matters</b>Without <code>virtual</code>, the call is bound at COMPILE time to the pointer's type (Animal). With it, C++ checks the REAL object at RUNTIME via the vtable. "What is a vtable?" is a guaranteed C++ interview question — answer: a hidden table of function pointers, one per class.</div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Concept</th><th>C++ tool</th></tr>
+        <tr><td>Encapsulation</td><td><code>private</code> + public methods</td></tr>
+        <tr><td>Constructor / Destructor</td><td><code>Dog() { }</code> / <code>~Dog() { }</code></td></tr>
+        <tr><td>Inheritance</td><td><code>class Dog : public Animal</code></td></tr>
+        <tr><td>Polymorphism</td><td><code>virtual</code> + <code>override</code></td></tr>
+        <tr><td>Abstraction</td><td>pure virtual: <code>= 0</code> (abstract class)</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 08: STL ═══ -->
+<div class="sec-bar" id="stl">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">08</div>
+  <div class="sec-info"><h2>Level 5 — The STL</h2><p>The Standard Template Library — why C++ rules competitive programming</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g3">
+    <div class="cw"><span class="cl2 pu">map &amp; unordered_map — Python's dict</span>
+<pre class="cpp">#include &lt;map&gt;
+map&lt;string, int&gt; price;
+price["apple"] = 40;      // add / update
+price.count("kiwi")       // 0 = missing
+for (auto&amp; [fruit, p] : price)
+    cout &lt;&lt; fruit &lt;&lt; p;
+// map: sorted keys, O(log n)
+// unordered_map: hash, O(1) avg</pre></div>
+    <div class="cw"><span class="cl2 gr">set — uniqueness + order</span>
+<pre class="cpp">#include &lt;set&gt;
+set&lt;int&gt; s = {3, 1, 3, 2};
+// {1, 2, 3} — deduped AND sorted!
+s.insert(5);
+s.count(2)     // 1 → exists
+s.erase(1);
+// unordered_set = Python's set</pre></div>
+    <div class="cw"><span class="cl2 am">algorithms — one-liners</span>
+<pre class="cpp">#include &lt;algorithm&gt;
+sort(v.begin(), v.end());
+sort(v.rbegin(), v.rend());   // desc
+reverse(v.begin(), v.end());
+*max_element(v.begin(), v.end());
+count(v.begin(), v.end(), 7);
+binary_search(v.begin(), v.end(), x);</pre></div>
+  </div>
+  <div class="g2" style="margin-top:1.2rem;">
+    <div class="cw"><span class="cl2">pair &amp; the CP starter pack</span>
+<pre class="cpp">pair&lt;int, string&gt; p = {1, "gold"};
+p.first; p.second;
+
+vector&lt;pair&lt;int,int&gt;&gt; points;
+sort(points.begin(), points.end());
+// sorts by first, then second — free!
+
+#include &lt;queue&gt;
+priority_queue&lt;int&gt; maxHeap;
+priority_queue&lt;int, vector&lt;int&gt;,
+               greater&lt;int&gt;&gt; minHeap;</pre></div>
+    <div>
+      <div class="tw"><table>
+        <tr><th>Python</th><th>C++ STL equivalent</th></tr>
+        <tr><td><code>list</code></td><td><code>vector</code></td></tr>
+        <tr><td><code>dict</code></td><td><code>unordered_map</code></td></tr>
+        <tr><td><code>set</code></td><td><code>unordered_set</code></td></tr>
+        <tr><td><code>sorted dict/set</code></td><td><code>map</code> / <code>set</code> (unique power!)</td></tr>
+        <tr><td><code>collections.deque</code></td><td><code>deque</code></td></tr>
+        <tr><td><code>heapq</code></td><td><code>priority_queue</code></td></tr>
+        <tr><td><code>tuple</code></td><td><code>pair</code> / <code>tuple</code></td></tr>
+      </table></div>
+      <div class="alert ap" style="margin-top:.8rem;">
+        <div class="alert-ico">🏆</div>
+        <div><b>The competitive edge</b>C++'s sorted <code>map</code>/<code>set</code> (red-black trees) have NO fast Python equivalent — problems needing "smallest element ≥ x" (<code>lower_bound</code>) are one-liners in C++.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 09: MASTER MAP ═══ -->
+<div class="sec-bar" id="master">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--orange);">09</div>
+  <div class="sec-info"><h2>The Master Map</h2><p>C++ habits that mark you as senior + rapid-fire interview Q&amp;A</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2">
+    <div class="card gl">
+      <h3 class="g">✅ Signs of a C++ master</h3>
+      <ul class="bl g" style="margin-top:.4rem;">
+        <li><code>vector</code> and <code>string</code> by default — raw arrays/<code>char*</code> only with a reason</li>
+        <li>Big objects passed as <code>const T&amp;</code> — never by copy</li>
+        <li><code>long long</code> the moment sums can exceed 2×10⁹</li>
+        <li>Uses <code>auto</code>, range-for, and STL algorithms before hand-rolled loops</li>
+        <li>Can explain stack vs heap, and why <code>new</code> without <code>delete</code> leaks</li>
+        <li>Says "vtable" when asked how virtual functions work</li>
+      </ul>
+    </div>
+    <div class="card rl">
+      <h3 class="r">❌ The 6 classic C++ mistakes</h3>
+      <ul class="bl r" style="margin-top:.4rem;">
+        <li><code>int</code> overflow: 10⁵ × 10⁵ = 10¹⁰ doesn't fit → garbage</li>
+        <li><code>7 / 2 == 3</code> — integer division chops silently</li>
+        <li><code>arr[n]</code> out of bounds — no error, just corrupted memory</li>
+        <li>Missing <code>break</code> in switch → fall-through chaos</li>
+        <li><code>if (x = 5)</code> — assignment where you meant ==</li>
+        <li>Forgetting <code>virtual</code> → base method called on child objects</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Rapid-fire Interview Q&amp;A</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Difference between C and C++?</span><span class="qico">+</span></div><div class="qa-a">C is procedural; C++ adds OOP (classes, inheritance, polymorphism), function/operator overloading, references, templates and the STL, plus stricter type checking. C++ is (nearly) a superset — most C programs compile as C++.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>Stack vs heap memory?</span><span class="qico">+</span></div><div class="qa-a">Stack: automatic, fast, small — local variables live here and die when their scope ends. Heap: manual (<code>new</code>/<code>delete</code>), large, survives across scopes — YOU own the lifetime. Forgetting delete = memory leak; deleting twice = crash. Vectors/smart pointers manage heap memory for you (RAII).</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>Pointer vs reference?</span><span class="qico">+</span></div><div class="qa-a">A pointer is a variable holding an address: can be null, can be reseated, needs <code>*</code> to use. A reference is a permanent alias: never null, bound once, used like the original variable. Rule: references for function parameters, pointers when "nothing" is a valid state or you must re-point.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q4</span>What happens if you don't write virtual?</span><span class="qico">+</span></div><div class="qa-a">Calls through a base pointer bind at compile time to the BASE version — child overrides are ignored. <code>virtual</code> switches to runtime dispatch through the vtable, so the real object's version runs. Also: always make base-class destructors virtual, or deleting through a base pointer skips the child's destructor.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q5</span>map vs unordered_map — when each?</span><span class="qico">+</span></div><div class="qa-a"><code>unordered_map</code> = hash table: O(1) average, no order — default for counting/lookup. <code>map</code> = red-black tree: O(log n) but keys stay SORTED, giving lower_bound/upper_bound range queries — priceless for "smallest key ≥ x" problems. Same choice applies to set vs unordered_set.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q6</span>++i vs i++ — does it matter?</span><span class="qico">+</span></div><div class="qa-a">For ints in a loop: no difference after optimization. For iterators/objects, <code>i++</code> must create a COPY of the old value to return; <code>++i</code> doesn't. Habit: write <code>++i</code> in C++ loops — costs nothing, occasionally faster, and interviewers notice.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q7</span>What is RAII?</span><span class="qico">+</span></div><div class="qa-a">Resource Acquisition Is Initialization: tie a resource (memory, file, lock) to an object's lifetime — the constructor takes it, the destructor releases it AUTOMATICALLY, even during exceptions. <code>vector</code>, <code>string</code>, <code>unique_ptr</code>, <code>lock_guard</code> are all RAII. It's C++'s answer to garbage collection.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q8</span>Function overloading vs overriding?</span><span class="qico">+</span></div><div class="qa-a">Overloading: SAME scope, same name, different parameter lists — resolved at compile time. Overriding: child class redefines a parent's <code>virtual</code> function with the SAME signature — resolved at runtime. Overloading is compile-time polymorphism; overriding is runtime polymorphism.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 10: PRACTICE ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">10</div>
+  <div class="sec-info"><h2>The 36-Problem Practice Sheet</h2><p>Solve in order — each level unlocks the next ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h3 class="c" style="margin-bottom:.8rem;">🟢 Level 1 — I/O &amp; basics</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Marks Card</h4><p>Read 3 subject marks, print total, average (2 decimals) and grade.</p><div class="ht">Hint: cout &lt;&lt; fixed &lt;&lt; setprecision(2)</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Integer vs Double Division</h4><p>Show 7/2, 7.0/2 and (double)a/b for user input.</p><div class="ht">Hint: the cast changes everything</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Swap Three Ways</h4><p>Temp variable, arithmetic, and std::swap.</p><div class="ht">Hint: swap(a, b) lives in &lt;algorithm&gt;</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Time Converter</h4><p>Seconds → h:m:s with / and %.</p><div class="ht">Hint: 3600 then 60</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>ASCII Explorer</h4><p>Read a char, print its code and the next 5 letters.</p><div class="ht">Hint: char + int arithmetic</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>sizeof Report</h4><p>Print the size of every basic type on your machine.</p><div class="ht">Hint: sizeof(long long)</div></div>
+  </div>
+  <h3 class="p" style="margin:1.8rem 0 .8rem;">🟣 Level 2 — Control flow</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>FizzBuzz</h4><p>1–50 with the classic rules.</p><div class="ht">Hint: check % 15 first</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Menu Calculator</h4><p>switch-based +, −, ×, ÷ with divide-by-zero guard.</p><div class="ht">Hint: don't forget break!</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Prime Checker</h4><p>Trial division up to √n.</p><div class="ht">Hint: i * i &lt;= n avoids sqrt()</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Star Pyramid</h4><p>n rows, centered.</p><div class="ht">Hint: two inner loops (spaces, stars)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Number Reverser</h4><p>1234 → 4321 with a while loop.</p><div class="ht">Hint: rev = rev*10 + n%10</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Do-While Menu Loop</h4><p>Keep showing the menu until user picks Exit.</p><div class="ht">Hint: the one real use of do-while</div></div>
+  </div>
+  <h3 class="a" style="margin:1.8rem 0 .8rem;">🟡 Level 3 — Functions &amp; references</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Overload biggest()</h4><p>For 2 ints, 3 ints, and 2 doubles.</p><div class="ht">Hint: compiler picks by arguments</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>swap() by Reference</h4><p>Write your own using int&amp;.</p><div class="ht">Hint: no pointers needed</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Recursive Trio</h4><p>factorial, fibonacci, sum of digits.</p><div class="ht">Hint: base case first</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Default Arguments</h4><p>greet(name, greeting="Hello") in C++.</p><div class="ht">Hint: defaults go rightmost</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Prototype Practice</h4><p>Declare above main, define below.</p><div class="ht">Hint: signature must match exactly</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>const Reference Audit</h4><p>Pass a string to a function 3 ways; time them.</p><div class="ht">Hint: value vs &amp; vs const&amp;</div></div>
+  </div>
+  <h3 class="r" style="margin:1.8rem 0 .8rem;">🔴 Level 4 — Pointers, arrays &amp; vectors</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Pointer Playground</h4><p>Print x, &amp;x, p, *p; change x through p.</p><div class="ht">Hint: §05 animation as your guide</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Array Min-Max-Sum</h4><p>One pass, no STL.</p><div class="ht">Hint: three trackers</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Vector Grader</h4><p>Read n marks into a vector; sort; print top 3.</p><div class="ht">Hint: sort + rbegin</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Reverse In Place</h4><p>Two-pointer reverse of a vector — no reverse().</p><div class="ht">Hint: swap ends, move inward</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>2D Matrix Ops</h4><p>Read, transpose, and row-sum a 3×3.</p><div class="ht">Hint: nested loops</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Dynamic Array with new</h4><p>Allocate n ints with new[], fill, delete[] — then rewrite with vector.</p><div class="ht">Hint: feel WHY vector exists</div></div>
+  </div>
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--indigo);">🔵 Level 5 — OOP</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>BankAccount Class</h4><p>private balance, deposit/withdraw with guards.</p><div class="ht">Hint: encapsulation in action</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Constructor Chain</h4><p>Default, parameterized and copy constructors — print from each.</p><div class="ht">Hint: watch the order</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Shape Hierarchy</h4><p>virtual area() in Circle/Rect; loop over Shape*.</p><div class="ht">Hint: the §07 pattern</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Abstract Vehicle</h4><p>Pure virtual start() = 0; Bike and Car implement.</p><div class="ht">Hint: can't instantiate the base</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Operator Overload Money</h4><p>Money + Money and == with operator+.</p><div class="ht">Hint: like Python dunders</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Student Manager</h4><p>Class holding vector&lt;Student&gt;: add, search, topper.</p><div class="ht">Hint: composition</div></div>
+  </div>
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--orange);">🟠 Boss level — STL</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Word Frequency</h4><p>Count words in a sentence with unordered_map.</p><div class="ht">Hint: mp[word]++ auto-creates</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Dedupe &amp; Sort</h4><p>n numbers → set → print.</p><div class="ht">Hint: set does both jobs</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Sort Students by Marks</h4><p>vector&lt;pair&lt;int,string&gt;&gt; sorted descending.</p><div class="ht">Hint: sort with a lambda</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Top-K with priority_queue</h4><p>K largest of n numbers.</p><div class="ht">Hint: min-heap of size k</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>lower_bound Practice</h4><p>Smallest element ≥ x in a sorted vector.</p><div class="ht">Hint: the CP superpower</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Mini Contact Book</h4><p>map&lt;string,string&gt; + menu loop + file save. Everything combined!</p><div class="ht">Hint: this IS the final exam</div></div>
+  </div>
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Completion promise</b>These 36 + the <a href="problems.html" style="color:var(--cyan)">Problem Solving Hub</a> (every solution in C++, Python AND Java) = interview-ready C++. Next: <a href="arrays_learn.html" style="color:var(--cyan)">Array patterns</a> · <a href="dsa_learn.html" style="color:var(--cyan)">Full DSA</a> · <a href="dp_complete.html" style="color:var(--cyan)">Dynamic Programming</a>. 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>C++ — Zero to Master · For placement preparation</p>
+  <div class="links">
+    <span>🧪 C++ Lab</span><span>🎬 9 Line-by-Line Animations</span><span>⚡ Pointers Made Visible</span><span>📝 36 Practice Problems</span><span>💬 Interview Q&amp;A</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+<script>
+/* ═══════════ C++ SYNTAX HIGHLIGHTER ═══════════ */
+const CPP_KW = new Set(['int','double','float','char','bool','void','long','string','class','struct','public','private','protected','return','if','else','for','while','do','switch','case','break','continue','default','using','namespace','new','delete','const','auto','true','false','virtual','override','this','vector','map','set','pair','include','nullptr','operator']);
+const CPP_FN = new Set(['cout','cin','endl','main','push_back','size','sort','begin','end','rbegin','rend','count','insert','erase','swap','max_element','reverse','binary_search','speak','getBalance','deposit','bump','bump2','printf','scanf','setprecision','fixed','at']);
+function hiCpp(raw){
+  let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return t.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/)|(#\w+)|('(?:\\.|[^'])*'|"(?:\\.|[^"])*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\b\d+\.?\d*)/gm, (m, cm, pre, st, w, num) => {
+    if (cm)  return '<span class="cm">' + cm + '</span>';
+    if (pre) return '<span class="kw">' + pre + '</span>';
+    if (st)  return '<span class="st2">' + st + '</span>';
+    if (w){
+      if (CPP_KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (CPP_FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    }
+    if (num) return '<span class="nm">' + num + '</span>';
+    return m;
+  });
+}
+document.querySelectorAll('pre.cpp').forEach(p => { p.innerHTML = hiCpp(p.textContent); });
+
+/* ═══════════ EXEC ENGINE (line-by-line runner) ═══════════ */
+const X = {};
+function regExec(id, cfg){
+  const host = document.getElementById(id);
+  let codeHtml = cfg.code.map((ln, i) =>
+    '<div class="xline" id="' + id + '-l' + i + '"><span class="ln">' + (i + 1) + '</span><span>' + (ln === '' ? ' ' : hiCpp(ln)) + '</span></div>'
+  ).join('');
+  host.innerHTML =
+    '<div class="exec-grid">' +
+      '<div class="exec-code">' + codeHtml + '</div>' +
+      '<div>' +
+        '<div class="exec-vars"><div class="exec-vt">📦 Variables in memory</div><div id="' + id + '-vars"><span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span></div></div>' +
+        '<div class="exec-out"><div class="exec-vt">🖥️ Output</div><pre id="' + id + '-out"></pre></div>' +
+      '</div>' +
+    '</div>';
+  X[id] = { cfg, i: 0, timer: null };
+  resetExec(id);
+}
+function renderVars(id, v){
+  const box = document.getElementById(id + '-vars');
+  const keys = Object.keys(v || {});
+  if (!keys.length){ box.innerHTML = '<span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span>'; return; }
+  box.innerHTML = keys.map(k => {
+    const item = v[k];
+    const val = Array.isArray(item) ? item[0] : item;
+    const cls = Array.isArray(item) && item[1] ? ' ' + item[1] : '';
+    const esc = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<span class="vbox' + cls + '"><span class="vn">' + k + '</span><span class="vv">' + esc + '</span></span>';
+  }).join('');
+}
+function resetExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; }
+  x.i = 0;
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  renderVars(id, {});
+  document.getElementById(id + '-out').textContent = '';
+  document.getElementById(id + '-cap').textContent = 'Press ▶ Step or ⏩ Auto to run this program';
+}
+function stepExec(id){
+  const x = X[id];
+  if (x.i >= x.cfg.steps.length){
+    document.getElementById(id + '-cap').textContent = '✅ Program finished! Press ↺ Reset to replay.';
+    return;
+  }
+  const s = x.cfg.steps[x.i++];
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  if (s.l >= 0) document.getElementById(id + '-l' + s.l).classList.add('on');
+  if (s.v !== undefined) renderVars(id, s.v);
+  if (s.o !== undefined) document.getElementById(id + '-out').textContent = s.o;
+  document.getElementById(id + '-cap').textContent = s.c;
+}
+function autoExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; return; }
+  if (x.i >= x.cfg.steps.length) resetExec(id);
+  stepExec(id);
+  x.timer = setInterval(() => {
+    stepExec(id);
+    if (x.i >= x.cfg.steps.length){ clearInterval(x.timer); x.timer = null; }
+  }, x.cfg.ms || 2000);
+}
+
+/* ─── 00 · Bill splitter ─── */
+regExec('exec-bill', { code: [
+'#include <iostream>',
+'using namespace std;',
+'int main() {',
+'    int bill = 1250;',
+'    int friends = 4;',
+'    double tip = bill * 0.10;',
+'    double share = (bill + tip) / friends;',
+'    cout << "Each pays " << share;',
+'    return 0;',
+'}'
+], steps: [
+{l:0, c:'BEFORE running: the preprocessor pastes the entire iostream library here. That is why the file "knows" cout.'},
+{l:2, c:'Execution always begins at main() — no matter where it sits in the file.'},
+{l:3, v:{bill:['1250 · int']}, c:'A 4-byte box shaped like an int is created and named bill. The type is now locked forever.'},
+{l:4, v:{bill:['1250 · int'], friends:['4 · int']}, c:'Another int box: friends = 4.'},
+{l:5, v:{bill:['1250 · int'], friends:['4 · int'], tip:['125.0 · double','chg']}, c:'int × double → double. tip = 125.0 in an 8-byte double box.'},
+{l:6, v:{bill:['1250 · int'], friends:['4 · int'], tip:['125.0 · double'], share:['343.75 · double','chg']}, c:'(1250 + 125.0) / 4 = 343.75. A double divided keeps its decimals — int division would have chopped them!'},
+{l:7, o:'Each pays 343.75', c:'cout chains pieces with <<. Arrows point where the data flows: INTO the console.'},
+{l:8, o:'Each pays 343.75', c:'return 0 tells the operating system "finished successfully". Non-zero = error code.'}
+]});
+
+/* ─── 02 · Static typing ─── */
+regExec('exec-static', { code: [
+'int x = 10;',
+'cout << x;',
+'x = "ten";   // ⛔',
+'cout << x;'
+], steps: [
+{l:0, v:{x:['10 · int']}, c:'x is an int box — 4 bytes, shaped for whole numbers, FOREVER.'},
+{l:2, v:{x:['10 · int'], COMPILER:['⛔ error','fr']}, o:'', c:'💥 error: invalid conversion from \'const char*\' to \'int\'. The COMPILER rejects the whole program.'},
+{l:2, v:{COMPILER:['⛔ build failed','fr']}, o:'(no output — the program never ran)', c:'Key insight: this error fires at COMPILE time — even line 2\'s cout never executed. Python would happily rebind x and explode later at runtime. C++ refuses to even start.'}
+]});
+
+/* ─── 03 · if / else if ─── */
+regExec('exec-if', { code: [
+'int marks = 67;',
+'if (marks >= 75) {',
+'    cout << "Grade A";',
+'} else if (marks >= 60) {',
+'    cout << "Grade B";',
+'} else {',
+'    cout << "Grade C";',
+'}'
+], steps: [
+{l:0, v:{marks:['67 · int']}, c:'marks = 67 goes into memory.'},
+{l:1, v:{marks:['67 · int']}, c:'Test #1: 67 >= 75? ❌ false → skip the A block entirely.'},
+{l:3, v:{marks:['67 · int']}, c:'Test #2: 67 >= 60? ✅ true → enter THIS block.'},
+{l:4, o:'Grade B', c:'Print Grade B. The else below is never even looked at.'},
+{l:7, o:'Grade B', c:'Jump past the whole chain. Exactly ONE branch ran. (Note: = assigns, == compares — if (x = 5) compiles and is a bug!)'}
+]});
+
+/* ─── 03 · for loop ─── */
+regExec('exec-for', { code: [
+'int total = 0;',
+'for (int i = 1; i <= 4; i++) {',
+'    total += i;',
+'}',
+'cout << "Sum = " << total;'
+], ms: 1500, steps: [
+{l:0, v:{total:['0 · int']}, c:'The accumulator starts at 0.'},
+{l:1, v:{total:['0'], i:['1','chg']}, c:'for has 3 parts: init (i=1, runs ONCE) · condition (i<=4) · update (i++). Condition true → enter.'},
+{l:2, v:{total:['1','chg'], i:['1']}, c:'total += i → 0 + 1 = 1.'},
+{l:1, v:{total:['1'], i:['2','chg']}, c:'Update i++ → 2, check 2<=4 ✅.'},
+{l:2, v:{total:['3','chg'], i:['2']}, c:'total = 1 + 2 = 3.'},
+{l:1, v:{total:['3'], i:['3','chg']}, c:'i = 3, still ≤ 4.'},
+{l:2, v:{total:['6','chg'], i:['3']}, c:'total = 3 + 3 = 6.'},
+{l:1, v:{total:['6'], i:['4','chg']}, c:'i = 4, 4<=4 ✅ — last lap.'},
+{l:2, v:{total:['10','chg'], i:['4']}, c:'total = 6 + 4 = 10.'},
+{l:1, v:{total:['10']}, c:'i++ → 5, check 5<=4 ❌ → loop ends. NOTE: i is GONE — it lived only inside the loop\'s scope!'},
+{l:4, o:'Sum = 10', c:'Sum = 10. Same accumulator pattern as every language — just with braces and types.'}
+]});
+
+/* ─── 03 · switch ─── */
+regExec('exec-switch', { code: [
+'int day = 3;',
+'switch (day) {',
+'    case 1: cout << "Mon"; break;',
+'    case 3: cout << "Wed"; break;',
+'    default: cout << "??";',
+'}'
+], steps: [
+{l:0, v:{day:['3 · int']}, c:'day = 3.'},
+{l:1, v:{day:['3 · int']}, c:'switch looks at day ONCE and jumps STRAIGHT to the matching case — no chain of checks.'},
+{l:3, o:'Wed', c:'case 3 matches → print "Wed". Now the break…'},
+{l:3, o:'Wed', c:'break EXITS the switch. Without it, execution would FALL THROUGH and also run default → "Wed??". The missing-break bug has shipped real-world outages!'},
+{l:5, o:'Wed', c:'Done. switch works on int/char/enum only — for ranges (marks >= 60) you still need if/else if.'}
+]});
+
+/* ─── 04 · value vs reference ─── */
+regExec('exec-ref', { code: [
+'void bump(int x)   { x = x + 1; }',
+'void bump2(int& x) { x = x + 1; }',
+'int main() {',
+'    int a = 5;',
+'    bump(a);',
+'    bump2(a);',
+'    cout << a;',
+'}'
+], steps: [
+{l:0, v:{bump:['<function>'], bump2:['<function>']}, c:'Two functions stored. Spot the difference: int x vs int& x — one character, completely different behavior.'},
+{l:3, v:{bump:['<function>'], bump2:['<function>'], a:['5 · int']}, c:'a = 5 lives in main\'s memory.'},
+{l:4, v:{bump:['<function>'], bump2:['<function>'], a:['5 · int'], 'x (copy)':['5','fr']}, c:'bump(a): x is a brand-new COPY of a\'s value. Two separate boxes now hold 5.'},
+{l:0, v:{bump:['<function>'], bump2:['<function>'], a:['5 · int'], 'x (copy)':['6','fr']}, c:'x becomes 6 — but it\'s the COPY. a is untouched.'},
+{l:4, v:{bump:['<function>'], bump2:['<function>'], a:['5 · int']}, c:'bump ends, the copy is destroyed. a is STILL 5. That was pass-by-value.'},
+{l:5, v:{bump:['<function>'], bump2:['<function>'], a:['5 · int'], 'x ⇒ a':['alias!','fr']}, c:'bump2(a): int& x makes x an ALIAS for a itself — same box, second name.'},
+{l:1, v:{bump:['<function>'], bump2:['<function>'], a:['6 · int','chg']}, c:'x = x + 1 changes THE REAL a → 6. That is pass-by-reference.'},
+{l:6, o:'6', c:'Output: 6. One & decided whether the caller\'s variable survives. Interviewers ask this constantly.'}
+]});
+
+/* ─── 05 · pointers ─── */
+regExec('exec-ptr', { code: [
+'int age = 20;',
+'int* p = &age;',
+'cout << p << "\\n";',
+'cout << *p << "\\n";',
+'*p = 21;',
+'cout << age;'
+], steps: [
+{l:0, v:{'age @0x7ffc10':['20 · int']}, c:'age = 20, living at (pretend) address 0x7ffc10.'},
+{l:1, v:{'age @0x7ffc10':['20 · int'], p:['0x7ffc10 · int*','chg']}, c:'&age = "address of age". p now stores WHERE age lives — not its value. That is all a pointer is.'},
+{l:2, o:'0x7ffc10', c:'Printing p shows the address itself.'},
+{l:3, o:'0x7ffc10\n20', c:'*p = "value AT that address" → follows the arrow → 20. The * is called dereferencing.'},
+{l:4, v:{'age @0x7ffc10':['21 · int','chg'], p:['0x7ffc10 · int*']}, c:'*p = 21 writes THROUGH the pointer — age itself changes, remotely!'},
+{l:5, o:'0x7ffc10\n20\n21', c:'age is 21. Pointers = remote controls for memory. (& = where, * = what.)'}
+]});
+
+/* ─── 06 · vector ─── */
+regExec('exec-vec', { code: [
+'vector<int> v = {10, 20};',
+'v.push_back(30);',
+'cout << v.size() << "\\n";',
+'cout << v[0] << "\\n";',
+'for (int x : v)',
+'    cout << x << " ";'
+], steps: [
+{l:0, v:{v:['[10, 20]']}, c:'A vector: an array that manages itself. Starts with 2 elements.'},
+{l:1, v:{v:['[10, 20, 30]','chg']}, c:'push_back appends — the vector grows AUTOMATICALLY (it reallocates behind the scenes when full). Amortized O(1).'},
+{l:2, o:'3', c:'Unlike raw arrays, a vector KNOWS its own size.'},
+{l:3, o:'3\n10', c:'Indexing works exactly like arrays: v[0] → 10, still O(1).'},
+{l:4, v:{v:['[10, 20, 30]'], x:['10 → 20 → 30','fr']}, c:'Range-based for: x takes each value in turn — C++\'s version of Python\'s for-in.'},
+{l:5, o:'3\n10\n10 20 30 ', c:'All elements printed. Rule: vector by default; raw array only when the size is tiny and fixed.'}
+]});
+
+/* ─── 07 · class ─── */
+regExec('exec-class', { code: [
+'class Dog {',
+'public:',
+'    string name;',
+'    Dog(string n) { name = n; }',
+'    string speak() { return name + " says Woof!"; }',
+'};',
+'int main() {',
+'    Dog d("Rex");',
+'    cout << d.speak();',
+'}'
+], steps: [
+{l:0, v:{Dog:['<class> blueprint']}, c:'The class is a BLUEPRINT — no dog exists yet, no memory used.'},
+{l:7, v:{Dog:['<class>']}, c:'Dog d("Rex") — C++ allocates a Dog-shaped box on the stack and calls the constructor…'},
+{l:3, v:{Dog:['<class>'], 'n (param)':['"Rex"','fr'], 'd.name':['"Rex"','chg']}, c:'The constructor runs: name = n stores "Rex" INSIDE this particular object.'},
+{l:7, v:{Dog:['<class>'], d:['Dog{name:"Rex"}','chg']}, c:'d is fully built. (When d\'s scope ends, its destructor runs automatically — RAII!)'},
+{l:8, v:{Dog:['<class>'], d:['Dog{name:"Rex"}']}, c:'d.speak() — the method runs with THIS object\'s data…'},
+{l:4, o:'Rex says Woof!', c:'Returns "Rex says Woof!" and cout prints it. A second Dog would carry its own name — one blueprint, many objects.'}
+]});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

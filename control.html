@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Flow Controls in C | CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--amber);opacity:.12;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--blue);opacity:.13;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--green);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:820px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:100px;font-size:12px;color:var(--amber);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:600px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+
+/* SECTION HEADER BAR */
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* HEADINGS */
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+th.c{color:var(--cyan);}th.p{color:var(--purple);}
+td code, li code, p code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+
+/* BULLETS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+
+/* BADGE */
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.bi{background:rgba(99,102,241,.12);color:var(--indigo);}
+
+/* ALERT */
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* INTERVIEW Q */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* ANIM CONTROLS */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+
+/* ═══ EXEC VIEWER (line-by-line Python runner) ═══ */
+.exec-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:1rem;align-items:start;}
+@media(max-width:820px){.exec-grid{grid-template-columns:1fr;}}
+.exec-code{background:#030608;border:1px solid var(--border2);border-radius:var(--r);padding:.8rem 0;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;line-height:1.6;overflow-x:auto;}
+.xline{display:flex;gap:.9rem;padding:.12rem 1rem .12rem .7rem;white-space:pre;border-left:3px solid transparent;}
+.xline .ln{color:var(--muted);width:1.6em;text-align:right;flex-shrink:0;user-select:none;font-size:11px;padding-top:2px;}
+.xline.on{background:rgba(245,158,11,.13);border-left-color:var(--amber);}
+.xline.on .ln{color:var(--amber);}
+.exec-vt{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase;}
+.exec-vars{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:96px;margin-bottom:.8rem;}
+.vbox{display:inline-flex;flex-direction:column;margin:.25rem;padding:.3rem .7rem;border:1.5px solid var(--cyan);border-radius:8px;background:rgba(0,217,255,.06);animation:vpop .3s ease;vertical-align:top;}
+.vbox .vn{font-size:10px;color:var(--slate);font-family:monospace;}
+.vbox .vv{font-size:13px;font-weight:700;color:var(--cyan);font-family:'Fira Code',monospace;}
+.vbox.chg{border-color:var(--amber);background:rgba(245,158,11,.1);}
+.vbox.chg .vv{color:var(--amber);}
+.vbox.fr{border-color:var(--purple);background:rgba(168,85,247,.08);}
+.vbox.fr .vv{color:var(--purple);}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.exec-out{background:#030608;border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:76px;}
+.exec-out pre{background:none;border:none;padding:0;color:var(--green);font-size:12.5px;line-height:1.8;white-space:pre-wrap;}
+.exec-out pre:empty::before{content:'— nothing printed yet —';color:var(--muted);font-style:italic;}
+
+/* ═══ LABS (interactive playgrounds) ═══ */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:130px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-row input.wide{width:230px;}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.5rem;font-weight:800;font-family:'Fira Code',monospace;word-break:break-all;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+
+/* char / element cells (slice lab, list lab) */
+.cellrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:.6rem 0;}
+.cellcol{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cidx{font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;}
+.cidx.neg{color:#7c5cbf;}
+.cchar{min-width:40px;height:40px;padding:0 6px;display:flex;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid rgba(255,255,255,.14);border-radius:9px;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .25s;}
+.cchar.hit{border-color:var(--amber);background:rgba(245,158,11,.16);color:var(--amber);transform:translateY(-3px);}
+.cchar.new{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);animation:vpop .35s ease;}
+.cchar.dead{border-color:var(--rose);background:rgba(244,63,94,.14);color:var(--rose);opacity:.45;transform:scale(.85);}
+.sitem{display:inline-block;padding:.3rem .75rem;margin:.2rem;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;background:var(--bg4);transition:all .25s;}
+.sitem.hit{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12);}
+.sitem.dim{opacity:.3;}
+.setlabel{font-size:11px;color:var(--slate);font-family:monospace;margin:.5rem 0 .1rem;}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+
+/* PIPELINE DIAGRAM (how python runs) */
+.pipe{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;justify-content:center;padding:1rem 0;}
+.pipe-box{background:var(--bg4);border:1.5px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:center;min-width:118px;}
+.pipe-box .pb-t{font-size:13px;font-weight:700;}
+.pipe-box .pb-s{font-size:10.5px;color:var(--slate);}
+.pipe-arrow{color:var(--muted);font-size:18px;font-weight:700;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="c_learn.html" class="nav-back">← C Topics</a>
+  <div class="nav-logo">CoddingBuddY <span>· C</span></div>
+  <div class="nav-links">
+    <a href="#ifelse">if / else</a>
+    <a href="#switch">switch</a>
+    <a href="#loops">Loops</a>
+    <a href="#jumps">break &amp; continue</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#practice">Practice</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero" style="min-height:62vh;">
+  <div class="hero-blob hb1" style="background:var(--green);"></div>
+  <div class="hero-blob hb2" style="background:var(--cyan);"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);color:var(--green);">C Language Series · Topic 04</div>
+    <h1 style="font-size:clamp(2rem,4.5vw,3.4rem);"><em style="color:var(--green);">Flow Controls</em> in C</h1>
+    <p>Programs that decide, repeat, and jump — if/else, switch, the three loops, break and continue. Every one of them animated line by line.</p>
+    <div class="chips">
+      <span class="ch ch-g">if / else if / else</span>
+      <span class="ch ch-c">switch</span>
+      <span class="ch ch-a">for · while · do-while</span>
+      <span class="ch ch-r">break · continue</span>
+      <span class="ch ch-p">Star Patterns</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ IF / ELSE ═══ -->
+<div class="sec-bar" id="ifelse">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">01</div>
+  <div class="sec-info"><h2>if / else if / else — the decision chain</h2><p>Checked top to bottom; exactly ONE branch runs</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 class="g">🎬 Animation — grading with a chain</h3>
+      <div class="anim-wrap">
+        <div id="exec-if"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-if')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-if')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-if')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-if-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="a" style="margin-top:0;">Rules that beginners break</h3>
+      <ul class="bl a">
+        <li>The condition needs <strong>parentheses</strong>: <code>if (marks &gt;= 60)</code> — and NO semicolon after it! <code>if (x &gt; 5);</code> ends the if instantly.</li>
+        <li><code>=</code> assigns, <code>==</code> compares. <code>if (x = 5)</code> compiles fine and is always true — C won't save you like Python does.</li>
+        <li>In C, 0 = false and <strong>anything non-zero = true</strong>. <code>if (n)</code> means "if n isn't zero".</li>
+        <li>Braces optional for one statement — but ALWAYS write them. The famous Apple "goto fail" bug came from a brace-less if.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">the ternary shortcut</span>
+<pre class="cpp">// condition ? value_if_true : value_if_false
+int bigger = (a &gt; b) ? a : b;
+printf("%s", marks &gt;= 40 ? "PASS" : "FAIL");</pre></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SWITCH ═══ -->
+<div class="sec-bar" id="switch">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">02</div>
+  <div class="sec-info"><h2>switch — the jump table</h2><p>One look at the value, straight to the matching case</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 class="c">🎬 Animation — watch the break work</h3>
+      <div class="anim-wrap">
+        <div id="exec-switch"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-switch')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-switch')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-switch')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-switch-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="r" style="margin-top:0;">Fall-through — bug AND feature</h3>
+      <div class="cw"><span class="cl2 ro">missing break = chaos</span>
+<pre class="cpp">switch (day) {
+    case 1: printf("Mon");   // no break!
+    case 2: printf("Tue");   // runs too!
+    default: printf("??");   // and this!
+}
+// day = 1 prints: MonTue??</pre></div>
+      <div class="cw"><span class="cl2 gr">deliberate fall-through — grouping cases</span>
+<pre class="cpp">switch (ch) {
+    case 'a': case 'e': case 'i':
+    case 'o': case 'u':
+        printf("vowel");
+        break;
+    default:
+        printf("consonant");
+}</pre></div>
+      <div class="alert ac">
+        <div class="alert-ico">💡</div>
+        <div><b>switch vs if/else</b>switch: ONE value against fixed constants (menu choices, grades, days). if/else: ranges and complex conditions. switch can't do <code>case marks &gt;= 60</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ LOOPS ═══ -->
+<div class="sec-bar" id="loops">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">03</div>
+  <div class="sec-info"><h2>The three loops</h2><p>for = known count · while = unknown count · do-while = at least once</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 class="a">🎬 Animation — for loop, part by part</h3>
+      <div class="anim-wrap">
+        <div id="exec-for"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-for')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-for')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-for')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-for-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="p" style="margin-top:0;">🎬 Animation — while countdown</h3>
+      <div class="anim-wrap">
+        <div id="exec-while"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-while')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-while')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-while')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-while-cap"></div>
+      </div>
+    </div>
+  </div>
+  <div class="g3" style="margin-top:1.5rem;">
+    <div class="cw"><span class="cl2 am">for — count is known</span>
+<pre class="cpp">for (int i = 1; i &lt;= 5; i++) {
+    printf("%d ", i);
+}
+// init ; condition ; update
+// 1 2 3 4 5</pre></div>
+    <div class="cw"><span class="cl2">while — count unknown</span>
+<pre class="cpp">int n = 1234, digits = 0;
+while (n &gt; 0) {
+    n = n / 10;
+    digits++;
+}
+// digits = 4</pre></div>
+    <div class="cw"><span class="cl2 pu">do-while — at least once</span>
+<pre class="cpp">int choice;
+do {
+    printf("1.Play 2.Exit: ");
+    scanf("%d", &amp;choice);
+} while (choice != 2);
+// menus: show FIRST, ask after</pre></div>
+  </div>
+  <div class="alert ar">
+    <div class="alert-ico">♾️</div>
+    <div><b>Infinite loop checklist</b>Something inside the loop must push the condition toward false. <code>while (n &gt; 0)</code> with no <code>n--</code> inside runs forever. Stuck? Ctrl+C kills it.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ BREAK & CONTINUE ═══ -->
+<div class="sec-bar" id="jumps">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">04</div>
+  <div class="sec-info"><h2>break &amp; continue — the emergency exits</h2><p>break leaves the loop; continue skips one lap</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 class="r">🎬 Animation — break on first match</h3>
+      <div class="anim-wrap">
+        <div id="exec-break"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-break')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-break')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-break')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-break-cap"></div>
+      </div>
+    </div>
+    <div>
+      <div class="cw" style="margin-top:0;"><span class="cl2 am">continue — skip, don't quit</span>
+<pre class="cpp">for (int i = 1; i &lt;= 6; i++) {
+    if (i % 2 == 0)
+        continue;      // skip evens
+    printf("%d ", i);  // 1 3 5
+}</pre></div>
+      <ul class="bl r" style="margin-top:.8rem;">
+        <li><code>break</code> exits only the INNERMOST loop — nested loops need a flag or a function return.</li>
+        <li><code>continue</code> in a for loop still runs the update (i++) — in a while it jumps straight to the condition (mind your counter!).</li>
+        <li><code>goto</code> exists in C. Interview answer: "I know it exists; structured code doesn't need it."</li>
+      </ul>
+      <div class="alert ag">
+        <div class="alert-ico">🔍</div>
+        <div><b>Classic use</b>Linear search IS "loop + break": scan until found, break, and check afterwards whether you found it or ran out.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PATTERNS ═══ -->
+<div class="sec-bar" id="patterns">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">05</div>
+  <div class="sec-info"><h2>Nested loops — star patterns</h2><p>The exam favorite: outer loop = rows, inner loop = what's IN a row</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g3">
+    <div class="cw"><span class="cl2 pu">right triangle</span>
+<pre class="cpp">for (int i = 1; i &lt;= 4; i++) {
+    for (int j = 1; j &lt;= i; j++)
+        printf("*");
+    printf("\n");
+}
+/*  *
+    **
+    ***
+    ****  */</pre></div>
+    <div class="cw"><span class="cl2 am">pyramid</span>
+<pre class="cpp">for (int i = 1; i &lt;= 4; i++) {
+    for (int s = 4 - i; s &gt; 0; s--)
+        printf(" ");
+    for (int j = 1; j &lt;= 2*i - 1; j++)
+        printf("*");
+    printf("\n");
+}</pre></div>
+    <div class="cw"><span class="cl2 gr">number square</span>
+<pre class="cpp">for (int i = 1; i &lt;= 3; i++) {
+    for (int j = 1; j &lt;= 3; j++)
+        printf("%d ", i * j);
+    printf("\n");
+}
+/* 1 2 3
+   2 4 6
+   3 6 9 */</pre></div>
+  </div>
+  <div class="alert ap">
+    <div class="alert-ico">🧠</div>
+    <div><b>The one trick for ALL patterns</b>Ask two questions per row i: how many SPACES? how many STARS/numbers? Write each answer as its own inner loop. Every pattern question falls to this.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ PRACTICE ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">06</div>
+  <div class="sec-info"><h2>Practice — 6 must-solve problems</h2><p>Do these before moving to the next topic ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Grade Calculator</h4><p>Marks → A/B/C/F chain with 0–100 validation.</p><div class="ht">Hint: strictest condition first</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Menu Calculator</h4><p>switch on +, −, ×, ÷ with zero-divide guard.</p><div class="ht">Hint: break after every case</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>FizzBuzz 1–50</h4><p>Fizz ÷3, Buzz ÷5, FizzBuzz ÷15.</p><div class="ht">Hint: test % 15 first</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Digit Cruncher</h4><p>Count digits, sum digits, reverse — one while loop each.</p><div class="ht">Hint: % 10 and / 10</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Prime Range</h4><p>Print all primes 2–100 (nested loop + break).</p><div class="ht">Hint: flag variable</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Diamond Pattern</h4><p>Pyramid + upside-down pyramid.</p><div class="ht">Hint: two row-loops</div></div>
+  </div>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem;">
+    <a href="keywords.html" class="btn btn-c" style="text-decoration:none;">← Prev: Keywords</a>
+    <a href="c_learn.html" class="btn btn-a" style="text-decoration:none;">☰ All C Topics</a>
+    <a href="c_learn.html#functions" class="btn btn-g" style="text-decoration:none;">Next: Functions →</a>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Flow Controls in C · C Language Series Topic 04</p>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+
+<script>
+/* C highlighter (shared engine with C++ pages) */
+const CPP_KW = new Set(['int','double','float','char','void','long','return','if','else','for','while','do','switch','case','break','continue','default','include','const','struct','goto','unsigned']);
+const CPP_FN = new Set(['printf','scanf','main','getchar','putchar']);
+function hiCpp(raw){
+  let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return t.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/)|(#\w+)|('(?:\\.|[^'])*'|"(?:\\.|[^"])*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\b\d+\.?\d*)/gm, (m, cm, pre, st, w, num) => {
+    if (cm)  return '<span class="cm">' + cm + '</span>';
+    if (pre) return '<span class="kw">' + pre + '</span>';
+    if (st)  return '<span class="st2">' + st + '</span>';
+    if (w){
+      if (CPP_KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (CPP_FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    }
+    if (num) return '<span class="nm">' + num + '</span>';
+    return m;
+  });
+}
+document.querySelectorAll('pre.cpp').forEach(p => { p.innerHTML = hiCpp(p.textContent); });
+
+const X = {};
+function regExec(id, cfg){
+  const host = document.getElementById(id);
+  let codeHtml = cfg.code.map((ln, i) =>
+    '<div class="xline" id="' + id + '-l' + i + '"><span class="ln">' + (i + 1) + '</span><span>' + (ln === '' ? ' ' : hiCpp(ln)) + '</span></div>'
+  ).join('');
+  host.innerHTML =
+    '<div class="exec-grid">' +
+      '<div class="exec-code">' + codeHtml + '</div>' +
+      '<div>' +
+        '<div class="exec-vars"><div class="exec-vt">📦 Variables in memory</div><div id="' + id + '-vars"><span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span></div></div>' +
+        '<div class="exec-out"><div class="exec-vt">🖥️ Output</div><pre id="' + id + '-out"></pre></div>' +
+      '</div>' +
+    '</div>';
+  X[id] = { cfg, i: 0, timer: null };
+  resetExec(id);
+}
+function renderVars(id, v){
+  const box = document.getElementById(id + '-vars');
+  const keys = Object.keys(v || {});
+  if (!keys.length){ box.innerHTML = '<span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span>'; return; }
+  box.innerHTML = keys.map(k => {
+    const item = v[k];
+    const val = Array.isArray(item) ? item[0] : item;
+    const cls = Array.isArray(item) && item[1] ? ' ' + item[1] : '';
+    const esc = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<span class="vbox' + cls + '"><span class="vn">' + k + '</span><span class="vv">' + esc + '</span></span>';
+  }).join('');
+}
+function resetExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; }
+  x.i = 0;
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  renderVars(id, {});
+  document.getElementById(id + '-out').textContent = '';
+  document.getElementById(id + '-cap').textContent = 'Press ▶ Step or ⏩ Auto to run this program';
+}
+function stepExec(id){
+  const x = X[id];
+  if (x.i >= x.cfg.steps.length){
+    document.getElementById(id + '-cap').textContent = '✅ Program finished! Press ↺ Reset to replay.';
+    return;
+  }
+  const s = x.cfg.steps[x.i++];
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  if (s.l >= 0) document.getElementById(id + '-l' + s.l).classList.add('on');
+  if (s.v !== undefined) renderVars(id, s.v);
+  if (s.o !== undefined) document.getElementById(id + '-out').textContent = s.o;
+  document.getElementById(id + '-cap').textContent = s.c;
+}
+function autoExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; return; }
+  if (x.i >= x.cfg.steps.length) resetExec(id);
+  stepExec(id);
+  x.timer = setInterval(() => {
+    stepExec(id);
+    if (x.i >= x.cfg.steps.length){ clearInterval(x.timer); x.timer = null; }
+  }, x.cfg.ms || 1900);
+}
+
+regExec('exec-if', { code: [
+'int marks = 67;',
+'if (marks >= 75) {',
+'    printf("Grade A");',
+'} else if (marks >= 60) {',
+'    printf("Grade B");',
+'} else {',
+'    printf("Grade C");',
+'}'
+], steps: [
+{l:0, v:{marks:['67 · int']}, c:'marks = 67 stored in a 4-byte int box.'},
+{l:1, v:{marks:['67 · int']}, c:'Test #1: 67 >= 75? ❌ false (0 in C) → skip the A block.'},
+{l:3, v:{marks:['67 · int']}, c:'Test #2: 67 >= 60? ✅ true (1) → enter THIS block.'},
+{l:4, o:'Grade B', c:'printf writes Grade B. The else below is never even checked.'},
+{l:7, o:'Grade B', c:'Exactly ONE branch ran — the chain guarantees it. Order matters: strictest condition first!'}
+]});
+
+regExec('exec-switch', { code: [
+'int day = 3;',
+'switch (day) {',
+'    case 1: printf("Mon"); break;',
+'    case 3: printf("Wed"); break;',
+'    default: printf("??");',
+'}'
+], steps: [
+{l:0, v:{day:['3 · int']}, c:'day = 3.'},
+{l:1, v:{day:['3 · int']}, c:'switch inspects day ONCE and jumps straight to the matching case — a jump table, not a chain of ifs.'},
+{l:3, o:'Wed', c:'case 3 → print "Wed". Now watch the break…'},
+{l:3, o:'Wed', c:'break EXITS the switch immediately. Delete it and execution FALLS THROUGH into default → "Wed??".'},
+{l:5, o:'Wed', c:'Done. Remember: switch matches CONSTANTS only — no ranges, no conditions.'}
+]});
+
+regExec('exec-for', { code: [
+'int total = 0;',
+'for (int i = 1; i <= 4; i++) {',
+'    total = total + i;',
+'}',
+'printf("Sum = %d", total);'
+], ms: 1500, steps: [
+{l:0, v:{total:['0 · int']}, c:'Accumulator starts at 0.'},
+{l:1, v:{total:['0'], i:['1','chg']}, c:'Three parts: int i = 1 (once) · i <= 4 (checked every lap) · i++ (after every lap). 1 ≤ 4 → enter.'},
+{l:2, v:{total:['1','chg'], i:['1']}, c:'total = 0 + 1 = 1.'},
+{l:1, v:{total:['1'], i:['2','chg']}, c:'i++ → 2. Check 2 ≤ 4 ✅.'},
+{l:2, v:{total:['3','chg'], i:['2']}, c:'total = 1 + 2 = 3.'},
+{l:1, v:{total:['3'], i:['3','chg']}, c:'i = 3, still in range.'},
+{l:2, v:{total:['6','chg'], i:['3']}, c:'total = 3 + 3 = 6.'},
+{l:1, v:{total:['6'], i:['4','chg']}, c:'i = 4 — last valid lap.'},
+{l:2, v:{total:['10','chg'], i:['4']}, c:'total = 6 + 4 = 10.'},
+{l:1, v:{total:['10']}, c:'i++ → 5. Check 5 ≤ 4 ❌ → loop over. i dies here (loop scope).'},
+{l:4, o:'Sum = 10', c:'printf with %d plugs total into the text: Sum = 10.'}
+]});
+
+regExec('exec-while', { code: [
+'int n = 3;',
+'while (n > 0) {',
+'    printf("%d\\n", n);',
+'    n = n - 1;',
+'}',
+'printf("Liftoff!");'
+], ms: 1400, steps: [
+{l:0, v:{n:['3 · int']}, c:'Countdown starts at 3.'},
+{l:1, v:{n:['3']}, c:'3 > 0? ✅ → enter the loop.'},
+{l:2, v:{n:['3']}, o:'3', c:'Print 3.'},
+{l:3, v:{n:['2','chg']}, o:'3', c:'n = 2. THIS line pushes the condition toward false — delete it and the loop never ends.'},
+{l:1, v:{n:['2']}, o:'3', c:'2 > 0? ✅ again.'},
+{l:2, v:{n:['2']}, o:'3\n2', c:'Print 2.'},
+{l:3, v:{n:['1','chg']}, o:'3\n2', c:'n = 1.'},
+{l:1, v:{n:['1']}, o:'3\n2', c:'1 > 0? ✅ one more lap.'},
+{l:2, v:{n:['1']}, o:'3\n2\n1', c:'Print 1.'},
+{l:3, v:{n:['0','chg']}, o:'3\n2\n1', c:'n = 0.'},
+{l:1, v:{n:['0']}, o:'3\n2\n1', c:'0 > 0? ❌ FALSE → exit the loop.'},
+{l:5, o:'3\n2\n1\nLiftoff!', c:'🚀 while ran exactly while its condition stayed true.'}
+]});
+
+regExec('exec-break', { code: [
+'int nums[4] = {3, 7, 4, 9};',
+'for (int i = 0; i < 4; i++) {',
+'    if (nums[i] == 4) {',
+'        printf("Found at %d", i);',
+'        break;',
+'    }',
+'}'
+], steps: [
+{l:0, v:{nums:['[3, 7, 4, 9]']}, c:'An array of 4 numbers. Mission: find the 4.'},
+{l:1, v:{nums:['[3, 7, 4, 9]'], i:['0','chg']}, c:'i = 0.'},
+{l:2, v:{nums:['[3, 7, 4, 9]'], i:['0']}, c:'nums[0] is 3 — not 4. Next lap.'},
+{l:2, v:{nums:['[3, 7, 4, 9]'], i:['1','chg']}, c:'nums[1] is 7 — not 4 either.'},
+{l:2, v:{nums:['[3, 7, 4, 9]'], i:['2','chg']}, c:'nums[2] is 4 — MATCH! ✅'},
+{l:3, o:'Found at 2', c:'Report the position…'},
+{l:4, o:'Found at 2', c:'…and break: exit NOW. nums[3] = 9 is never examined — why keep searching after you found it? That\'s linear search.'}
+]});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

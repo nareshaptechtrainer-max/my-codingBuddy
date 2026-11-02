@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Arrays — Zero to Master — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--green);opacity:.11;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--cyan);opacity:.12;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--purple);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:840px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:100px;font-size:12px;color:var(--green);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--green);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:620px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+td code, li code, p code, div code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+
+/* BULLETS / BADGES / ALERTS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* QA */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* ANIM */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-svg-wrap{display:flex;justify-content:center;overflow-x:auto;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+.chipstrip{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem;justify-content:center;min-height:30px;}
+.mchip{padding:.2rem .7rem;border-radius:100px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);color:var(--purple);font-size:12px;font-weight:700;font-family:'Fira Code',monospace;animation:vpop .3s ease;}
+.mchip.hit{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+/* LABS */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:130px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.5rem;font-weight:800;font-family:'Fira Code',monospace;word-break:break-all;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+.lab-bar-wrap{margin-top:1rem;}
+.lab-bar-row{display:flex;align-items:center;gap:.8rem;margin:.5rem 0;}
+.lab-bar-label{width:120px;font-size:12px;color:var(--slate);text-align:right;flex-shrink:0;}
+.lab-bar-track{flex:1;background:var(--bg4);border-radius:100px;height:22px;overflow:hidden;border:1px solid var(--border);}
+.lab-bar{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:.7rem;font-size:11px;font-weight:700;color:#000;white-space:nowrap;transition:width .6s ease;}
+.cellrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:.6rem 0;}
+.cellcol{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cidx{font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;}
+.cidx.neg{color:#7c5cbf;}
+.cchar{min-width:44px;height:42px;padding:0 6px;display:flex;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid rgba(255,255,255,.14);border-radius:9px;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .25s;}
+.cchar.hit{border-color:var(--amber);background:rgba(245,158,11,.16);color:var(--amber);transform:translateY(-3px);}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;margin-right:.35rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+.pat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,217,255,.1);color:var(--cyan);}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· Arrays</span></div>
+  <div class="nav-links">
+    <a href="#lab">🧪 Array Lab</a>
+    <a href="#basics">Basics</a>
+    <a href="#ops">Operations</a>
+    <a href="#prefix">Prefix Sum</a>
+    <a href="#twoptr">Two Pointers</a>
+    <a href="#window">Sliding Window</a>
+    <a href="#kadane">Kadane</a>
+    <a href="#hashing">Hashing</a>
+    <a href="#binsearch">Binary Search</a>
+    <a href="#matrix">Matrix</a>
+    <a href="#master">Master Map</a>
+    <a href="#practice">Practice Sheet</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-blob hb1"></div>
+  <div class="hero-blob hb2"></div>
+  <div class="hero-blob hb3"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge">CoddingBuddY · Placement Preparation Series</div>
+    <h1><em>Arrays</em><br/>Zero to Master</h1>
+    <p>Arrays are where every interview begins. Learn the memory model, all core operations, and the <strong style="color:var(--white)">7 patterns</strong> that solve 90% of array questions — each one animated step by step, with basic → medium → hard problem sheets.</p>
+    <div class="chips">
+      <span class="ch ch-g">Memory Model</span>
+      <span class="ch ch-c">Prefix Sum</span>
+      <span class="ch ch-p">Two Pointers</span>
+      <span class="ch ch-a">Sliding Window</span>
+      <span class="ch ch-r">Kadane's</span>
+      <span class="ch ch-i">Hashing</span>
+      <span class="ch ch-c">Binary Search</span>
+      <span class="ch ch-p">Matrix Tricks</span>
+      <span class="ch ch-a">42 Problems</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 00: ARRAY LAB ═══ -->
+<div class="sec-bar" id="lab">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">00</div>
+  <div class="sec-info"><h2>The Array Lab — Feel the Difference</h2><p>Same problem (Two Sum), two approaches. Watch the pattern destroy brute force.</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="playground">
+    <p style="font-size:13.5px;color:var(--slate);margin-bottom:1rem;">Find two numbers that sum to a target. <strong style="color:var(--rose)">Brute force</strong> checks every pair — n(n−1)/2 comparisons. <strong style="color:var(--green)">The hashing pattern</strong> walks the array ONCE. Slide n up and watch the gap explode.</p>
+    <div class="lab-row">
+      <div>
+        <label>Array size n (10 – 100000)</label>
+        <input type="number" id="al-n" value="1000" min="10" max="100000" onchange="runArrLab()" onkeydown="if(event.key==='Enter')runArrLab()"/>
+      </div>
+      <button class="btn btn-c" onclick="runArrLab()">Compare approaches</button>
+    </div>
+    <div class="g3">
+      <div class="lab-stat"><div class="lv" style="color:var(--rose);" id="al-brute">499,500</div><div class="ll">pair checks — brute force O(n²)</div></div>
+      <div class="lab-stat"><div class="lv" style="color:var(--green);" id="al-hash">1,000</div><div class="ll">steps — hashing pattern O(n)</div></div>
+      <div class="lab-stat"><div class="lv" style="color:var(--amber);" id="al-x">500×</div><div class="ll">less work with the pattern</div></div>
+    </div>
+    <div class="lab-bar-wrap">
+      <div class="lab-bar-row">
+        <div class="lab-bar-label">Brute O(n²)</div>
+        <div class="lab-bar-track"><div class="lab-bar" id="al-bar-brute" style="background:var(--rose);width:100%;">499,500</div></div>
+      </div>
+      <div class="lab-bar-row">
+        <div class="lab-bar-label">Pattern O(n)</div>
+        <div class="lab-bar-track"><div class="lab-bar" id="al-bar-hash" style="background:var(--green);width:8%;">1,000</div></div>
+      </div>
+    </div>
+    <div id="al-msg" style="margin-top:.8rem;font-size:13px;color:var(--amber);font-family:'Fira Code',monospace;"></div>
+  </div>
+  <div class="alert ag">
+    <div class="alert-ico">🎯</div>
+    <div><b>The whole course in one sentence</b>Array interviews are never about arrays — they're about replacing the O(n²) "check everything against everything" loop with a smarter pattern. This page teaches you all 7 of those patterns.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 01: BASICS ═══ -->
+<div class="sec-bar" id="basics">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">01</div>
+  <div class="sec-info"><h2>Level 1 — What an Array Really Is</h2><p>One block of memory + one multiplication = instant access</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Boxes in a <span class="hl" style="color:var(--green)">row</span>, glued together</h2>
+      <p class="ss">An array is a contiguous block of memory — every element same size, side by side</p>
+      <ul class="bl g">
+        <li><strong>Contiguous:</strong> element i+1 physically sits right after element i. No gaps, no jumping around memory.</li>
+        <li><strong>That's why access is O(1):</strong> Python never "walks" to index 5 — it CALCULATES where it is: <code>address = base + i × size</code>. One multiplication, one jump. Try it in the lab →</li>
+        <li><strong>Python's list</strong> is a <em>dynamic array</em>: same idea, but it automatically grows (roughly doubling) when full. That's why <code>append</code> is O(1) <em>amortized</em>.</li>
+        <li><strong>Negative indices</strong> are sugar: <code>arr[-1]</code> just means <code>arr[len(arr) - 1]</code>.</li>
+      </ul>
+      <div class="alert ag" style="margin-top:1rem;">
+        <div class="alert-ico">📏</div>
+        <div><b>Interview line</b>"Array indexing is O(1) because the address is computed arithmetically — base address plus index times element size — not searched for."</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-bottom:.4rem;">🧪 Address Lab — why arr[i] is instant</h3>
+      <p style="font-size:12.5px;color:var(--slate);margin-bottom:.6rem;">This array starts at (pretend) address <code>1000</code>, each int takes 4 bytes. Type any index — positive or negative:</p>
+      <div class="playground" style="padding:1.1rem;">
+        <div class="cellrow" id="ad-cells"></div>
+        <div class="lab-row" style="margin:.6rem 0;justify-content:center;">
+          <div><label>index i =</label><input type="number" id="ad-i" value="3" style="width:90px;" oninput="runAddrLab()"/></div>
+        </div>
+        <div class="anim-log" id="ad-msg" style="text-align:center;">address = 1000 + 3 × 4 = 1012 → jump straight there → value 3. No walking!</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--green);">⏱️ Big-O of every array operation — memorize this</h3>
+  <div class="tw"><table>
+    <tr><th>Operation</th><th>Python</th><th>Cost</th><th>Why</th></tr>
+    <tr><td>Access by index</td><td><code>arr[i]</code></td><td class="yes">O(1)</td><td>address arithmetic</td></tr>
+    <tr><td>Update by index</td><td><code>arr[i] = x</code></td><td class="yes">O(1)</td><td>same arithmetic</td></tr>
+    <tr><td>Append at end</td><td><code>arr.append(x)</code></td><td class="yes">O(1)*</td><td>space usually ready (*amortized)</td></tr>
+    <tr><td>Pop from end</td><td><code>arr.pop()</code></td><td class="yes">O(1)</td><td>nothing shifts</td></tr>
+    <tr><td>Insert at front/middle</td><td><code>arr.insert(i, x)</code></td><td class="no">O(n)</td><td>everything after shifts right</td></tr>
+    <tr><td>Delete at front/middle</td><td><code>arr.pop(i)</code></td><td class="no">O(n)</td><td>everything after shifts left</td></tr>
+    <tr><td>Search (unsorted)</td><td><code>x in arr</code></td><td class="no">O(n)</td><td>must check one by one</td></tr>
+    <tr><td>Search (sorted)</td><td>binary search</td><td class="yes">O(log n)</td><td>halve the field each step</td></tr>
+  </table></div>
+  <div class="alert aa">
+    <div class="alert-ico">💡</div>
+    <div><b>Read that table again</b>Every array pattern exists to avoid the red O(n) rows — or to avoid doing an O(n) scan n times. Recognize the cost, then pick the pattern that dodges it.</div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 02: CORE OPERATIONS ═══ -->
+<div class="sec-bar" id="ops">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">02</div>
+  <div class="sec-info"><h2>Level 1 — The Core Operations, Animated</h2><p>Insert, delete, search — SEE the shifting that makes them O(n)</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 class="a">🎬 Insert 10 at index 2 — watch the shifting</h3>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="insert-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('insert')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('insert')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('insert')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="insert-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="r">🎬 Delete index 1 — everyone slides left</h3>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="delete-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('delete')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('delete')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('delete')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="delete-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:1.6rem;align-items:start;">
+    <div>
+      <h3 class="c">🎬 Linear search for 20 — the honest O(n)</h3>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="lsearch-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('lsearch')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('lsearch')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('lsearch')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="lsearch-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">The traversal patterns you'll write daily</h3>
+      <div class="cw"><span class="cl2 gr">4 loops that cover 90% of basics</span>
+<pre class="py">arr = [5, 8, 12, 20, 7]
+
+for x in arr:                # values only
+    print(x)
+
+for i in range(len(arr)):    # index needed
+    print(i, arr[i])
+
+for i, x in enumerate(arr):  # both — Pythonic
+    print(i, x)
+
+for x in reversed(arr):      # right to left
+    print(x)</pre></div>
+      <div class="cw"><span class="cl2 am">the classic single-pass trio</span>
+<pre class="py"># max, min, sum in ONE pass — no built-ins
+best, small, total = arr[0], arr[0], 0
+for x in arr:
+    if x &gt; best:  best = x
+    if x &lt; small: small = x
+    total += x</pre></div>
+    </div>
+  </div>
+
+  <div class="alert ar" style="margin-top:1rem;">
+    <div class="alert-ico">⚠️</div>
+    <div><b>Beginner trap</b>Never modify a list while looping over it — elements shift under your feet and get skipped. Loop over a copy (<code>for x in arr[:]</code>) or build a new list with a comprehension.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 03: PREFIX SUM ═══ -->
+<div class="sec-bar" id="prefix">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">03</div>
+  <div class="sec-info"><h2>Pattern 1 — Prefix Sum</h2><p>Pre-compute running totals once → answer every range-sum question in O(1)</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Pay <span class="hl" style="color:var(--purple)">once</span>, query forever</h2>
+      <p class="ss">prefix[i] = sum of everything up to index i. Then sum(l..r) = prefix[r] − prefix[l−1]</p>
+      <ul class="bl p">
+        <li><strong>Spot it when:</strong> "sum of subarray", "range sum queries", "equilibrium/pivot index", "subarray with sum K".</li>
+        <li>Without it: each range-sum question costs O(n). With 10⁵ queries → 10¹⁰ operations → TLE.</li>
+        <li>With it: O(n) once to build, then every query is a single subtraction.</li>
+        <li>Same trick works for <strong>prefix max, prefix product, prefix XOR</strong> — anything cumulative.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 pu">the pattern in code</span>
+<pre class="py">arr = [2, 4, 1, 3, 5]
+
+prefix = [0] * len(arr)
+prefix[0] = arr[0]
+for i in range(1, len(arr)):
+    prefix[i] = prefix[i-1] + arr[i]
+# prefix = [2, 6, 7, 10, 15]
+
+def range_sum(l, r):          # inclusive
+    if l == 0:
+        return prefix[r]
+    return prefix[r] - prefix[l-1]
+
+range_sum(1, 3)   # 4+1+3 = 8, in O(1)!</pre></div>
+    </div>
+    <div>
+      <h3 class="p">🎬 Animation — build it, then query in one subtraction</h3>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="prefix-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('prefix')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('prefix')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('prefix')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="prefix-cap"></div>
+      </div>
+      <div class="alert ap">
+        <div class="alert-ico">🎯</div>
+        <div><b>Level-up: Subarray Sum Equals K (LC 560)</b>Walk once keeping a running sum; store each sum in a hashmap. If <code>running − k</code> was seen before, a subarray summing to k just ended here. Prefix sum + hashing combined — a favorite medium question.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--purple);">🎯 Where this pattern scores</h3>
+  <div class="tw"><table>
+    <tr><th>Problem</th><th>Difficulty</th><th>The prefix idea</th></tr>
+    <tr><td>1480 · Running Sum of 1D Array</td><td><span class="lc-diff lc-e">EASY</span></td><td>literally build the prefix array</td></tr>
+    <tr><td>724 · Find Pivot Index</td><td><span class="lc-diff lc-e">EASY</span></td><td>left sum == total − left − arr[i]</td></tr>
+    <tr><td>303 · Range Sum Query</td><td><span class="lc-diff lc-e">EASY</span></td><td>the range_sum() function above</td></tr>
+    <tr><td>560 · Subarray Sum Equals K</td><td><span class="lc-diff lc-m">MED</span></td><td>prefix + hashmap of seen sums</td></tr>
+    <tr><td>238 · Product of Array Except Self</td><td><span class="lc-diff lc-m">MED</span></td><td>prefix product × suffix product</td></tr>
+    <tr><td>974 · Subarray Sums Divisible by K</td><td><span class="lc-diff lc-m">MED</span></td><td>prefix remainders + counting</td></tr>
+  </table></div>
+</div>
+</section>
+<!-- ═══ SEC 04: TWO POINTERS ═══ -->
+<div class="sec-bar" id="twoptr">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">04</div>
+  <div class="sec-info"><h2>Pattern 2 — Two Pointers</h2><p>Start at both ends, squeeze inward — one decision per step kills the O(n²)</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Squeeze from <span class="hl">both ends</span></h2>
+      <p class="ss">Works when the array is SORTED (or when moving a pointer has a predictable effect)</p>
+      <ul class="bl c">
+        <li><strong>Spot it when:</strong> "sorted array + find a pair/triplet", "container/area between lines", "remove duplicates in place", "is it a palindrome".</li>
+        <li>The magic: sum too BIG? Only moving <code>right</code> left can shrink it. Too SMALL? Only moving <code>left</code> right can grow it. Every step safely discards one element → O(n).</li>
+        <li>Second flavor — <strong>slow/fast pointers</strong> moving the same direction: overwrite-in-place problems (move zeroes, remove duplicates).</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2">pair with target sum — sorted array</span>
+<pre class="py">def pair_sum(arr, target):     # arr is sorted
+    left, right = 0, len(arr) - 1
+    while left &lt; right:
+        s = arr[left] + arr[right]
+        if s == target:
+            return (left, right)
+        if s &lt; target:
+            left += 1      # need bigger sum
+        else:
+            right -= 1     # need smaller sum
+    return None            # no pair exists</pre></div>
+      <div class="cw"><span class="cl2 gr">slow/fast flavor — move zeroes (LC 283)</span>
+<pre class="py">def move_zeroes(arr):
+    slow = 0                    # next non-zero slot
+    for fast in range(len(arr)):
+        if arr[fast] != 0:
+            arr[slow], arr[fast] = arr[fast], arr[slow]
+            slow += 1
+# [0,1,0,3,12] → [1,3,12,0,0] in ONE pass</pre></div>
+    </div>
+    <div>
+      <h3 class="c">🎬 Animation — find a pair summing to 10</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;"><span style="color:var(--cyan)">L pointer cyan</span> · <span style="color:var(--amber)">R pointer amber</span> · discarded cells fade. Watch each comparison make ONE safe decision.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="twoptr-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('twoptr')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('twoptr')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('twoptr')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="twoptr-cap"></div>
+      </div>
+      <div class="alert ac">
+        <div class="alert-ico">💡</div>
+        <div><b>3Sum secret (LC 15)</b>Sort, fix one number with a loop, then run THIS two-pointer on the rest for the remaining target. O(n²) instead of O(n³).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tw" style="margin-top:1.6rem;"><table>
+    <tr><th>Problem</th><th>Difficulty</th><th>The two-pointer move</th></tr>
+    <tr><td>344 · Reverse String / Array</td><td><span class="lc-diff lc-e">EASY</span></td><td>swap ends, squeeze in</td></tr>
+    <tr><td>26 · Remove Duplicates (sorted)</td><td><span class="lc-diff lc-e">EASY</span></td><td>slow writes, fast scans</td></tr>
+    <tr><td>283 · Move Zeroes</td><td><span class="lc-diff lc-e">EASY</span></td><td>slow/fast swap</td></tr>
+    <tr><td>167 · Two Sum II (sorted)</td><td><span class="lc-diff lc-m">MED</span></td><td>the animation above</td></tr>
+    <tr><td>15 · 3Sum</td><td><span class="lc-diff lc-m">MED</span></td><td>fix one + two pointers</td></tr>
+    <tr><td>11 · Container With Most Water</td><td><span class="lc-diff lc-m">MED</span></td><td>move the SHORTER wall inward</td></tr>
+    <tr><td>42 · Trapping Rain Water</td><td><span class="lc-diff lc-h">HARD</span></td><td>two pointers + running max walls</td></tr>
+  </table></div>
+</div>
+</section>
+
+<!-- ═══ SEC 05: SLIDING WINDOW ═══ -->
+<div class="sec-bar" id="window">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">05</div>
+  <div class="sec-info"><h2>Pattern 3 — Sliding Window</h2><p>Don't recompute the window — subtract what leaves, add what enters</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Recycle the <span class="hl" style="color:var(--amber)">overlap</span></h2>
+      <p class="ss">Two windows next to each other share almost everything — only the edges differ</p>
+      <ul class="bl a">
+        <li><strong>Spot it when:</strong> "subarray of size k", "longest/shortest subarray satisfying a condition", "max sum window", any CONTIGUOUS chunk question.</li>
+        <li><strong>Fixed window (size k):</strong> compute window 1 fully; then slide: <code>sum += arr[right] − arr[left]</code>. Each slide is O(1) instead of O(k).</li>
+        <li><strong>Variable window:</strong> grow <code>right</code> while the condition allows; when broken, shrink from <code>left</code> until it's fixed. Both pointers only move forward → O(n) total.</li>
+        <li>Sliding window IS two pointers moving the same direction — with a running "state" (sum/count/set) carried between moves.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">fixed window — max sum of size k</span>
+<pre class="py">def max_window(arr, k):
+    wsum = sum(arr[:k])        # first window
+    best = wsum
+    for right in range(k, len(arr)):
+        wsum += arr[right] - arr[right - k]
+        best = max(best, wsum)
+    return best</pre></div>
+      <div class="cw"><span class="cl2 pu">variable window — smallest subarray ≥ target (LC 209)</span>
+<pre class="py">def min_subarray(arr, target):
+    left = wsum = 0
+    best = float('inf')
+    for right in range(len(arr)):
+        wsum += arr[right]           # grow
+        while wsum &gt;= target:        # shrink
+            best = min(best, right - left + 1)
+            wsum -= arr[left]
+            left += 1
+    return 0 if best == float('inf') else best</pre></div>
+    </div>
+    <div>
+      <h3 class="a">🎬 Animation — max sum window of size 3</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">arr = [2, 1, 5, 1, 3, 2]. Watch the window slide: one number leaves (rose), one enters (green) — the middle is recycled.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="window-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('window')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('window')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('window')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="window-cap"></div>
+      </div>
+      <div class="alert aa">
+        <div class="alert-ico">🧠</div>
+        <div><b>Two pointers vs sliding window?</b>Two pointers usually squeeze from OPPOSITE ends (sorted data). Sliding window moves BOTH pointers forward and maintains a running state about what's inside. Say this distinction in interviews — it lands well.</div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>Window type</th></tr>
+        <tr><td>643 · Max Average Subarray</td><td><span class="lc-diff lc-e">EASY</span></td><td>fixed k</td></tr>
+        <tr><td>209 · Min Size Subarray Sum</td><td><span class="lc-diff lc-m">MED</span></td><td>variable, shrink while valid</td></tr>
+        <tr><td>3 · Longest Substr. No Repeats</td><td><span class="lc-diff lc-m">MED</span></td><td>variable + set</td></tr>
+        <tr><td>239 · Sliding Window Maximum</td><td><span class="lc-diff lc-h">HARD</span></td><td>fixed + deque of candidates</td></tr>
+        <tr><td>76 · Minimum Window Substring</td><td><span class="lc-diff lc-h">HARD</span></td><td>variable + char counts</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 06: KADANE ═══ -->
+<div class="sec-bar" id="kadane">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">06</div>
+  <div class="sec-info"><h2>Pattern 4 — Kadane's Algorithm</h2><p>Maximum subarray sum in one pass — the most-asked array question ever</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">At every step: <span class="hl" style="color:var(--rose)">extend or restart</span></h2>
+      <p class="ss">Walking left to right, ask ONE question: "does the past help me, or is it dead weight?"</p>
+      <ul class="bl r">
+        <li><strong>Spot it when:</strong> "maximum/minimum subarray sum", "best contiguous run", "max product subarray" (with a twist).</li>
+        <li><code>best_here = max(x, best_here + x)</code> — if the running sum went negative, carrying it only hurts → restart fresh at x.</li>
+        <li>Track the best <code>best_here</code> ever seen — that's the answer. O(n) time, O(1) space.</li>
+        <li>This is actually 1-D dynamic programming — the full story is on the <a href="dp_complete.html" style="color:var(--cyan)">DP page</a>.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 ro">Kadane in 7 lines (LC 53)</span>
+<pre class="py">def max_subarray(arr):
+    best_here = best = arr[0]
+    for x in arr[1:]:
+        # extend the run, or restart at x?
+        best_here = max(x, best_here + x)
+        best = max(best, best_here)
+    return best
+
+max_subarray([-2, 3, -1, 4, -5])   # 6 → [3,-1,4]</pre></div>
+    </div>
+    <div>
+      <h3 class="r">🎬 Animation — extend or restart, cell by cell</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Row 1 = the array. Row 2 = best sum ENDING here. Watch the decision at every cell — and the winning run light up.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="kadane-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('kadane')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('kadane')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('kadane')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="kadane-cap"></div>
+      </div>
+      <div class="alert ar">
+        <div class="alert-ico">🌪️</div>
+        <div><b>Max PRODUCT twist (LC 152)</b>A negative × negative becomes positive — so track the running MIN too. When you hit a negative number, min and max swap roles. Classic follow-up question.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 07: HASHING ═══ -->
+<div class="sec-bar" id="hashing">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--indigo);">07</div>
+  <div class="sec-info"><h2>Pattern 5 — Hashing (dict &amp; set)</h2><p>Trade a little memory for instant "have I seen this?" answers</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Remember, don't <span class="hl" style="color:var(--indigo)">re-scan</span></h2>
+      <p class="ss">Any time your inner loop only asks "does X exist?" or "how many X?" — a dict/set answers in O(1)</p>
+      <ul class="bl c">
+        <li><strong>Spot it when:</strong> "two sum (unsorted)", "contains duplicate", "frequency / majority element", "intersection of arrays", "longest consecutive sequence".</li>
+        <li>The rewrite recipe: inner loop searching → <strong>set/dict lookup</strong>. O(n²) → O(n) instantly.</li>
+        <li>Cost: O(n) extra memory. Interviewers expect you to SAY this trade-off out loud.</li>
+        <li>On the <a href="python_learn.html#dictset" style="color:var(--cyan)">Python page</a> you saw HOW dicts jump in O(1) — here's where it wins battles.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2">Two Sum, unsorted — THE interview classic (LC 1)</span>
+<pre class="py">def two_sum(arr, target):
+    seen = {}                  # value → index
+    for i, x in enumerate(arr):
+        need = target - x
+        if need in seen:       # O(1) lookup!
+            return (seen[need], i)
+        seen[x] = i
+    return None</pre></div>
+      <div class="cw"><span class="cl2 gr">longest consecutive sequence (LC 128)</span>
+<pre class="py">def longest_streak(arr):
+    s, best = set(arr), 0
+    for x in s:
+        if x - 1 not in s:       # only start
+            y = x                # at streak heads
+            while y + 1 in s:
+                y += 1
+            best = max(best, y - x + 1)
+    return best     # O(n) — each number visited twice max</pre></div>
+    </div>
+    <div>
+      <h3 style="color:var(--indigo);">🎬 Animation — Two Sum with a "seen" dict</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">arr = [8, 3, 15, 2, 7], target = 10. Watch the seen-dict grow below the array — until the partner is already waiting in it.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="tsh-svg"></svg></div>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:.5rem;">seen = </div>
+        <div class="chipstrip" id="tsh-seen"><span style="color:var(--muted);font-size:12px;font-style:italic;">{ } — empty</span></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('tsh')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('tsh')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('tsh')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="tsh-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>What to store</th></tr>
+        <tr><td>217 · Contains Duplicate</td><td><span class="lc-diff lc-e">EASY</span></td><td>set of seen values</td></tr>
+        <tr><td>1 · Two Sum</td><td><span class="lc-diff lc-e">EASY</span></td><td>value → index</td></tr>
+        <tr><td>169 · Majority Element</td><td><span class="lc-diff lc-e">EASY</span></td><td>value → count</td></tr>
+        <tr><td>350 · Intersection of Arrays</td><td><span class="lc-diff lc-e">EASY</span></td><td>counts of smaller array</td></tr>
+        <tr><td>560 · Subarray Sum = K</td><td><span class="lc-diff lc-m">MED</span></td><td>prefix-sum → count</td></tr>
+        <tr><td>128 · Longest Consecutive Seq.</td><td><span class="lc-diff lc-m">MED</span></td><td>set + streak heads</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 08: BINARY SEARCH ═══ -->
+<div class="sec-bar" id="binsearch">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">08</div>
+  <div class="sec-info"><h2>Pattern 6 — Sorting &amp; Binary Search</h2><p>Sorted data is a superpower: discard HALF the array with every question</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Ask the <span class="hl" style="color:var(--green)">middle</span>, throw half away</h2>
+      <p class="ss">1,000,000,000 elements → found in ~30 comparisons. That's log₂(n)</p>
+      <ul class="bl g">
+        <li><strong>Spot it when:</strong> the array is SORTED (or rotated-sorted), or you can ask a yes/no question whose answers form a monotonic ✗✗✗✓✓✓ pattern ("binary search on answer").</li>
+        <li>Compare with the middle: too small → answer lives in the right half; too big → left half. Either way, HALF the field dies.</li>
+        <li>Sorting first costs O(n log n) — worth it if you'll search many times, or if sorted order unlocks two-pointers.</li>
+        <li>The bug factory: use <code>while lo &lt;= hi</code>, and <code>mid = (lo + hi) // 2</code>; move <code>lo = mid + 1</code> / <code>hi = mid − 1</code>. Off-by-ones cause infinite loops!</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 gr">binary search — memorize this exact shape</span>
+<pre class="py">def binary_search(arr, target):   # sorted!
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if arr[mid] == target:
+            return mid
+        if arr[mid] &lt; target:
+            lo = mid + 1     # go right
+        else:
+            hi = mid - 1     # go left
+    return -1</pre></div>
+      <div class="alert ag">
+        <div class="alert-ico">🐍</div>
+        <div><b>Python sorting facts</b><code>arr.sort()</code> = in-place, returns None. <code>sorted(arr)</code> = new list. Both are Timsort, O(n log n), STABLE (equal items keep their order). Sort by anything: <code>arr.sort(key=lambda p: p[1], reverse=True)</code>.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">🎬 Animation — hunting 19 in a sorted array</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;"><span style="color:var(--amber)">mid amber</span> · dead halves fade. Count the comparisons — then imagine the array had a billion cells.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="bsearch-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('bsearch')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('bsearch')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('bsearch')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="bsearch-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>The twist</th></tr>
+        <tr><td>704 · Binary Search</td><td><span class="lc-diff lc-e">EASY</span></td><td>the template above</td></tr>
+        <tr><td>35 · Search Insert Position</td><td><span class="lc-diff lc-e">EASY</span></td><td>return lo at the end</td></tr>
+        <tr><td>75 · Sort Colors</td><td><span class="lc-diff lc-m">MED</span></td><td>Dutch flag: 3 pointers, one pass</td></tr>
+        <tr><td>33 · Search Rotated Array</td><td><span class="lc-diff lc-m">MED</span></td><td>one half is always sorted — find it</td></tr>
+        <tr><td>153 · Min in Rotated Array</td><td><span class="lc-diff lc-m">MED</span></td><td>compare mid with hi</td></tr>
+        <tr><td>4 · Median of Two Sorted</td><td><span class="lc-diff lc-h">HARD</span></td><td>binary search the partition</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 09: MATRIX ═══ -->
+<div class="sec-bar" id="matrix">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--orange);">09</div>
+  <div class="sec-info"><h2>Pattern 7 — 2D Arrays (Matrix)</h2><p>Rows of rows — plus the three walks every interview loves</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">A matrix is a <span class="hl" style="color:var(--orange)">list of lists</span></h2>
+      <p class="ss">m[row][col] — row first, then column. Master the traversals and the rest follows</p>
+      <div class="cw"><span class="cl2 am">create · read · walk</span>
+<pre class="py">m = [[1, 2, 3],
+     [4, 5, 6],
+     [7, 8, 9]]
+m[1][2]          # 6 — row 1, col 2
+
+for row in m:                 # row by row
+    for x in row:
+        print(x, end=" ")
+
+# build n×n of zeros — the RIGHT way
+grid = [[0] * 3 for _ in range(3)]
+# ❌ [[0]*3]*3 → THREE LABELS ON ONE ROW!
+#    changing grid[0][0] changes every row</pre></div>
+      <div class="cw"><span class="cl2 gr">rotate 90° clockwise (LC 48) — the elegant way</span>
+<pre class="py"># step 1: transpose (flip across diagonal)
+for i in range(n):
+    for j in range(i + 1, n):
+        m[i][j], m[j][i] = m[j][i], m[i][j]
+# step 2: reverse each row
+for row in m:
+    row.reverse()
+# transpose + mirror = rotation. Two clean loops,
+# in place, no second matrix.</pre></div>
+      <div class="alert ar">
+        <div class="alert-ico">⚠️</div>
+        <div><b>The aliased-rows trap</b><code>[[0]*n]*n</code> repeats the SAME inner list n times (remember aliasing from the Python page?). Every row changes together. Always use the comprehension form.</div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--orange);">🎬 Animation — spiral traversal (LC 54)</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Peel the matrix like an onion: top row → right column → bottom row backwards → left column up → then the inner ring.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="spiral-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('spiral')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('spiral')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('spiral')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="spiral-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>The walk</th></tr>
+        <tr><td>867 · Transpose Matrix</td><td><span class="lc-diff lc-e">EASY</span></td><td>swap across the diagonal</td></tr>
+        <tr><td>54 · Spiral Matrix</td><td><span class="lc-diff lc-m">MED</span></td><td>4 boundaries shrinking inward</td></tr>
+        <tr><td>48 · Rotate Image</td><td><span class="lc-diff lc-m">MED</span></td><td>transpose + reverse rows</td></tr>
+        <tr><td>73 · Set Matrix Zeroes</td><td><span class="lc-diff lc-m">MED</span></td><td>mark in first row/col, apply later</td></tr>
+        <tr><td>74 · Search 2D Matrix</td><td><span class="lc-diff lc-m">MED</span></td><td>binary search, treat as 1D</td></tr>
+        <tr><td>240 · Search 2D Matrix II</td><td><span class="lc-diff lc-m">MED</span></td><td>start top-right, walk left/down</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 10: MASTER MAP ═══ -->
+<div class="sec-bar" id="master">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">10</div>
+  <div class="sec-info"><h2>The Master Map</h2><p>Read the question → hear the trigger phrase → know the pattern in 30 seconds</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">The <span class="hl">Pattern Map</span> — every array question decoded</h2>
+  <p class="ss">This table is the entire page compressed. Screenshot it. Revise it before every interview.</p>
+  <div class="tw"><table>
+    <tr><th>Trigger phrase in the question</th><th>Pattern</th><th>Complexity</th><th>Taught in</th></tr>
+    <tr><td>"range sum", "subarray sum", "pivot/equilibrium"</td><td><strong style="color:var(--purple)">Prefix Sum</strong></td><td>O(n) build, O(1) query</td><td>§03</td></tr>
+    <tr><td>"sorted + pair/triplet", "palindrome", "in-place remove"</td><td><strong style="color:var(--cyan)">Two Pointers</strong></td><td>O(n)</td><td>§04</td></tr>
+    <tr><td>"subarray of size k", "longest subarray with…"</td><td><strong style="color:var(--amber)">Sliding Window</strong></td><td>O(n)</td><td>§05</td></tr>
+    <tr><td>"maximum subarray sum", "best contiguous run"</td><td><strong style="color:var(--rose)">Kadane</strong></td><td>O(n), O(1) space</td><td>§06</td></tr>
+    <tr><td>"have I seen", "count frequency", "unsorted two sum"</td><td><strong style="color:var(--indigo)">Hashing</strong></td><td>O(n) time + space</td><td>§07</td></tr>
+    <tr><td>"sorted array, find…", "minimum X such that…"</td><td><strong style="color:var(--green)">Binary Search</strong></td><td>O(log n)</td><td>§08</td></tr>
+    <tr><td>"rotate", "spiral", "search a grid"</td><td><strong style="color:var(--orange)">Matrix walks</strong></td><td>O(m·n)</td><td>§09</td></tr>
+    <tr><td>"0s, 1s and 2s", "three groups in place"</td><td><strong style="color:var(--green)">Dutch Flag</strong></td><td>O(n), one pass</td><td>§08</td></tr>
+  </table></div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div class="card gl">
+      <h3 class="g">✅ How to attack ANY array problem</h3>
+      <ul class="bl g" style="margin-top:.4rem;">
+        <li><strong>1.</strong> Say the brute force out loud FIRST ("check every pair, O(n²)") — it's your safety net</li>
+        <li><strong>2.</strong> Find the repeated work the brute force does — that's what a pattern removes</li>
+        <li><strong>3.</strong> Match a trigger phrase to the map above</li>
+        <li><strong>4.</strong> Walk a 5-element example BY HAND before coding</li>
+        <li><strong>5.</strong> Test edge cases: empty array, single element, all same, all negative</li>
+        <li><strong>6.</strong> State time AND space complexity without being asked</li>
+      </ul>
+    </div>
+    <div class="card rl">
+      <h3 class="r">❌ The 5 classic array mistakes</h3>
+      <ul class="bl r" style="margin-top:.4rem;">
+        <li>Off-by-one: <code>range(len(arr))</code> vs <code>range(len(arr)-1)</code> — walk your loop bounds on paper</li>
+        <li>Modifying the list you're iterating — items get skipped silently</li>
+        <li><code>[[0]*n]*n</code> aliased matrix rows (one row, n labels)</li>
+        <li>Forgetting Kadane/two-pointer arrays can be ALL negative — initialize with arr[0], not 0</li>
+        <li>Binary search with <code>while lo &lt; hi</code> + wrong mid updates → infinite loop</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Rapid-fire Interview Q&amp;A</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Why is array access O(1) but search O(n)?</span><span class="qico">+</span></div><div class="qa-a">Access computes the address directly: base + index × element-size — one multiplication regardless of size. Search has no such formula for VALUES: an unsorted array gives no clue where a value hides, so every cell must be checked. Sorting restores structure, enabling O(log n) binary search.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>Array vs linked list — when does each win?</span><span class="qico">+</span></div><div class="qa-a">Array wins at random access O(1) and cache-friendliness (contiguous memory). Linked list wins at insert/delete at a KNOWN position O(1) — no shifting. Array insert/delete is O(n); linked list access is O(n). Rule: read-heavy → array, splice-heavy → linked list.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>How does Python's list grow? Why is append "amortized" O(1)?</span><span class="qico">+</span></div><div class="qa-a">Python over-allocates: when the block fills, it allocates a bigger block (~1.125×) and copies everything — that ONE append is O(n). But it buys many cheap O(1) appends before the next resize, so the average per append stays O(1). That average-over-a-sequence cost is called amortized.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q4</span>Two pointers vs sliding window — what's the actual difference?</span><span class="qico">+</span></div><div class="qa-a">Two pointers usually start at OPPOSITE ends of sorted data and squeeze inward, discarding one element per comparison. Sliding window moves both pointers FORWARD over unsorted data, maintaining running state (sum, counts, a set) about the current contiguous chunk. Window = "contiguous subarray" questions; opposite-end pointers = "pair/triplet in sorted" questions.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q5</span>When can I binary search something that isn't a sorted array?</span><span class="qico">+</span></div><div class="qa-a">Whenever you can define a yes/no check that's monotonic — answers look like ✗✗✗✗✓✓✓. Example: "min ship capacity to deliver in D days" (LC 1011) — if capacity C works, every capacity above C works too. Binary search the smallest ✓. This "binary search on the answer" solves many hard problems.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q6</span>What does "in-place" mean and why do interviewers demand it?</span><span class="qico">+</span></div><div class="qa-a">O(1) extra space — mutate the given array instead of building a copy. It proves you can manage indices carefully (slow/fast pointers, swaps). Examples: move zeroes, rotate image, Dutch flag. Trade-off to mention: in-place often sacrifices readability and destroys the input.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q7</span>Kadane's returned the wrong answer for all-negative arrays. Why?</span><span class="qico">+</span></div><div class="qa-a">Because it was initialized with 0 instead of arr[0]. With best = 0, an all-negative array returns 0 — the sum of an EMPTY subarray, usually not allowed. Initialize both best and best_here to arr[0] and start the loop from index 1. This exact bug is a favorite interviewer probe.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q8</span>Why is Python's sort "stable" and when does it matter?</span><span class="qico">+</span></div><div class="qa-a">Stable = equal elements keep their original relative order. Timsort guarantees it. It matters for multi-key sorting: sort by name first, then by grade — students with equal grades stay alphabetical. You get multi-level sorting just by sorting twice in reverse priority order.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 11: PRACTICE SHEET ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">11</div>
+  <div class="sec-info"><h2>The 42-Problem Practice Sheet</h2><p>Basic → Medium → Hard. Each card names its pattern. Solve in order! ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <h3 class="g" style="margin-bottom:.8rem;">🟢 BASIC — build fingers &amp; confidence (do ALL 12 first)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">traversal</span><h4>Max, Min &amp; Sum</h4><p>One pass, no built-ins.</p><div class="ht">Hint: three variables, one loop</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">traversal</span><h4>1480 · Running Sum</h4><p>Your first prefix array.</p><div class="ht">Hint: each cell += previous</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">traversal</span><h4>485 · Max Consecutive Ones</h4><p>Longest run of 1s.</p><div class="ht">Hint: counter resets on 0</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">two pointers</span><h4>Reverse the Array In-Place</h4><p>No slicing allowed!</p><div class="ht">Hint: swap ends, squeeze</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">traversal</span><h4>Second Largest</h4><p>One pass, handle duplicates.</p><div class="ht">Hint: update (big, second) together</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">traversal</span><h4>Check if Sorted</h4><p>Is arr non-decreasing?</p><div class="ht">Hint: any(a[i] &gt; a[i+1])</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">hashing</span><h4>217 · Contains Duplicate</h4><p>Any repeats?</p><div class="ht">Hint: len(set) vs len(list)</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">math/xor</span><h4>268 · Missing Number</h4><p>0..n with one gap.</p><div class="ht">Hint: expected sum − actual sum</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">hashing</span><h4>136 · Single Number</h4><p>Every number twice, one alone.</p><div class="ht">Hint: XOR everything!</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">two pointers</span><h4>26 · Remove Duplicates (sorted)</h4><p>In place, return new length.</p><div class="ht">Hint: slow writes, fast scans</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">two pointers</span><h4>88 · Merge Sorted Arrays</h4><p>Merge into the bigger one.</p><div class="ht">Hint: fill from the BACK</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">prefix</span><h4>724 · Find Pivot Index</h4><p>Left sum == right sum.</p><div class="ht">Hint: leftsum vs total−left−x</div></div>
+  </div>
+
+  <h3 class="a" style="margin:1.8rem 0 .8rem;">🟡 MEDIUM — where interviews actually live (18)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">hashing</span><h4>1 · Two Sum</h4><p>THE most-asked question on Earth.</p><div class="ht">Hint: seen dict, one pass</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">kadane</span><h4>53 · Maximum Subarray</h4><p>Extend or restart.</p><div class="ht">Hint: §06 animation</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">one pass</span><h4>121 · Best Time to Buy/Sell Stock</h4><p>Track min so far.</p><div class="ht">Hint: profit = price − min_seen</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">prefix</span><h4>238 · Product Except Self</h4><p>No division allowed.</p><div class="ht">Hint: prefix × suffix products</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">prefix+hash</span><h4>560 · Subarray Sum Equals K</h4><p>Count subarrays.</p><div class="ht">Hint: seen[running − k]</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">two pointers</span><h4>15 · 3Sum</h4><p>All unique triplets summing 0.</p><div class="ht">Hint: sort, fix one, squeeze two</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">two pointers</span><h4>11 · Container With Most Water</h4><p>Max area between lines.</p><div class="ht">Hint: move the shorter wall</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">window</span><h4>209 · Min Size Subarray Sum</h4><p>Shortest window ≥ target.</p><div class="ht">Hint: grow right, shrink left</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">dutch flag</span><h4>75 · Sort Colors</h4><p>0s, 1s, 2s in one pass.</p><div class="ht">Hint: low, mid, high pointers</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">reversal</span><h4>189 · Rotate Array by K</h4><p>In place, O(1) space.</p><div class="ht">Hint: reverse all, reverse parts</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">sorting</span><h4>56 · Merge Intervals</h4><p>Overlapping ranges.</p><div class="ht">Hint: sort by start, extend end</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">matrix</span><h4>48 · Rotate Image 90°</h4><p>In place.</p><div class="ht">Hint: transpose + reverse rows</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">matrix</span><h4>54 · Spiral Matrix</h4><p>The onion peel.</p><div class="ht">Hint: 4 shrinking boundaries</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">binary search</span><h4>33 · Search Rotated Array</h4><p>O(log n) required.</p><div class="ht">Hint: one half is always sorted</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">kadane±</span><h4>152 · Max Product Subarray</h4><p>Negatives flip everything.</p><div class="ht">Hint: track max AND min</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">hashing</span><h4>128 · Longest Consecutive Sequence</h4><p>O(n), not O(n log n).</p><div class="ht">Hint: set + only start at streak heads</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">matrix</span><h4>73 · Set Matrix Zeroes</h4><p>O(1) space version.</p><div class="ht">Hint: first row/col as markers</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">cycle</span><h4>287 · Find the Duplicate</h4><p>No modify, O(1) space.</p><div class="ht">Hint: slow/fast like a linked-list cycle</div></div>
+  </div>
+
+  <h3 class="r" style="margin:1.8rem 0 .8rem;">🔴 HARD — boss battles (12)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">two pointers</span><h4>42 · Trapping Rain Water</h4><p>THE hard-array classic.</p><div class="ht">Hint: water = min(maxL, maxR) − height</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">window+deque</span><h4>239 · Sliding Window Maximum</h4><p>Max of every window of k.</p><div class="ht">Hint: deque of falling candidates</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">index trick</span><h4>41 · First Missing Positive</h4><p>O(n) time, O(1) space.</p><div class="ht">Hint: park value v at index v−1</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">binary search</span><h4>4 · Median of Two Sorted Arrays</h4><p>O(log(min(m,n))).</p><div class="ht">Hint: binary search the cut position</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">window+hash</span><h4>76 · Minimum Window Substring</h4><p>Smallest window with all chars.</p><div class="ht">Hint: need/have counts</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">stack</span><h4>84 · Largest Rectangle in Histogram</h4><p>Monotonic stack magic.</p><div class="ht">Hint: pop when a shorter bar arrives</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">binary search</span><h4>154 · Min in Rotated Array II</h4><p>Now with duplicates.</p><div class="ht">Hint: when mid == hi, shrink hi by 1</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">greedy</span><h4>135 · Candy</h4><p>Two-direction ratings.</p><div class="ht">Hint: left pass + right pass, take max</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">merge sort</span><h4>493 · Reverse Pairs</h4><p>Count i&lt;j with a[i] &gt; 2·a[j].</p><div class="ht">Hint: count while merging</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">binary search</span><h4>1011 · Ship Packages in D Days</h4><p>Binary search on the ANSWER.</p><div class="ht">Hint: monotonic ✗✗✓✓ check(capacity)</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">heap/two ptr</span><h4>480 · Sliding Window Median</h4><p>239's evil twin.</p><div class="ht">Hint: two heaps + lazy deletion</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">sweep line</span><h4>218 · The Skyline Problem</h4><p>The final boss.</p><div class="ht">Hint: events + max-heap of heights</div></div>
+  </div>
+
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Completion promise</b>These 42 problems cover every array pattern asked in placements. Do the 12 basics in week 1, six mediums per week after, and one hard per weekend. Then continue the journey: <a href="dsa_learn.html" style="color:var(--cyan)">full DSA course</a> · <a href="dp_complete.html" style="color:var(--cyan)">Dynamic Programming</a> · <a href="python_learn.html" style="color:var(--cyan)">Python Zero to Master</a>. 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Arrays — Zero to Master · For placement preparation</p>
+  <div class="links">
+    <span>🧪 Array Lab</span><span>🎬 9 Step Animations</span><span>🧭 7 Patterns</span><span>📝 42 Problems (Basic/Med/Hard)</span><span>💬 Interview Q&amp;A</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+<script>
+/* ═══════════ PYTHON SYNTAX HIGHLIGHTER ═══════════ */
+const PY_KW = new Set(['def','class','return','if','elif','else','for','while','in','not','and','or','None','True','False','lambda','nonlocal','global','break','continue','import','from','try','except','finally','raise','with','as','yield','pass','del','is']);
+const PY_FN = new Set(['range','len','max','min','sum','set','float','int','str','list','dict','tuple','bool','enumerate','abs','print','sorted','reversed','input','type','zip','map','filter','reverse']);
+document.querySelectorAll('pre.py').forEach(p => {
+  let t = p.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t = t.replace(/(#.*$)|('[^'\n]*'|"[^"\n]*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\d+\.?\d*)/gm, (m, cm, st, w, num) => {
+    if (cm)  return '<span class="cm">' + cm + '</span>';
+    if (st)  return '<span class="st2">' + st + '</span>';
+    if (w){
+      if (PY_KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (PY_FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    }
+    if (num) return '<span class="nm">' + num + '</span>';
+    return m;
+  });
+  p.innerHTML = t;
+});
+
+/* ═══════════ GENERIC STEP-ANIMATION ENGINE (same as DP page) ═══════════ */
+const NS = 'http://www.w3.org/2000/svg';
+const A = {};
+function el(tag, attrs, parent, txt){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (txt !== undefined) e.textContent = txt;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function buildGrid(svgId, cfg){
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const cw = cfg.cw || 50, chh = cfg.ch || 44, gap = 5;
+  const rlw = cfg.rowLabels ? (cfg.rlw || 84) : 10;
+  const clh = cfg.colLabels ? 24 : 10;
+  const W = rlw + cfg.cols * (cw + gap) + 10;
+  const H = clh + cfg.rows * (chh + gap) + 10;
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  if (cfg.colLabels) cfg.colLabels.forEach((L, c) => {
+    el('text', {x: rlw + c*(cw+gap) + cw/2, y: 16, 'text-anchor':'middle', 'font-size':12, fill:'#94A3B8', 'font-family':'Fira Code,monospace', 'font-weight':700}, svg, L);
+  });
+  if (cfg.rowLabels) cfg.rowLabels.forEach((L, r) => {
+    el('text', {x: rlw - 10, y: clh + r*(chh+gap) + chh/2 + 4, 'text-anchor':'end', 'font-size':11.5, fill:'#94A3B8', 'font-family':'Fira Code,monospace', 'font-weight':700}, svg, L);
+  });
+  for (let r = 0; r < cfg.rows; r++) for (let c = 0; c < cfg.cols; c++){
+    el('rect', {id: svgId+'-r-'+r+'-'+c, x: rlw + c*(cw+gap), y: clh + r*(chh+gap), width: cw, height: chh, rx: 7, fill:'#070C18', stroke:'rgba(255,255,255,.14)', 'stroke-width':1.5}, svg);
+    el('text', {id: svgId+'-x-'+r+'-'+c, x: rlw + c*(cw+gap) + cw/2, y: clh + r*(chh+gap) + chh/2 + 5, 'text-anchor':'middle', 'font-size':14, 'font-weight':700, fill:'#475569', 'font-family':'Fira Code,monospace'}, svg);
+  }
+  if (cfg.prefill) cfg.prefill.forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+}
+function setCellV(svgId, r, c, v, col){
+  col = col || '#00D9FF';
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  const txt  = document.getElementById(svgId+'-x-'+r+'-'+c);
+  if (!rect) return;
+  rect.setAttribute('stroke', col);
+  txt.setAttribute('fill', col);
+  txt.textContent = v;
+}
+function hiCell(svgId, r, c, on){
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  if (rect) rect.setAttribute('fill', on ? 'rgba(245,158,11,.16)' : '#070C18');
+}
+function setCap(id, t){ document.getElementById(id+'-cap').textContent = t; }
+function regAnim(id, cfg){ A[id] = {cfg, steps: [], i: 0, timer: null, lastHi: []}; resetAnim(id); }
+function resetAnim(id){
+  const a = A[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  a.i = 0; a.lastHi = [];
+  buildGrid(id + '-svg', a.cfg);
+  a.steps = a.cfg.steps();
+  setCap(id, 'Press ▶ Step or ⏩ Auto to begin');
+}
+function stepAnim(id){
+  const a = A[id], svgId = id + '-svg';
+  if (a.i >= a.steps.length){ setCap(id, '✅ Done! Press ↺ Reset to replay.'); return; }
+  const s = a.steps[a.i++];
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, false));
+  a.lastHi = s.h || [];
+  (s.s || []).forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, true));
+  if (s.f) s.f(svgId);
+  setCap(id, s.c);
+}
+function autoAnim(id){
+  const a = A[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; return; }
+  if (a.i >= a.steps.length) resetAnim(id);
+  stepAnim(id);
+  a.timer = setInterval(() => {
+    stepAnim(id);
+    if (a.i >= a.steps.length){ clearInterval(a.timer); a.timer = null; }
+  }, a.cfg.ms || 1900);
+}
+const C_CY='#00D9FF', C_PU='#A855F7', C_AM='#F59E0B', C_GR='#22C55E', C_RO='#F43F5E', C_MU='#475569', C_WH='#F1F5F9';
+
+/* ═══ 02 · INSERT ═══ */
+regAnim('insert', {
+  rows:1, cols:6, colLabels:['0','1','2','3','4','5'],
+  prefill:[[0,0,'5',C_WH],[0,1,'8',C_WH],[0,2,'12',C_WH],[0,3,'20',C_WH],[0,4,'—',C_MU],[0,5,'—',C_MU]],
+  steps: () => [
+    {h:[[0,2]], c:'Goal: insert 10 at index 2. But 12 lives there! Everyone from index 2 onward must shift right first.'},
+    {s:[[0,4,'20',C_AM],[0,3,'—',C_MU]], h:[[0,4]], c:'Shift #1: 20 moves index 3 → 4. Always start from the RIGHT end — or you overwrite data!'},
+    {s:[[0,3,'12',C_AM],[0,2,'—',C_MU]], h:[[0,3]], c:'Shift #2: 12 moves index 2 → 3. A gap opens at index 2.'},
+    {s:[[0,2,'10',C_GR]], h:[[0,2]], c:'Drop 10 into the gap → [5, 8, 10, 12, 20]. Cost: 2 shifts + 1 write.'},
+    {c:'Insert at the FRONT of n elements = n shifts → O(n). Insert at the END = 0 shifts → O(1). That is why append rules.'}
+  ]
+});
+
+/* ═══ 02 · DELETE ═══ */
+regAnim('delete', {
+  rows:1, cols:5, colLabels:['0','1','2','3','4'],
+  prefill:[[0,0,'5',C_WH],[0,1,'8',C_WH],[0,2,'12',C_WH],[0,3,'20',C_WH],[0,4,'7',C_WH]],
+  steps: () => [
+    {h:[[0,1]], c:'Delete arr[1] — the 8. Arrays cannot have holes, so everything after it must slide left.'},
+    {s:[[0,1,'12',C_AM]], h:[[0,1]], c:'12 slides index 2 → 1, crushing the 8.'},
+    {s:[[0,2,'20',C_AM]], h:[[0,2]], c:'20 slides index 3 → 2.'},
+    {s:[[0,3,'7',C_AM]], h:[[0,3]], c:'7 slides index 4 → 3.'},
+    {s:[[0,4,'—',C_MU]], c:'[5, 12, 20, 7] — one delete cost 3 shifts → O(n). pop() from the END costs zero shifts → O(1).'}
+  ]
+});
+
+/* ═══ 02 · LINEAR SEARCH ═══ */
+regAnim('lsearch', {
+  rows:1, cols:5, colLabels:['0','1','2','3','4'],
+  prefill:[[0,0,'5',C_WH],[0,1,'8',C_WH],[0,2,'12',C_WH],[0,3,'20',C_WH],[0,4,'7',C_WH]],
+  steps: () => [
+    {h:[[0,0]], c:'Searching for 20. Index 0: 5 ≠ 20. (1 comparison)'},
+    {h:[[0,1]], c:'Index 1: 8 ≠ 20. (2 comparisons)'},
+    {h:[[0,2]], c:'Index 2: 12 ≠ 20. (3 comparisons)'},
+    {s:[[0,3,'20',C_GR]], h:[[0,3]], c:'Index 3: 20 == 20 → FOUND after 4 comparisons ✅'},
+    {c:'Worst case (last cell, or missing) checks all n cells → O(n). Section 08 shows how sorted data makes this O(log n).'}
+  ]
+});
+
+/* ═══ 03 · PREFIX SUM ═══ */
+regAnim('prefix', {
+  rows:2, cols:5, colLabels:['0','1','2','3','4'], rowLabels:['arr','prefix'],
+  prefill:[[0,0,'2',C_WH],[0,1,'4',C_WH],[0,2,'1',C_WH],[0,3,'3',C_WH],[0,4,'5',C_WH]],
+  steps: () => [
+    {s:[[1,0,'2',C_PU]], h:[[1,0]], c:'prefix[0] = arr[0] = 2. The base case.'},
+    {s:[[1,1,'6',C_PU]], h:[[1,1]], c:'prefix[1] = prefix[0] + arr[1] = 2 + 4 = 6.'},
+    {s:[[1,2,'7',C_PU]], h:[[1,2]], c:'prefix[2] = 6 + 1 = 7. Each cell reuses the previous — no re-adding.'},
+    {s:[[1,3,'10',C_PU]], h:[[1,3]], c:'prefix[3] = 7 + 3 = 10.'},
+    {s:[[1,4,'15',C_PU]], h:[[1,4]], c:'prefix[4] = 10 + 5 = 15. Build complete — O(n), paid exactly once.'},
+    {h:[[0,1],[0,2],[0,3]], c:'QUERY: sum of indices 1..3? The slow way re-adds 4+1+3 every time…'},
+    {s:[[1,3,'10',C_AM],[1,0,'2',C_AM]], h:[[1,3],[1,0]], c:'The prefix way: prefix[3] − prefix[0] = 10 − 2 = 8 ✅ ONE subtraction — for ANY range, forever.'}
+  ]
+});
+
+/* ═══ 04 · TWO POINTERS ═══ */
+regAnim('twoptr', {
+  rows:1, cols:6, colLabels:['0','1','2','3','4','5'],
+  prefill:[[0,0,'1',C_WH],[0,1,'3',C_WH],[0,2,'4',C_WH],[0,3,'6',C_WH],[0,4,'8',C_WH],[0,5,'11',C_WH]],
+  steps: () => [
+    {s:[[0,0,'1',C_CY],[0,5,'11',C_AM]], h:[[0,0],[0,5]], c:'Target 10. L=0 (1), R=5 (11). Sum = 12 > 10 → only a smaller number helps → move R left.'},
+    {s:[[0,5,'11',C_MU],[0,4,'8',C_AM]], h:[[0,0],[0,4]], c:'11 is discarded FOREVER. Sum = 1 + 8 = 9 < 10 → need bigger → move L right.'},
+    {s:[[0,0,'1',C_MU],[0,1,'3',C_CY]], h:[[0,1],[0,4]], c:'Sum = 3 + 8 = 11 > 10 → move R left.'},
+    {s:[[0,4,'8',C_MU],[0,3,'6',C_AM]], h:[[0,1],[0,3]], c:'Sum = 3 + 6 = 9 < 10 → move L right.'},
+    {s:[[0,1,'3',C_MU],[0,2,'4',C_CY]], h:[[0,2],[0,3]], c:'Sum = 4 + 6 = 10 == target ✅'},
+    {s:[[0,2,'4',C_GR],[0,3,'6',C_GR]], c:'Found in 5 steps — brute force could try 15 pairs. Every comparison safely killed one element: that is the O(n) guarantee.'}
+  ]
+});
+
+/* ═══ 05 · SLIDING WINDOW ═══ */
+regAnim('window', {
+  rows:1, cols:6, colLabels:['0','1','2','3','4','5'],
+  prefill:[[0,0,'2',C_WH],[0,1,'1',C_WH],[0,2,'5',C_WH],[0,3,'1',C_WH],[0,4,'3',C_WH],[0,5,'2',C_WH]],
+  steps: () => [
+    {s:[[0,0,'2',C_AM],[0,1,'1',C_AM],[0,2,'5',C_AM]], h:[[0,0],[0,1],[0,2]], c:'First window [2,1,5] — computed honestly: sum = 8. best = 8.'},
+    {s:[[0,0,'2',C_MU],[0,3,'1',C_AM]], h:[[0,1],[0,2],[0,3]], c:'Slide: −2 leaves, +1 enters → sum = 8 − 2 + 1 = 7. The overlap [1,5] was NOT re-added!'},
+    {s:[[0,1,'1',C_MU],[0,4,'3',C_AM]], h:[[0,2],[0,3],[0,4]], c:'Slide: −1, +3 → sum = 7 − 1 + 3 = 9. New best! 🏆'},
+    {s:[[0,2,'5',C_MU],[0,5,'2',C_AM]], h:[[0,3],[0,4],[0,5]], c:'Slide: −5, +2 → sum = 9 − 5 + 2 = 6. Still remembering best = 9.'},
+    {s:[[0,2,'5',C_GR],[0,3,'1',C_GR],[0,4,'3',C_GR]], c:'Answer: 9, from window [5,1,3]. Each slide is O(1) → total O(n), instead of O(n·k) recomputing.'}
+  ]
+});
+
+/* ═══ 06 · KADANE ═══ */
+regAnim('kadane', {
+  rows:2, cols:5, colLabels:['0','1','2','3','4'], rowLabels:['arr','best here'],
+  prefill:[[0,0,'-2',C_WH],[0,1,'3',C_WH],[0,2,'-1',C_WH],[0,3,'4',C_WH],[0,4,'-5',C_WH]],
+  steps: () => [
+    {s:[[1,0,'-2',C_PU]], h:[[1,0]], c:'Best sum ending at index 0 is just −2. Overall best = −2. (Initialize with arr[0], never 0!)'},
+    {s:[[1,1,'3',C_PU]], h:[[1,1]], c:'At 3: extend (−2+3 = 1) or restart (3)? 3 wins → RESTART. The negative past was dead weight. best = 3.'},
+    {s:[[1,2,'2',C_PU]], h:[[1,2]], c:'At −1: extend (3−1 = 2) or restart (−1)? 2 wins → EXTEND. A small dip is worth carrying. best stays 3.'},
+    {s:[[1,3,'6',C_GR]], h:[[1,3]], c:'At 4: extend (2+4 = 6) or restart (4)? 6 wins → EXTEND. New overall best = 6 🏆'},
+    {s:[[1,4,'1',C_PU]], h:[[1,4]], c:'At −5: extend (6−5 = 1) or restart (−5)? 1 wins. best remains 6.'},
+    {s:[[0,1,'3',C_GR],[0,2,'-1',C_GR],[0,3,'4',C_GR]], c:'Answer: 6 = sum of [3, −1, 4]. One pass, two variables — O(n) time, O(1) space.'}
+  ]
+});
+
+/* ═══ 07 · TWO SUM HASH ═══ */
+function tshChips(entries, hitVal){
+  const host = document.getElementById('tsh-seen');
+  if (!entries.length){ host.innerHTML = '<span style="color:var(--muted);font-size:12px;font-style:italic;">{ } — empty</span>'; return; }
+  host.innerHTML = entries.map(([v, i]) =>
+    '<span class="mchip' + (v === hitVal ? ' hit' : '') + '">' + v + ' : idx ' + i + '</span>').join('');
+}
+regAnim('tsh', {
+  rows:1, cols:5, colLabels:['0','1','2','3','4'],
+  prefill:[[0,0,'8',C_WH],[0,1,'3',C_WH],[0,2,'15',C_WH],[0,3,'2',C_WH],[0,4,'7',C_WH]],
+  steps: () => {
+    tshChips([]);
+    return [
+      {h:[[0,0]], f:() => tshChips([[8,0]]), c:'x = 8: need 10 − 8 = 2. Is 2 in seen? No → store 8. seen = {8: 0}.'},
+      {h:[[0,1]], f:() => tshChips([[8,0],[3,1]]), c:'x = 3: need 7. Not in seen → store 3.'},
+      {h:[[0,2]], f:() => tshChips([[8,0],[3,1],[15,2]]), c:'x = 15: need −5. Not in seen → store 15. (Yes, we store even "useless" numbers — we can\'t know the future.)'},
+      {h:[[0,3]], f:() => tshChips([[8,0],[3,1],[15,2]], 8), c:'x = 2: need 8… and 8 IS in seen, at index 0! ✅ The partner was waiting for us.'},
+      {s:[[0,0,'8',C_GR],[0,3,'2',C_GR]], c:'Answer: indices (0, 3) → 8 + 2 = 10. One pass, each lookup O(1) — no nested loop anywhere. O(n²) → O(n).'}
+    ];
+  }
+});
+
+/* ═══ 08 · BINARY SEARCH ═══ */
+regAnim('bsearch', {
+  rows:1, cols:7, colLabels:['0','1','2','3','4','5','6'], cw:46,
+  prefill:[[0,0,'3',C_WH],[0,1,'7',C_WH],[0,2,'11',C_WH],[0,3,'15',C_WH],[0,4,'19',C_WH],[0,5,'24',C_WH],[0,6,'30',C_WH]],
+  steps: () => [
+    {s:[[0,3,'15',C_AM]], h:[[0,3]], c:'Target 19. lo=0, hi=6 → mid=3. arr[3]=15 < 19 → target must be RIGHT of mid. (comparison 1)'},
+    {s:[[0,0,'3',C_MU],[0,1,'7',C_MU],[0,2,'11',C_MU],[0,3,'15',C_MU]], c:'Indices 0–3 are DEAD. Half the array eliminated by ONE question.'},
+    {s:[[0,5,'24',C_AM]], h:[[0,5]], c:'lo=4, hi=6 → mid=5. arr[5]=24 > 19 → go LEFT. (comparison 2)'},
+    {s:[[0,5,'24',C_MU],[0,6,'30',C_MU]], c:'Indices 5–6 dead. Only index 4 survives.'},
+    {s:[[0,4,'19',C_GR]], h:[[0,4]], c:'lo=4, hi=4 → mid=4. arr[4] = 19 == target ✅ Found in 3 comparisons — linear search needed 5.'},
+    {c:'Doubling the array adds only ONE comparison. n = 1,000,000,000 → ~30 steps. That is the log₂(n) superpower.'}
+  ]
+});
+
+/* ═══ 09 · SPIRAL ═══ */
+regAnim('spiral', {
+  rows:4, cols:4, cw:46,
+  prefill:[[0,0,'1',C_MU],[0,1,'2',C_MU],[0,2,'3',C_MU],[0,3,'4',C_MU],
+           [1,0,'5',C_MU],[1,1,'6',C_MU],[1,2,'7',C_MU],[1,3,'8',C_MU],
+           [2,0,'9',C_MU],[2,1,'10',C_MU],[2,2,'11',C_MU],[2,3,'12',C_MU],
+           [3,0,'13',C_MU],[3,1,'14',C_MU],[3,2,'15',C_MU],[3,3,'16',C_MU]],
+  steps: () => [
+    {s:[[0,0,'1',C_CY],[0,1,'2',C_CY],[0,2,'3',C_CY],[0,3,'4',C_CY]], h:[[0,0],[0,1],[0,2],[0,3]], c:'① Top row, left → right: 1 2 3 4. Then top boundary moves DOWN.'},
+    {s:[[1,3,'8',C_AM],[2,3,'12',C_AM],[3,3,'16',C_AM]], h:[[1,3],[2,3],[3,3]], c:'② Right column, top → bottom: 8 12 16. Right boundary moves LEFT.'},
+    {s:[[3,2,'15',C_GR],[3,1,'14',C_GR],[3,0,'13',C_GR]], h:[[3,2],[3,1],[3,0]], c:'③ Bottom row, right → LEFT: 15 14 13. Bottom boundary moves UP.'},
+    {s:[[2,0,'9',C_RO],[1,0,'5',C_RO]], h:[[2,0],[1,0]], c:'④ Left column, bottom → top: 9 5. Ring 1 complete! All four boundaries have shrunk inward.'},
+    {s:[[1,1,'6',C_CY],[1,2,'7',C_CY]], h:[[1,1],[1,2]], c:'⑤ Ring 2 — inner top: 6 7.'},
+    {s:[[2,2,'11',C_AM],[2,1,'10',C_AM]], h:[[2,2],[2,1]], c:'⑥ Inner bottom, right → left: 11 10. Matrix fully peeled! 🧅'},
+    {c:'Order: 1 2 3 4 · 8 12 16 · 15 14 13 · 9 5 · 6 7 · 11 10. The whole algorithm = four shrinking boundaries (top, right, bottom, left).'}
+  ]
+});
+
+/* ═══════════ ARRAY LAB (00) ═══════════ */
+function runArrLab(){
+  let n = parseInt(document.getElementById('al-n').value, 10);
+  if (isNaN(n)) n = 1000;
+  n = Math.min(Math.max(n, 10), 100000);
+  document.getElementById('al-n').value = n;
+  const brute = n * (n - 1) / 2, hash = n;
+  const x = Math.round(brute / hash);
+  document.getElementById('al-brute').textContent = brute.toLocaleString();
+  document.getElementById('al-hash').textContent = hash.toLocaleString();
+  document.getElementById('al-x').textContent = x.toLocaleString() + '×';
+  const hw = Math.max(1.5, hash / brute * 100);
+  const barB = document.getElementById('al-bar-brute');
+  const barH = document.getElementById('al-bar-hash');
+  barB.style.width = '100%'; barB.textContent = brute.toLocaleString();
+  barH.style.width = hw + '%'; barH.textContent = hash.toLocaleString();
+  const msg = document.getElementById('al-msg');
+  if (n >= 50000) msg.textContent = '😱 At n = ' + n.toLocaleString() + ', brute force does ' + brute.toLocaleString() + ' checks — seconds vs milliseconds. Patterns are not optional.';
+  else if (n >= 5000) msg.textContent = 'The gap grows with n² — double the data, 4× the brute-force pain. The pattern grows linearly.';
+  else msg.textContent = 'Push n to 100000 and watch the brute-force number explode.';
+}
+
+/* ═══════════ ADDRESS LAB (01) ═══════════ */
+const AD_VALS = [12, 7, 25, 3, 18, 42, 9, 31];
+function runAddrLab(){
+  const raw = document.getElementById('ad-i').value.trim();
+  const i = parseInt(raw, 10);
+  const n = AD_VALS.length;
+  const real = (!isNaN(i) && i < 0) ? i + n : i;
+  const ok = !isNaN(i) && real >= 0 && real < n;
+  const wrap = document.getElementById('ad-cells');
+  wrap.innerHTML = '';
+  AD_VALS.forEach((v, k) => {
+    const col = document.createElement('div'); col.className = 'cellcol';
+    const top = document.createElement('div'); top.className = 'cidx'; top.textContent = k;
+    const ch  = document.createElement('div'); ch.className = 'cchar' + (ok && k === real ? ' hit' : ''); ch.textContent = v;
+    const bot = document.createElement('div'); bot.className = 'cidx neg'; bot.textContent = k - n;
+    col.appendChild(top); col.appendChild(ch); col.appendChild(bot);
+    wrap.appendChild(col);
+  });
+  const msg = document.getElementById('ad-msg');
+  if (isNaN(i)) msg.textContent = 'Type an index between -8 and 7.';
+  else if (!ok) msg.textContent = '💥 IndexError: index ' + i + ' out of range — the array has only 8 elements (valid: 0..7 or -1..-8).';
+  else if (i < 0) msg.textContent = 'arr[' + i + '] = arr[' + n + ' ' + i + '] = arr[' + real + '] → address = 1000 + ' + real + ' × 4 = ' + (1000 + real * 4) + ' → value ' + AD_VALS[real] + '. Negative index is just sugar!';
+  else msg.textContent = 'address = 1000 + ' + i + ' × 4 = ' + (1000 + i * 4) + ' → jump straight there → value ' + AD_VALS[i] + '. No walking — that is O(1).';
+}
+
+/* ═══ INIT ═══ */
+runArrLab();
+runAddrLab();
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

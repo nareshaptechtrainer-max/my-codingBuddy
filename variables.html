@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Variables & Data Types — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#060B16;--bg2:#0B1220;--bg3:#0F1829;--glass:rgba(255,255,255,.04);
+  --glass2:rgba(255,255,255,.07);--border:rgba(255,255,255,.08);
+  --green:#22C55E;--cyan:#00D9FF;--blue:#3B82F6;--amber:#F59E0B;
+  --purple:#A855F7;--rose:#F43F5E;--orange:#FB923C;--teal:#14B8A6;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+a{text-decoration:none;color:inherit;}
+code{font-family:'Fira Code','Courier New',monospace;font-size:.85em;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;color:var(--cyan);}
+
+/* ── NAV ── */
+.topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:56px;
+  background:rgba(6,11,22,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;}
+.tnav-back{display:flex;align-items:center;gap:.4rem;font-size:13px;color:var(--slate);
+  padding:.3rem .8rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;}
+.tnav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.tnav-title{font-size:.95rem;font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tnav-badge{margin-left:auto;padding:.3rem .9rem;border-radius:100px;font-size:11px;font-weight:700;
+  background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.25);color:var(--cyan);}
+.tnav-dots{display:flex;gap:.4rem;margin-left:.8rem;}
+.tnav-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s;}
+.tnav-dot.done{background:var(--green);}
+
+/* ── HERO ── */
+.hero{padding:5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,217,255,.08) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;padding:.3rem 1rem;border-radius:100px;
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(0,217,255,.08);border:1px solid rgba(0,217,255,.2);color:var(--cyan);margin-bottom:1.2rem;}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.5;}}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:.7rem;}
+.hero h1 .g{background:linear-gradient(135deg,var(--cyan),var(--blue),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{font-size:15px;color:var(--slate);max-width:560px;margin:0 auto 2rem;line-height:1.75;}
+.hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.pill{padding:.35rem .9rem;border-radius:100px;font-size:12px;font-weight:600;
+  background:var(--glass);border:1px solid var(--border);color:var(--slate);}
+
+/* ── SECTION ── */
+.section{padding:4rem 1.5rem;max-width:1300px;margin:0 auto;}
+.sec-label{display:inline-flex;align-items:center;gap:.4rem;font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.7rem;}
+.sec-title{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem;}
+.sec-sub{font-size:14px;color:var(--slate);line-height:1.7;max-width:600px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1rem 0 3rem;}
+
+/* ── SPLIT ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
+@media(max-width:900px){.split{grid-template-columns:1fr;}}
+.split-l,.split-r{display:flex;flex-direction:column;gap:1rem;}
+
+/* ── CARD ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.card-header{padding:.75rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;font-size:13px;font-weight:700;}
+.card-body{padding:1.25rem;}
+
+/* ── CODE BLOCK ── */
+.cblk{background:#080D18;border:1px solid rgba(255,255,255,.07);border-radius:var(--r);overflow:hidden;}
+.cblk-bar{background:#0B1220;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
+.cbdots{display:flex;gap:.35rem;}
+.cbd{width:10px;height:10px;border-radius:50%;}
+.cbd1{background:#F43F5E;}.cbd2{background:#F59E0B;}.cbd3{background:#22C55E;}
+.cblk-lang{font-size:11px;color:var(--muted);font-family:monospace;margin-left:.3rem;}
+.cblk-copy{margin-left:auto;font-size:11px;color:var(--muted);padding:.2rem .6rem;border-radius:5px;
+  border:1px solid var(--border);background:none;cursor:pointer;transition:all .2s;}
+.cblk-copy:hover{color:var(--white);}
+.cblk-body{padding:1.2rem 1.4rem;overflow-x:auto;}
+.cblk-body pre{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:2;white-space:pre;}
+.ln{display:block;position:relative;padding-left:2.5rem;border-radius:5px;transition:background .25s;}
+.lnum{position:absolute;left:0;width:2rem;text-align:right;color:var(--muted);font-size:11px;user-select:none;}
+.ln.hl{background:rgba(0,217,255,.1);border-left:2px solid var(--cyan);}
+.ln.hl .lnum{color:var(--cyan);}
+/* syntax */
+.kw{color:#A855F7;}.fn{color:#00D9FF;}.str{color:#22C55E;}.num{color:#F59E0B;}
+.cmt{color:#475569;font-style:italic;}.inc{color:#F43F5E;}.tp{color:#FB923C;}
+
+/* ── ANALOGY CARDS ── */
+.analogy-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;}
+.analogy-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.2rem;text-align:center;transition:all .25s;cursor:default;}
+.analogy-card:hover{transform:translateY(-4px);border-color:var(--card-accent);}
+.analogy-icon{font-size:2.5rem;margin-bottom:.8rem;}
+.analogy-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem;}
+.analogy-val{font-size:1.1rem;font-weight:800;color:var(--card-accent);}
+.analogy-type{font-size:11px;color:var(--slate);margin-top:.3rem;}
+
+/* ── MEMORY BOX ── */
+.mem-grid{display:flex;flex-direction:column;gap:1.2rem;}
+.mem-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.mem-label{font-family:monospace;font-size:13px;color:var(--slate);min-width:80px;text-align:right;}
+.mem-box{
+  position:relative;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1.1rem;transition:all .35s;cursor:pointer;
+  border:2px solid;flex-shrink:0;
+}
+.mem-box:hover{transform:scale(1.06);}
+.mem-box .mem-bytes{
+  position:absolute;bottom:-1.4rem;left:50%;transform:translateX(-50%);
+  font-size:10px;color:var(--muted);white-space:nowrap;font-family:monospace;}
+.mem-box .mem-addr{
+  position:absolute;top:-1.3rem;left:0;font-size:9px;color:var(--muted);font-family:monospace;}
+.mem-arrow{color:var(--cyan);font-size:1.2rem;}
+.mem-var{font-family:monospace;font-size:12px;color:var(--white);}
+
+/* ── TYPE COMPARISON ── */
+.type-bars{display:flex;flex-direction:column;gap:.9rem;}
+.type-bar-row{display:flex;align-items:center;gap:.8rem;}
+.type-name{width:70px;font-family:monospace;font-size:12px;font-weight:700;text-align:right;flex-shrink:0;}
+.type-bar-track{flex:1;height:32px;background:rgba(255,255,255,.04);border-radius:8px;position:relative;overflow:hidden;}
+.type-bar-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding:0 .7rem;
+  font-size:11px;font-weight:700;color:#000;white-space:nowrap;transition:width 1s ease;}
+.type-bytes{font-size:11px;color:var(--muted);flex-shrink:0;min-width:55px;}
+
+/* ── EXECUTION STEPPER ── */
+.exec-wrap{background:#080D18;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.exec-controls{padding:.7rem 1rem;background:#0B1220;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.6rem;}
+.exec-btn{padding:.4rem 1rem;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;
+  border:none;transition:all .2s;}
+.exec-run{background:var(--green);color:#000;}
+.exec-run:hover{background:#16A34A;}
+.exec-step{background:var(--glass2);color:var(--white);border:1px solid var(--border);}
+.exec-step:hover{background:rgba(0,217,255,.1);border-color:var(--cyan);color:var(--cyan);}
+.exec-reset{background:var(--glass);color:var(--muted);border:1px solid var(--border);}
+.exec-reset:hover{color:var(--rose);border-color:var(--rose);}
+.exec-status{margin-left:auto;font-size:11px;color:var(--muted);font-family:monospace;}
+.exec-panels{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);}
+@media(max-width:700px){.exec-panels{grid-template-columns:1fr;}}
+.exec-code{padding:1rem 1.2rem;border-right:1px solid var(--border);}
+.exec-code pre{font-family:monospace;font-size:12.5px;line-height:2.1;}
+.exec-mem{padding:1rem 1.2rem;}
+.exec-mem-title{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.exec-var-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;font-size:12px;}
+.exec-var-name{font-family:monospace;color:var(--slate);min-width:60px;}
+.exec-var-box{padding:.25rem .7rem;border-radius:6px;font-family:monospace;font-weight:700;
+  border:1.5px solid;min-width:50px;text-align:center;transition:all .35s;}
+.exec-var-box.updated{animation:flash .4s ease;}
+@keyframes flash{0%,100%{opacity:1;}50%{opacity:.3;}}
+.exec-var-type{font-size:10px;color:var(--muted);}
+.exec-output-area{border-top:1px solid var(--border);padding:.7rem 1.2rem;font-family:monospace;font-size:12px;color:var(--green);min-height:40px;}
+.exec-out-label{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;}
+
+/* ── LOGIC BUILDER ── */
+.logic-card{background:linear-gradient(135deg,rgba(0,217,255,.04),rgba(168,85,247,.04));
+  border:1px solid rgba(0,217,255,.15);border-radius:var(--r);overflow:hidden;}
+.logic-question{padding:1.5rem;border-bottom:1px solid var(--border);}
+.lq-label{font-size:10px;color:var(--amber);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+.lq-text{font-size:1rem;font-weight:700;line-height:1.5;margin-bottom:1rem;}
+.think-steps{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem;}
+.think-step{display:flex;align-items:flex-start;gap:.7rem;padding:.6rem .9rem;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;font-size:13px;color:var(--slate);}
+.think-step .ts-num{width:22px;height:22px;border-radius:50%;background:rgba(245,158,11,.15);
+  color:var(--amber);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.reveal-btn{padding:.55rem 1.4rem;border-radius:8px;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;border:none;cursor:pointer;
+  transition:all .2s;}
+.reveal-btn:hover{transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,217,255,.3);}
+.logic-answer{padding:1.5rem;display:none;}
+.logic-answer.show{display:block;}
+
+/* ── ROADMAP ── */
+.roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;}
+.rm-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;text-align:center;transition:all .25s;position:relative;overflow:hidden;}
+.rm-item::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s;
+  background:linear-gradient(135deg,rgba(0,217,255,.06),rgba(168,85,247,.06));}
+.rm-item:hover::before{opacity:1;}
+.rm-item:hover{transform:translateY(-3px);border-color:rgba(0,217,255,.25);}
+.rm-icon{font-size:1.6rem;margin-bottom:.5rem;}
+.rm-name{font-size:12px;font-weight:700;margin-bottom:.2rem;}
+.rm-desc{font-size:11px;color:var(--slate);}
+.rm-check{position:absolute;top:.5rem;right:.5rem;color:var(--green);font-size:.8rem;}
+
+/* ── MISTAKE CARD ── */
+.mistake-pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media(max-width:700px){.mistake-pair{grid-template-columns:1fr;}}
+.mistake-box{border-radius:var(--r);overflow:hidden;}
+.mistake-box .mb-head{padding:.5rem 1rem;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.mistake-box.wrong .mb-head{background:rgba(244,63,94,.12);color:var(--rose);border-bottom:1px solid rgba(244,63,94,.2);}
+.mistake-box.right .mb-head{background:rgba(34,197,94,.1);color:var(--green);border-bottom:1px solid rgba(34,197,94,.2);}
+.mistake-box.wrong{border:1px solid rgba(244,63,94,.2);}
+.mistake-box.right{border:1px solid rgba(34,197,94,.2);}
+.mistake-box .mb-body{padding:.9rem 1rem;background:#080D18;}
+.mistake-box pre{font-family:monospace;font-size:12px;line-height:1.9;color:var(--slate);}
+.mistake-why{margin-top:.6rem;font-size:12px;color:var(--slate);line-height:1.6;padding:0 1rem .8rem;}
+
+/* ── PRACTICE ── */
+.practice-list{display:flex;flex-direction:column;gap:1.2rem;}
+.prac-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.prac-head{padding:.75rem 1.2rem;display:flex;align-items:center;gap:.7rem;cursor:pointer;
+  background:var(--bg3);transition:background .2s;}
+.prac-head:hover{background:rgba(0,217,255,.04);}
+.prac-num{width:28px;height:28px;border-radius:50%;background:rgba(0,217,255,.1);
+  border:1px solid rgba(0,217,255,.25);color:var(--cyan);font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prac-q{font-size:13.5px;font-weight:600;flex:1;}
+.prac-toggle{font-size:.9rem;color:var(--muted);transition:transform .25s;}
+.prac-card.open .prac-toggle{transform:rotate(180deg);}
+.prac-body{display:none;padding:1.2rem;border-top:1px solid var(--border);}
+.prac-card.open .prac-body{display:block;}
+.prac-section{margin-bottom:.9rem;}
+.prac-sec-label{font-size:10px;color:var(--amber);font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:.4rem;}
+
+/* ── INTERVIEW ── */
+.interview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;}
+.iq-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem;}
+.iq-q{font-size:13.5px;font-weight:700;margin-bottom:.7rem;color:var(--white);}
+.iq-chain{display:flex;flex-direction:column;gap:.35rem;}
+.iq-step{display:flex;align-items:flex-start;gap:.6rem;font-size:12.5px;color:var(--slate);line-height:1.6;}
+.iq-step .iq-icon{flex-shrink:0;margin-top:1px;}
+
+/* ── LOGIC RULES ── */
+.rules-card{
+  background:linear-gradient(135deg,rgba(0,217,255,.06),rgba(168,85,247,.06),rgba(245,158,11,.04));
+  border:1px solid rgba(0,217,255,.2);border-radius:20px;padding:2.5rem;text-align:center;
+  position:relative;overflow:hidden;
+}
+.rules-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(0,217,255,.03) 25%,transparent 50%);
+  animation:spin 8s linear infinite;pointer-events:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.rules-crown{font-size:2.5rem;margin-bottom:.8rem;}
+.rules-title{font-size:1.4rem;font-weight:800;margin-bottom:.3rem;
+  background:linear-gradient(135deg,var(--cyan),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.rules-sub{font-size:13px;color:var(--slate);margin-bottom:2rem;}
+.rules-list{display:flex;flex-direction:column;gap:.7rem;max-width:500px;margin:0 auto 2rem;text-align:left;}
+.rule-item{display:flex;align-items:flex-start;gap:.9rem;padding:.75rem 1rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;}
+.rule-num{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;}
+.rule-text{font-size:13.5px;color:var(--white);line-height:1.5;}
+.rule-text span{color:var(--cyan);}
+.rules-promise{font-size:13px;color:var(--green);font-style:italic;
+  background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);
+  border-radius:10px;padding:.75rem 1.2rem;display:inline-block;}
+
+/* ── MISC ── */
+.info-row{display:flex;gap:.6rem;align-items:flex-start;padding:.8rem 1rem;border-radius:10px;font-size:13px;}
+.info-row.info{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.12);}
+.info-row.tip{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.12);}
+.info-row.warn{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.12);}
+.info-row .ir-icon{flex-shrink:0;}
+.info-row p{color:var(--slate);line-height:1.7;}
+.info-row p strong{color:var(--white);}
+
+table.dt{width:100%;border-collapse:collapse;font-size:13px;}
+table.dt th{background:rgba(0,217,255,.07);color:var(--cyan);padding:.55rem .9rem;text-align:left;
+  font-size:10px;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid rgba(0,217,255,.15);}
+table.dt td{padding:.55rem .9rem;border-bottom:1px solid var(--border);color:var(--slate);vertical-align:middle;}
+table.dt td:first-child{font-family:monospace;font-size:12px;color:var(--white);font-weight:700;}
+table.dt tr:last-child td{border-bottom:none;}
+table.dt tr:hover td{background:rgba(255,255,255,.02);}
+
+.tag-pill{display:inline-block;padding:.15rem .6rem;border-radius:100px;font-size:10px;font-weight:700;}
+
+/* section number badge */
+.sec-num{display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:50%;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;flex-shrink:0;}
+.sec-heading{display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem;}
+.sec-heading h2{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<div class="topnav">
+  <a href="c_learn.html" class="tnav-back">← C Topics</a>
+  <span class="tnav-title">CoddingBuddY</span>
+  <span class="tnav-badge">Topic 02 · Variables &amp; Data Types</span>
+</div>
+
+<!-- ══ HERO ══ -->
+<div class="hero" style="padding-top:5.5rem;">
+  <div class="hero-tag"><div class="dot"></div> Topic 02 of 10</div>
+  <h1>Variables &amp; <span class="g">Data Types</span> in C</h1>
+  <p class="hero-sub">Don't just memorize syntax. Understand WHY a variable exists, HOW memory stores it, and WHEN to choose the right type.</p>
+  <div class="hero-pills">
+    <span class="pill">🎓 BTech Students</span>
+    <span class="pill">🚀 Placement Aspirants</span>
+    <span class="pill">🧠 Logic Builders</span>
+    <span class="pill">💡 Absolute Beginners</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 1 · CONCEPT + REAL-LIFE ANALOGY
+══════════════════════════════════════════ -->
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">1</div>
+    <h2>What is a Variable? <span style="color:var(--cyan)">The Real Idea</span></h2>
+  </div>
+
+  <div class="split">
+    <div class="split-l">
+      <div class="card">
+        <div class="card-header" style="color:var(--cyan);">💡 Concept (2 sentences)</div>
+        <div class="card-body">
+          <p style="font-size:15px;line-height:1.9;color:var(--slate);">A <strong style="color:var(--white)">variable</strong> is a <strong style="color:var(--cyan)">named box in memory</strong> that stores a value so you can use it later. You give it a name, tell C what type of data it will hold, and C reserves the right amount of memory for it.</p>
+          <div class="info-row info" style="margin-top:1rem;">
+            <span class="ir-icon">📌</span>
+            <p><strong>The rule:</strong> Every variable needs a <strong>type</strong> (what kind of data), a <strong>name</strong> (what to call it), and a <strong>value</strong> (what to put inside).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syntax card -->
+      <div class="cblk">
+        <div class="cblk-bar">
+          <div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div>
+          <span class="cblk-lang">Syntax</span>
+        </div>
+        <div class="cblk-body"><pre>
+<span class="cmt">// type  name  =  value;</span>
+<span class="tp">int</span>    <span class="fn">age</span>  =  <span class="num">20</span>;
+
+<span class="cmt">// Multiple variables</span>
+<span class="tp">float</span>  <span class="fn">gpa</span>    = <span class="num">8.5</span>;
+<span class="tp">char</span>   <span class="fn">grade</span>  = <span class="str">'A'</span>;
+
+<span class="cmt">// Declare first, assign later</span>
+<span class="tp">int</span> <span class="fn">marks</span>;
+<span class="fn">marks</span> = <span class="num">95</span>;
+</pre></div>
+      </div>
+    </div>
+
+    <div class="split-r">
+      <!-- Real-Life Analogy -->
+      <div class="card">
+        <div class="card-header" style="color:var(--amber);">🌍 Real-Life Analogy — Student Profile</div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--slate);margin-bottom:1.2rem;line-height:1.7;">Think of a student's profile form. Each field is a <strong style="color:var(--white)">variable</strong> — it has a label (name), accepts a certain kind of data (type), and holds a value.</p>
+          <div class="analogy-row">
+            <div class="analogy-card" style="--card-accent:var(--cyan);">
+              <div class="analogy-icon">👤</div>
+              <div class="analogy-label">char name[50]</div>
+              <div class="analogy-val" style="font-size:.85rem;">"Naresh G."</div>
+              <div class="analogy-type">Text → char array</div>
+            </div>
+            <div class="analogy-card" style="--card-accent:var(--green);">
+              <div class="analogy-icon">🎂</div>
+              <div class="analogy-label">int age</div>
+              <div class="analogy-val">20</div>
+              <div class="analogy-type">Whole number → int</div>
+            </div>
+            <div class="analogy-card" style="--card-accent:var(--amber);">
+              <div class="analogy-icon">📊</div>
+              <div class="analogy-label">float cgpa</div>
+              <div class="analogy-val">8.7</div>
+              <div class="analogy-type">Decimal → float</div>
+            </div>
+            <div class="analogy-card" style="--card-accent:var(--purple);">
+              <div class="analogy-icon">🏅</div>
+              <div class="analogy-label">char grade</div>
+              <div class="analogy-val">'A'</div>
+              <div class="analogy-type">Single letter → char</div>
+            </div>
+          </div>
+          <div class="info-row tip" style="margin-top:1rem;">
+            <span class="ir-icon">✅</span>
+            <p>Just like you can't put a name in an "age" box, C won't let you store text in an <code>int</code>. The <strong>type</strong> defines what goes inside.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 2 · MEMORY VISUALIZER
+══════════════════════════════════════════ -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">2</div>
+    <h2>How Memory <span style="color:var(--green)">Actually Stores</span> Your Variable</h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:2rem;line-height:1.75;">
+    When you write <code>int age = 20;</code>, C goes to RAM, picks 4 empty bytes, writes <strong style="color:var(--white)">20</strong> in binary there, and sticks a label <strong style="color:var(--cyan)">"age"</strong> on that location. Click any variable below to see its memory layout.
+  </p>
+
+  <div class="split">
+    <div class="split-l">
+      <!-- Interactive memory selector -->
+      <div class="card">
+        <div class="card-header" style="color:var(--green);">🧠 Click a variable to visualize</div>
+        <div class="card-body">
+          <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem;">
+            <button class="exec-btn exec-run" onclick="showMem('int')" style="background:var(--green);">int age = 20</button>
+            <button class="exec-btn exec-step" onclick="showMem('float')">float gpa = 8.5</button>
+            <button class="exec-btn exec-step" onclick="showMem('char')">char grade = 'A'</button>
+            <button class="exec-btn exec-step" onclick="showMem('double')">double pi = 3.14</button>
+          </div>
+
+          <div id="mem-visual" style="min-height:180px;">
+            <!-- filled by JS -->
+            <div style="text-align:center;color:var(--muted);padding:2rem;font-size:13px;">👆 Click a variable above</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Type size comparison -->
+      <div class="card">
+        <div class="card-header" style="color:var(--purple);">📏 Memory Size Comparison</div>
+        <div class="card-body">
+          <div class="type-bars">
+            <div class="type-bar-row">
+              <span class="type-name" style="color:var(--cyan);">char</span>
+              <div class="type-bar-track"><div class="type-bar-fill" style="width:12.5%;background:var(--cyan);">1B</div></div>
+              <span class="type-bytes">1 byte</span>
+            </div>
+            <div class="type-bar-row">
+              <span class="type-name" style="color:var(--green);">int</span>
+              <div class="type-bar-track"><div class="type-bar-fill" style="width:50%;background:var(--green);">4 bytes</div></div>
+              <span class="type-bytes">4 bytes</span>
+            </div>
+            <div class="type-bar-row">
+              <span class="type-name" style="color:var(--amber);">float</span>
+              <div class="type-bar-track"><div class="type-bar-fill" style="width:50%;background:var(--amber);">4 bytes</div></div>
+              <span class="type-bytes">4 bytes</span>
+            </div>
+            <div class="type-bar-row">
+              <span class="type-name" style="color:var(--purple);">double</span>
+              <div class="type-bar-track"><div class="type-bar-fill" style="width:100%;background:var(--purple);">8 bytes</div></div>
+              <span class="type-bytes">8 bytes</span>
+            </div>
+            <div class="type-bar-row">
+              <span class="type-name" style="color:var(--orange);">long</span>
+              <div class="type-bar-track"><div class="type-bar-fill" style="width:100%;background:var(--orange);">8 bytes</div></div>
+              <span class="type-bytes">8 bytes</span>
+            </div>
+          </div>
+          <div class="info-row warn" style="margin-top:1rem;">
+            <span class="ir-icon">⚠️</span>
+            <p><strong>More bytes = bigger range.</strong> <code>char</code> can only hold values −128 to 127. <code>int</code> holds up to ±2 billion. Choose the type that fits your data — don't waste memory.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-r">
+      <!-- Data Types Reference -->
+      <div class="card">
+        <div class="card-header" style="color:var(--cyan);">📋 All Data Types at a Glance</div>
+        <div class="card-body" style="padding:.5rem;">
+          <table class="dt">
+            <tr><th>Type</th><th>Size</th><th>Range</th><th>Use For</th><th>Format</th></tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(0,217,255,.1);color:var(--cyan);">char</span></td>
+              <td>1 byte</td><td style="font-size:11px;">−128 to 127</td><td>Single character, small int</td><td><code>%c</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(34,197,94,.1);color:var(--green);">int</span></td>
+              <td>4 bytes</td><td style="font-size:11px;">±2.1 billion</td><td>Whole numbers (most common)</td><td><code>%d</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(245,158,11,.1);color:var(--amber);">float</span></td>
+              <td>4 bytes</td><td style="font-size:11px;">6–7 decimals</td><td>Decimal numbers</td><td><code>%f</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(168,85,247,.1);color:var(--purple);">double</span></td>
+              <td>8 bytes</td><td style="font-size:11px;">15–16 decimals</td><td>High-precision decimals</td><td><code>%lf</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(251,146,60,.1);color:var(--orange);">long</span></td>
+              <td>8 bytes</td><td style="font-size:11px;">Very large int</td><td>Big numbers (population, etc.)</td><td><code>%ld</code></td>
+            </tr>
+            <tr>
+              <td><span class="tag-pill" style="background:rgba(20,184,166,.1);color:var(--teal);">short</span></td>
+              <td>2 bytes</td><td style="font-size:11px;">−32768 to 32767</td><td>Small numbers (save memory)</td><td><code>%hd</code></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Format specifier visual -->
+      <div class="card">
+        <div class="card-header" style="color:var(--amber);">🔡 Format Specifiers — The Secret Code</div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--slate);margin-bottom:1rem;line-height:1.7;">When using <code>printf</code> or <code>scanf</code>, you must tell C <strong>what type</strong> the variable is using a format specifier. Wrong specifier = garbage output or crash.</p>
+          <div class="cblk" style="margin:0;">
+            <div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">Format Specifiers in Action</span></div>
+            <div class="cblk-body"><pre>
+<span class="tp">int</span>    age   = <span class="num">20</span>;
+<span class="tp">float</span>  gpa   = <span class="num">8.5</span>;
+<span class="tp">char</span>   grade = <span class="str">'A'</span>;
+<span class="tp">double</span> pi    = <span class="num">3.14159</span>;
+
+<span class="fn">printf</span>(<span class="str">"Age:   %d\n"</span>,  age);    <span class="cmt">// int</span>
+<span class="fn">printf</span>(<span class="str">"GPA:   %f\n"</span>,  gpa);    <span class="cmt">// float</span>
+<span class="fn">printf</span>(<span class="str">"GPA:   %.2f\n"</span>,gpa);    <span class="cmt">// 2 decimals</span>
+<span class="fn">printf</span>(<span class="str">"Grade: %c\n"</span>,  grade);  <span class="cmt">// char</span>
+<span class="fn">printf</span>(<span class="str">"Pi:    %lf\n"</span>, pi);     <span class="cmt">// double</span>
+</pre></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 3 · EXECUTION ANIMATION
+══════════════════════════════════════════ -->
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">3</div>
+    <h2>Watch Code <span style="color:var(--amber)">Execute</span> Line by Line</h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">Step through the program. Watch the memory boxes update and output appear in real time.</p>
+
+  <div class="exec-wrap">
+    <div class="exec-controls">
+      <button class="exec-btn exec-run" onclick="execRun()">▶ Run All</button>
+      <button class="exec-btn exec-step" onclick="execStep()">⏭ Next Step</button>
+      <button class="exec-btn exec-reset" onclick="execReset()">↺ Reset</button>
+      <span class="exec-status" id="exec-status">Ready — press Run or Step</span>
+    </div>
+    <div class="exec-panels">
+      <!-- Code side -->
+      <div class="exec-code">
+        <pre id="exec-code-display">
+<span class="ln" id="el0"><span class="lnum">1</span><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span></span>
+<span class="ln" id="el1"><span class="lnum">2</span></span>
+<span class="ln" id="el2"><span class="lnum">3</span><span class="kw">int</span> <span class="fn">main</span>() {</span>
+<span class="ln" id="el3"><span class="lnum">4</span>  <span class="tp">int</span>   <span class="fn">age</span>   = <span class="num">20</span>;</span>
+<span class="ln" id="el4"><span class="lnum">5</span>  <span class="tp">float</span> <span class="fn">gpa</span>   = <span class="num">8.5</span>;</span>
+<span class="ln" id="el5"><span class="lnum">6</span>  <span class="tp">char</span>  <span class="fn">grade</span> = <span class="str">'A'</span>;</span>
+<span class="ln" id="el6"><span class="lnum">7</span></span>
+<span class="ln" id="el7"><span class="lnum">8</span>  age = <span class="num">21</span>; <span class="cmt">// update</span></span>
+<span class="ln" id="el8"><span class="lnum">9</span></span>
+<span class="ln" id="el9"><span class="lnum">10</span>  <span class="fn">printf</span>(<span class="str">"Age:   %d\n"</span>, age);</span>
+<span class="ln" id="el10"><span class="lnum">11</span>  <span class="fn">printf</span>(<span class="str">"GPA:   %.1f\n"</span>,gpa);</span>
+<span class="ln" id="el11"><span class="lnum">12</span>  <span class="fn">printf</span>(<span class="str">"Grade: %c\n"</span>, grade);</span>
+<span class="ln" id="el12"><span class="lnum">13</span>  <span class="kw">return</span> <span class="num">0</span>;</span>
+<span class="ln" id="el13"><span class="lnum">14</span>}</span>
+        </pre>
+      </div>
+      <!-- Memory side -->
+      <div class="exec-mem">
+        <div class="exec-mem-title">📦 Memory State</div>
+        <div id="exec-vars">
+          <div style="color:var(--muted);font-size:12px;font-family:monospace;">No variables yet...</div>
+        </div>
+        <div class="exec-output-area" id="exec-output-area">
+          <div class="exec-out-label">Output</div>
+          <div id="exec-output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 4 · LOGIC BUILDER
+══════════════════════════════════════════ -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">4</div>
+    <h2>Logic Builder — <span style="color:var(--amber)">Think Before You Code</span></h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">Don't start coding immediately. Answer these questions first. This is how real programmers think.</p>
+
+  <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+    <!-- Problem 1 -->
+    <div class="logic-card">
+      <div class="logic-question">
+        <div class="lq-label">🧩 Problem 1</div>
+        <div class="lq-text">Store a student's name, age, and percentage — then print all three.</div>
+        <div class="think-steps">
+          <div class="think-step"><div class="ts-num">1</div><span>What <strong style="color:var(--white)">information</strong> do I need to store? → name, age, percentage</span></div>
+          <div class="think-step"><div class="ts-num">2</div><span>What <strong style="color:var(--white)">data type</strong> for each? → name: text, age: whole number, percentage: decimal</span></div>
+          <div class="think-step"><div class="ts-num">3</div><span>Which type maps to which? → name: <code>char[]</code>, age: <code>int</code>, percentage: <code>float</code></span></div>
+          <div class="think-step"><div class="ts-num">4</div><span>What <strong style="color:var(--white)">format specifier</strong> for each? → <code>%s</code>, <code>%d</code>, <code>%.2f</code></span></div>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r1',this)">👁 Reveal Solution</button>
+      </div>
+      <div class="logic-answer" id="r1">
+        <div class="cblk">
+          <div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">Solution</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="tp">char</span>  name[<span class="num">50</span>] = <span class="str">"Ravi Kumar"</span>;
+    <span class="tp">int</span>   age      = <span class="num">20</span>;
+    <span class="tp">float</span> percent  = <span class="num">87.5</span>;
+
+    <span class="fn">printf</span>(<span class="str">"Name:       %s\n"</span>,    name);
+    <span class="fn">printf</span>(<span class="str">"Age:        %d\n"</span>,    age);
+    <span class="fn">printf</span>(<span class="str">"Percentage: %.2f%%\n"</span>, percent);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+        <div style="margin-top:.8rem;padding:.8rem;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.12);border-radius:10px;font-size:12.5px;color:var(--slate);line-height:1.75;">
+          <strong style="color:var(--green);">Output:</strong><br/>
+          <code style="color:var(--green);display:block;margin-top:.4rem;">Name:       Ravi Kumar<br/>Age:        20<br/>Percentage: 87.50%</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem 2 -->
+    <div class="logic-card">
+      <div class="logic-question">
+        <div class="lq-label">🧩 Problem 2</div>
+        <div class="lq-text">Calculate the total price: 5 items at ₹49.99 each. Store and print the result.</div>
+        <div class="think-steps">
+          <div class="think-step"><div class="ts-num">1</div><span>What variables? → quantity (whole number), price per item (decimal), total (decimal)</span></div>
+          <div class="think-step"><div class="ts-num">2</div><span>Types? → <code>int</code> quantity, <code>float</code> price, <code>float</code> total</span></div>
+          <div class="think-step"><div class="ts-num">3</div><span>Operation? → total = quantity × price</span></div>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r2',this)">👁 Reveal Solution</button>
+      </div>
+      <div class="logic-answer" id="r2">
+        <div class="cblk">
+          <div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">Solution</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span>   qty   = <span class="num">5</span>;
+    <span class="tp">float</span> price = <span class="num">49.99</span>;
+    <span class="tp">float</span> total = qty * price;
+
+    <span class="fn">printf</span>(<span class="str">"Quantity: %d\n"</span>,     qty);
+    <span class="fn">printf</span>(<span class="str">"Price:    %.2f\n"</span>,   price);
+    <span class="fn">printf</span>(<span class="str">"Total:    %.2f\n"</span>,   total);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 5 · FUTURE CONNECTIONS
+══════════════════════════════════════════ -->
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">5</div>
+    <h2>Variables are Everywhere — <span style="color:var(--green)">Future Connections</span></h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">Every topic you learn after this USES variables. Understanding them deeply now means every future topic clicks faster.</p>
+
+  <div class="roadmap-grid">
+    <div class="rm-item"><div class="rm-check">✓ Now</div><div class="rm-icon">📦</div><div class="rm-name">Variables</div><div class="rm-desc">Store values</div></div>
+    <div class="rm-item"><div class="rm-icon">⚖️</div><div class="rm-name">Conditions</div><div class="rm-desc"><code>if (age &gt; 18)</code></div></div>
+    <div class="rm-item"><div class="rm-icon">🔁</div><div class="rm-name">Loops</div><div class="rm-desc"><code>for(i=0; i&lt;n; i++)</code></div></div>
+    <div class="rm-item"><div class="rm-icon">📋</div><div class="rm-name">Arrays</div><div class="rm-desc"><code>int marks[10]</code></div></div>
+    <div class="rm-item"><div class="rm-icon">⚙️</div><div class="rm-name">Functions</div><div class="rm-desc">Pass variables as arguments</div></div>
+    <div class="rm-item"><div class="rm-icon">📍</div><div class="rm-name">Pointers</div><div class="rm-desc">Point to variable's address</div></div>
+    <div class="rm-item"><div class="rm-icon">🧱</div><div class="rm-name">Structures</div><div class="rm-desc">Group variables together</div></div>
+    <div class="rm-item"><div class="rm-icon">🌳</div><div class="rm-name">DSA</div><div class="rm-desc">Nodes, counters, flags</div></div>
+    <div class="rm-item"><div class="rm-icon">🎯</div><div class="rm-name">Interviews</div><div class="rm-desc">Every question uses them</div></div>
+  </div>
+
+  <!-- Mini connections code -->
+  <div class="cblk" style="margin-top:1.5rem;">
+    <div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">Variables appear everywhere — preview</span></div>
+    <div class="cblk-body"><pre>
+<span class="tp">int</span> age = <span class="num">20</span>;
+
+<span class="cmt">// In conditions</span>
+<span class="kw">if</span> (age &gt;= <span class="num">18</span>) <span class="fn">printf</span>(<span class="str">"Adult\n"</span>);
+
+<span class="cmt">// In loops</span>
+<span class="kw">for</span> (<span class="tp">int</span> i = <span class="num">0</span>; i &lt; age; i++) { ... }
+
+<span class="cmt">// In arrays</span>
+<span class="tp">int</span> marks[age];   <span class="cmt">// age defines size</span>
+
+<span class="cmt">// In functions</span>
+<span class="fn">checkAge</span>(age);    <span class="cmt">// passed as argument</span>
+
+<span class="cmt">// In pointers</span>
+<span class="tp">int</span> *p = &amp;age;    <span class="cmt">// pointer to age</span>
+</pre></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 6 · COMMON MISTAKES
+══════════════════════════════════════════ -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">6</div>
+    <h2>Common Mistakes — <span style="color:var(--rose)">What Goes Wrong</span></h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">These mistakes are made by 90% of beginners. Seeing them now means you won't make them.</p>
+
+  <div style="display:flex;flex-direction:column;gap:2rem;">
+
+    <!-- Mistake 1 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:.75rem;color:var(--rose);">❌ Mistake 1 — Wrong format specifier</div>
+      <div class="mistake-pair">
+        <div class="mistake-box wrong">
+          <div class="mb-head">✗ Wrong</div>
+          <div class="mb-body"><pre><span class="tp">float</span> gpa = <span class="num">8.5</span>;
+<span class="fn">printf</span>(<span class="str">"%d"</span>, gpa); <span class="cmt">// WRONG!</span></pre></div>
+        </div>
+        <div class="mistake-box right">
+          <div class="mb-head">✓ Correct</div>
+          <div class="mb-body"><pre><span class="tp">float</span> gpa = <span class="num">8.5</span>;
+<span class="fn">printf</span>(<span class="str">"%f"</span>, gpa); <span class="cmt">// Correct</span></pre></div>
+        </div>
+      </div>
+      <div class="mistake-why">💡 <strong>Why it's wrong:</strong> <code>%d</code> reads data as integer bits. A float stored as bits looks like a completely different number. You'll see garbage like <code>−858993460</code> instead of <code>8.5</code>.</div>
+    </div>
+
+    <!-- Mistake 2 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:.75rem;color:var(--rose);">❌ Mistake 2 — Using variable before declaring</div>
+      <div class="mistake-pair">
+        <div class="mistake-box wrong">
+          <div class="mb-head">✗ Wrong</div>
+          <div class="mb-body"><pre>age = <span class="num">20</span>;         <span class="cmt">// Error!</span>
+<span class="tp">int</span> age;</pre></div>
+        </div>
+        <div class="mistake-box right">
+          <div class="mb-head">✓ Correct</div>
+          <div class="mb-body"><pre><span class="tp">int</span> age;
+age = <span class="num">20</span>;         <span class="cmt">// Works</span></pre></div>
+        </div>
+      </div>
+      <div class="mistake-why">💡 <strong>Why it's wrong:</strong> C reads code top-to-bottom. You must declare a variable first so the compiler knows it exists and how much memory to reserve. Using it before declaring = "unknown identifier" error.</div>
+    </div>
+
+    <!-- Mistake 3 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:.75rem;color:var(--rose);">❌ Mistake 3 — Storing decimal in int (data loss!)</div>
+      <div class="mistake-pair">
+        <div class="mistake-box wrong">
+          <div class="mb-head">✗ Wrong (silent data loss)</div>
+          <div class="mb-body"><pre><span class="tp">int</span> cgpa = <span class="num">8.7</span>;
+<span class="cmt">// cgpa becomes 8 — .7 lost!</span></pre></div>
+        </div>
+        <div class="mistake-box right">
+          <div class="mb-head">✓ Correct</div>
+          <div class="mb-body"><pre><span class="tp">float</span> cgpa = <span class="num">8.7</span>;
+<span class="cmt">// cgpa = 8.7 ✓</span></pre></div>
+        </div>
+      </div>
+      <div class="mistake-why">💡 <strong>Why it's wrong:</strong> <code>int</code> cannot store decimals — it <strong>silently chops off</strong> everything after the decimal point. No error, no warning — just wrong data. This is called <em>truncation</em>.</div>
+    </div>
+
+    <!-- Mistake 4 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:.75rem;color:var(--rose);">❌ Mistake 4 — Forgetting & in scanf</div>
+      <div class="mistake-pair">
+        <div class="mistake-box wrong">
+          <div class="mb-head">✗ Wrong (crash!)</div>
+          <div class="mb-body"><pre><span class="tp">int</span> age;
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, age);  <span class="cmt">// CRASH!</span></pre></div>
+        </div>
+        <div class="mistake-box right">
+          <div class="mb-head">✓ Correct</div>
+          <div class="mb-body"><pre><span class="tp">int</span> age;
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;age); <span class="cmt">// &amp; = address</span></pre></div>
+        </div>
+      </div>
+      <div class="mistake-why">💡 <strong>Why it's wrong:</strong> <code>scanf</code> needs the <strong>address</strong> of the variable to know WHERE in memory to write the value. Without <code>&amp;</code>, you're passing the variable's current value (garbage number) as an address — causing a segmentation fault / crash.</div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 7 · QUICK PRACTICE
+══════════════════════════════════════════ -->
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">7</div>
+    <h2>Quick Practice — <span style="color:var(--cyan)">5 Exercises</span></h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">Try thinking through each question yourself before revealing the answer. One step at a time.</p>
+
+  <div class="practice-list">
+
+    <div class="prac-card" id="pc1">
+      <div class="prac-head" onclick="togglePrac('pc1')">
+        <div class="prac-num">1</div>
+        <div class="prac-q">Take a student's roll number and marks as input, print both.</div>
+        <span class="prac-toggle">▼</span>
+      </div>
+      <div class="prac-body">
+        <div class="prac-section"><div class="prac-sec-label">🧠 Logic</div><p style="font-size:13px;color:var(--slate);line-height:1.7;">Roll number is a whole number → <code>int</code>. Marks could be decimal → <code>float</code>. Take input with <code>scanf</code>, print with <code>printf</code>.</p></div>
+        <div class="prac-section">
+          <div class="prac-sec-label">💻 Code</div>
+          <div class="cblk"><div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">C</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="tp">int</span>   roll;
+    <span class="tp">float</span> marks;
+    <span class="fn">printf</span>(<span class="str">"Enter roll number: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;roll);
+    <span class="fn">printf</span>(<span class="str">"Enter marks: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, &amp;marks);
+    <span class="fn">printf</span>(<span class="str">"Roll: %d, Marks: %.2f\n"</span>, roll, marks);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        </div>
+        <div class="prac-section"><div class="prac-sec-label">📤 Output</div><div style="background:#080D18;border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.7rem 1rem;font-family:monospace;font-size:12px;color:var(--green);">Enter roll number: 101<br/>Enter marks: 87.5<br/>Roll: 101, Marks: 87.50</div></div>
+      </div>
+    </div>
+
+    <div class="prac-card" id="pc2">
+      <div class="prac-head" onclick="togglePrac('pc2')">
+        <div class="prac-num">2</div>
+        <div class="prac-q">Store temperature in Celsius, convert to Fahrenheit, and print.</div>
+        <span class="prac-toggle">▼</span>
+      </div>
+      <div class="prac-body">
+        <div class="prac-section"><div class="prac-sec-label">🧠 Logic</div><p style="font-size:13px;color:var(--slate);line-height:1.7;">Temperature can be decimal → <code>float</code>. Formula: F = (C × 9/5) + 32. Be careful: <code>9/5</code> in int division = 1. Write <code>9.0/5</code> for correct result.</p></div>
+        <div class="prac-section">
+          <div class="prac-sec-label">💻 Code</div>
+          <div class="cblk"><div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">C</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="tp">float</span> celsius, fahrenheit;
+    <span class="fn">printf</span>(<span class="str">"Enter Celsius: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, &amp;celsius);
+    fahrenheit = (celsius * <span class="num">9.0</span> / <span class="num">5</span>) + <span class="num">32</span>;
+    <span class="fn">printf</span>(<span class="str">"Fahrenheit: %.2f\n"</span>, fahrenheit);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div></div>
+        </div>
+        <div class="prac-section"><div class="prac-sec-label">📤 Output</div><div style="background:#080D18;border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.7rem 1rem;font-family:monospace;font-size:12px;color:var(--green);">Enter Celsius: 37<br/>Fahrenheit: 98.60</div></div>
+      </div>
+    </div>
+
+    <div class="prac-card" id="pc3">
+      <div class="prac-head" onclick="togglePrac('pc3')">
+        <div class="prac-num">3</div>
+        <div class="prac-q">Take two integers, swap their values, print before and after.</div>
+        <span class="prac-toggle">▼</span>
+      </div>
+      <div class="prac-body">
+        <div class="prac-section"><div class="prac-sec-label">🧠 Logic</div><p style="font-size:13px;color:var(--slate);line-height:1.7;">Use a <strong>third (temp) variable</strong> as a temporary holder. Like swapping water between two glasses — you need an empty third glass. Classic logic-building question.</p></div>
+        <div class="prac-section">
+          <div class="prac-sec-label">💻 Code</div>
+          <div class="cblk"><div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">C</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="tp">int</span> a = <span class="num">10</span>, b = <span class="num">20</span>, temp;
+<span class="fn">printf</span>(<span class="str">"Before: a=%d, b=%d\n"</span>, a, b);
+temp = a;   <span class="cmt">// save a</span>
+a    = b;   <span class="cmt">// a gets b's value</span>
+b    = temp;<span class="cmt">// b gets old a</span>
+<span class="fn">printf</span>(<span class="str">"After:  a=%d, b=%d\n"</span>, a, b);</pre></div></div>
+        </div>
+        <div class="prac-section"><div class="prac-sec-label">📤 Output</div><div style="background:#080D18;border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.7rem 1rem;font-family:monospace;font-size:12px;color:var(--green);">Before: a=10, b=20<br/>After:  a=20, b=10</div></div>
+      </div>
+    </div>
+
+    <div class="prac-card" id="pc4">
+      <div class="prac-head" onclick="togglePrac('pc4')">
+        <div class="prac-num">4</div>
+        <div class="prac-q">Calculate area and perimeter of a rectangle. Take length and width as input.</div>
+        <span class="prac-toggle">▼</span>
+      </div>
+      <div class="prac-body">
+        <div class="prac-section"><div class="prac-sec-label">🧠 Logic</div><p style="font-size:13px;color:var(--slate);line-height:1.7;">Length and width can be decimal → <code>float</code>. Area = l × w. Perimeter = 2 × (l + w).</p></div>
+        <div class="prac-section">
+          <div class="prac-sec-label">💻 Code</div>
+          <div class="cblk"><div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">C</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="tp">float</span> l, w, area, peri;
+<span class="fn">printf</span>(<span class="str">"Length: "</span>);  <span class="fn">scanf</span>(<span class="str">"%f"</span>,&amp;l);
+<span class="fn">printf</span>(<span class="str">"Width:  "</span>);  <span class="fn">scanf</span>(<span class="str">"%f"</span>,&amp;w);
+area = l * w;
+peri = <span class="num">2</span> * (l + w);
+<span class="fn">printf</span>(<span class="str">"Area:      %.2f\n"</span>, area);
+<span class="fn">printf</span>(<span class="str">"Perimeter: %.2f\n"</span>, peri);</pre></div></div>
+        </div>
+        <div class="prac-section"><div class="prac-sec-label">📤 Output</div><div style="background:#080D18;border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.7rem 1rem;font-family:monospace;font-size:12px;color:var(--green);">Length: 5<br/>Width:  3<br/>Area:      15.00<br/>Perimeter: 16.00</div></div>
+      </div>
+    </div>
+
+    <div class="prac-card" id="pc5">
+      <div class="prac-head" onclick="togglePrac('pc5')">
+        <div class="prac-num">5</div>
+        <div class="prac-q">Store a character grade. Print its ASCII value and the next grade in alphabet.</div>
+        <span class="prac-toggle">▼</span>
+      </div>
+      <div class="prac-body">
+        <div class="prac-section"><div class="prac-sec-label">🧠 Logic</div><p style="font-size:13px;color:var(--slate);line-height:1.7;"><code>char</code> is secretly stored as an integer (ASCII code). <code>'A'</code> = 65, <code>'B'</code> = 66. So <code>grade + 1</code> gives next letter. Print with <code>%c</code> for character, <code>%d</code> for ASCII.</p></div>
+        <div class="prac-section">
+          <div class="prac-sec-label">💻 Code</div>
+          <div class="cblk"><div class="cblk-bar"><div class="cbdots"><div class="cbd cbd1"></div><div class="cbd cbd2"></div><div class="cbd cbd3"></div></div><span class="cblk-lang">C</span><button class="cblk-copy" onclick="copyCode(this)">Copy</button></div>
+          <div class="cblk-body"><pre>
+<span class="tp">char</span> grade = <span class="str">'A'</span>;
+<span class="fn">printf</span>(<span class="str">"Grade:        %c\n"</span>,   grade);
+<span class="fn">printf</span>(<span class="str">"ASCII value:  %d\n"</span>,   grade);
+<span class="fn">printf</span>(<span class="str">"Next grade:   %c\n"</span>,   grade+<span class="num">1</span>);</pre></div></div>
+        </div>
+        <div class="prac-section"><div class="prac-sec-label">📤 Output</div><div style="background:#080D18;border:1px solid rgba(34,197,94,.15);border-radius:8px;padding:.7rem 1rem;font-family:monospace;font-size:12px;color:var(--green);">Grade:        A<br/>ASCII value:  65<br/>Next grade:   B</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 8 · INTERVIEW THINKING
+══════════════════════════════════════════ -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+<div class="section">
+  <div class="sec-heading">
+    <div class="sec-num">8</div>
+    <h2>Interview Thinking — <span style="color:var(--purple)">Analytical Questions</span></h2>
+  </div>
+  <p style="color:var(--slate);font-size:14px;max-width:600px;margin-bottom:1.5rem;line-height:1.75;">Interviewers don't ask "what is a variable?" They ask WHY. Train your mind to answer analytically.</p>
+
+  <div class="interview-grid">
+
+    <div class="iq-card">
+      <div class="iq-q">Q: Why use <code>int</code> for age and not <code>float</code>?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> Age is always a whole number — no one is 20.7 years old in a system</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> <code>int</code> uses 4 bytes; <code>float</code> also uses 4 bytes — same size but unnecessary precision</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> Using <code>float</code> wastes CPU cycles for floating-point arithmetic on whole numbers</div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>Rule: Match the data type to the nature of the data</strong></div>
+      </div>
+    </div>
+
+    <div class="iq-card">
+      <div class="iq-q">Q: What happens when you store 8.7 in an <code>int</code>?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> <strong>Truncation</strong> happens — the decimal part is silently removed</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> <code>int x = 8.7;</code> → x becomes <strong>8</strong>, not 9 (it does NOT round)</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> The compiler may give a warning but still compiles</div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>This is called implicit type conversion (type coercion)</strong></div>
+      </div>
+    </div>
+
+    <div class="iq-card">
+      <div class="iq-q">Q: Why does <code>int x;</code> (no value) have garbage inside?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> C reserves memory for <code>x</code>, but does NOT clear it</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> That memory location has leftover bits from a previous program</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> These leftover bits look like a random number — called <strong>garbage value</strong></div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>Always initialize variables before using them</strong></div>
+      </div>
+    </div>
+
+    <div class="iq-card">
+      <div class="iq-q">Q: <code>float</code> vs <code>double</code> — when to use which?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> <code>float</code> — 4 bytes, 6–7 decimal digits of precision. Use for basic decimals</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> <code>double</code> — 8 bytes, 15–16 decimal digits. Use for scientific, financial calculations</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> Example: bank balance → <code>double</code>. Temperature → <code>float</code> is enough</div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>More precision = more memory. Choose wisely.</strong></div>
+      </div>
+    </div>
+
+    <div class="iq-card">
+      <div class="iq-q">Q: What is the size of <code>int</code> — always 4 bytes?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> <strong>Not always</strong> — it depends on the platform and compiler</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> On most 32-bit and 64-bit systems today: 4 bytes</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> On older 16-bit systems: 2 bytes</div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>Use <code>sizeof(int)</code> to check at runtime — never assume</strong></div>
+      </div>
+    </div>
+
+    <div class="iq-card">
+      <div class="iq-q">Q: Why is <code>char</code> stored as a number (ASCII)?</div>
+      <div class="iq-chain">
+        <div class="iq-step"><span class="iq-icon">🔹</span> Computers only understand numbers (0s and 1s)</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> ASCII is a mapping: <code>'A'</code>=65, <code>'a'</code>=97, <code>'0'</code>=48</div>
+        <div class="iq-step"><span class="iq-icon">🔹</span> <code>char c = 'A';</code> actually stores 65 in 1 byte</div>
+        <div class="iq-step"><span class="iq-icon">✅</span> <strong>That's why <code>char + 1</code> gives the next character</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 9 · CODINGBUDDY LOGIC RULES
+══════════════════════════════════════════ -->
+<div class="section">
+  <div class="rules-card">
+    <div class="rules-crown">👑</div>
+    <div class="rules-title">CoddingBuddY — Logic Framework</div>
+    <div class="rules-sub">Before writing even one line of code, answer these 5 questions. If you can — you already know how to solve it.</div>
+    <div class="rules-list">
+      <div class="rule-item">
+        <div class="rule-num">1</div>
+        <div class="rule-text">What <span>information</span> should I store in this program?</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">2</div>
+        <div class="rule-text">Which <span>data type</span> fits each piece of information? (int / float / char / double)</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">3</div>
+        <div class="rule-text">What should I <span>name</span> each variable? (meaningful names, not x/y/z)</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">4</div>
+        <div class="rule-text">What <span>operation</span> do I perform on the data? (calculate / compare / print)</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">5</div>
+        <div class="rule-text">What should be the <span>output</span>? What format? Which specifier?</div>
+      </div>
+    </div>
+    <div class="rules-promise">
+      "If you can answer these 5 questions, you can write the code. Every time." — Mr. Naresh G.
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+    <a href="c_learn.html#intro" style="display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;
+      border-radius:10px;border:1px solid var(--border);background:var(--glass);color:var(--slate);font-size:13px;font-weight:600;">← Prev: Introduction to C</a>
+    <a href="operators.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.6rem;
+      border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;font-size:13px;font-weight:700;">Next: Operators →</a>
+  </div>
+</div>
+
+<script>
+/* ═══ MEMORY VISUALIZER ═══ */
+const memData = {
+  int: {
+    name:'age', type:'int', value:'20', bytes:4, color:'var(--green)',
+    hex:'0x00000014', addr:'0x7ffd1a2c',
+    desc:'<code>int</code> uses 4 consecutive bytes in RAM. The number 20 is stored in binary: <strong>00000000 00000000 00000000 00010100</strong>. Your CPU reads all 4 bytes together as one integer.'
+  },
+  float: {
+    name:'gpa', type:'float', value:'8.5', bytes:4, color:'var(--amber)',
+    hex:'0x41080000', addr:'0x7ffd1a30',
+    desc:'<code>float</code> uses 4 bytes but stores decimals using <strong>IEEE 754 format</strong> — 1 sign bit + 8 exponent bits + 23 mantissa bits. This is why floating-point is sometimes imprecise.'
+  },
+  char: {
+    name:'grade', type:'char', value:"'A'", bytes:1, color:'var(--cyan)',
+    hex:'0x41', addr:'0x7ffd1a34',
+    desc:`<code>char</code> uses only 1 byte. The letter 'A' is stored as its <strong>ASCII value: 65</strong> (binary: 01000001). That's why you can do arithmetic on characters — they're really just small integers.`
+  },
+  double: {
+    name:'pi', type:'double', value:'3.14159', bytes:8, color:'var(--purple)',
+    hex:'0x400921F9F01B866E', addr:'0x7ffd1a38',
+    desc:'<code>double</code> uses 8 bytes — twice the precision of float. Stores 15–16 significant decimal digits using IEEE 754 double-precision format.'
+  }
+};
+
+function showMem(type) {
+  const d = memData[type];
+  const boxes = Array.from({length:d.bytes},(_,i)=>`
+    <div class="mem-box" style="width:52px;height:52px;color:${d.color};border-color:${d.color};background:rgba(0,0,0,.3);">
+      <div class="mem-addr">+${i}</div>
+      ${i===0?d.value:'···'}
+      ${i===d.bytes-1?`<div class="mem-bytes">${d.bytes} bytes</div>`:''}
+    </div>`).join('<div class="mem-arrow">→</div>');
+
+  document.getElementById('mem-visual').innerHTML = `
+    <div style="margin-bottom:1rem;">
+      <div style="font-family:monospace;font-size:14px;color:${d.color};margin-bottom:.3rem;">
+        <span style="color:var(--orange)">${d.type}</span> <span style="color:var(--cyan)">${d.name}</span> = <span style="color:var(--amber)">${d.value}</span>;
+      </div>
+      <div style="font-size:11px;color:var(--muted);">Address: ${d.addr}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;">${boxes}</div>
+    <div style="font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:.8rem;">Hex: ${d.hex}</div>
+    <div style="font-size:13px;color:var(--slate);line-height:1.75;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:.75rem 1rem;">${d.desc}</div>
+  `;
+}
+
+/* ═══ EXECUTION STEPPER ═══ */
+const STEPS = [
+  {line:0, status:'Including stdio.h header', vars:{}, out:''},
+  {line:2, status:'Entering main()', vars:{}, out:''},
+  {line:3, status:'Declaring int age = 20', vars:{age:{v:'20',t:'int',c:'var(--green)'}}, out:''},
+  {line:4, status:'Declaring float gpa = 8.5', vars:{age:{v:'20',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'}}, out:''},
+  {line:5, status:'Declaring char grade = A', vars:{age:{v:'20',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:''},
+  {line:7, status:'Updating age from 20 → 21', vars:{age:{v:'21',t:'int',c:'var(--green)',u:true},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:''},
+  {line:9, status:'printf: Age = 21', vars:{age:{v:'21',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:'Age:   21\n'},
+  {line:10, status:'printf: GPA = 8.5', vars:{age:{v:'21',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:'Age:   21\nGPA:   8.5\n'},
+  {line:11, status:'printf: Grade = A', vars:{age:{v:'21',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:'Age:   21\nGPA:   8.5\nGrade: A\n'},
+  {line:12, status:'return 0 — program complete ✓', vars:{age:{v:'21',t:'int',c:'var(--green)'},gpa:{v:'8.5',t:'float',c:'var(--amber)'},grade:{v:"'A'",t:'char',c:'var(--cyan)'}}, out:'Age:   21\nGPA:   8.5\nGrade: A\n'},
+];
+
+let stepIdx = -1;
+let runTimer = null;
+
+function renderStep(s) {
+  // highlight line
+  document.querySelectorAll('.ln').forEach(l=>l.classList.remove('hl'));
+  const el = document.getElementById('el'+s.line);
+  if(el) el.classList.add('hl');
+
+  // render vars
+  const varsEl = document.getElementById('exec-vars');
+  const entries = Object.entries(s.vars);
+  if(entries.length===0){varsEl.innerHTML='<div style="color:var(--muted);font-size:12px;font-family:monospace;">No variables yet...</div>';return;}
+  varsEl.innerHTML = entries.map(([k,v])=>`
+    <div class="exec-var-row">
+      <span class="exec-var-name">${k}</span>
+      <div class="exec-var-box ${v.u?'updated':''}" style="color:${v.c};border-color:${v.c};background:rgba(0,0,0,.4);">${v.v}</div>
+      <span class="exec-var-type">${v.t}</span>
+    </div>`).join('');
+
+  // output
+  document.getElementById('exec-output').textContent = s.out;
+  document.getElementById('exec-status').textContent = 'Step '+(stepIdx+1)+'/'+STEPS.length+': '+s.status;
+}
+
+function execStep(){
+  if(runTimer){clearInterval(runTimer);runTimer=null;}
+  stepIdx = Math.min(stepIdx+1, STEPS.length-1);
+  renderStep(STEPS[stepIdx]);
+}
+
+function execRun(){
+  stepIdx = -1;
+  let i=0;
+  runTimer = setInterval(()=>{
+    stepIdx=i; renderStep(STEPS[i]); i++;
+    if(i>=STEPS.length){clearInterval(runTimer);runTimer=null;}
+  },800);
+}
+
+function execReset(){
+  if(runTimer){clearInterval(runTimer);runTimer=null;}
+  stepIdx=-1;
+  document.querySelectorAll('.ln').forEach(l=>l.classList.remove('hl'));
+  document.getElementById('exec-vars').innerHTML='<div style="color:var(--muted);font-size:12px;font-family:monospace;">No variables yet...</div>';
+  document.getElementById('exec-output').textContent='';
+  document.getElementById('exec-status').textContent='Ready — press Run or Step';
+}
+
+/* ═══ REVEAL ═══ */
+function toggleReveal(id, btn) {
+  const el = document.getElementById(id);
+  const showing = el.classList.toggle('show');
+  btn.textContent = showing ? '🙈 Hide Solution' : '👁 Reveal Solution';
+}
+
+/* ═══ PRACTICE TOGGLE ═══ */
+function togglePrac(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+/* ═══ COPY ═══ */
+function copyCode(btn){
+  const pre = btn.closest('.cblk').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText||pre.textContent).then(()=>{
+    btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+  });
+}
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dynamic Programming — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--cyan);opacity:.12;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--purple);opacity:.12;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--amber);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:820px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(0,217,255,.08);border:1px solid rgba(0,217,255,.25);border-radius:100px;font-size:12px;color:var(--cyan);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--cyan);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:580px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+
+/* SECTION HEADER BAR */
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* HEADINGS */
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+th.c{color:var(--cyan);}th.p{color:var(--purple);}
+
+/* BULLETS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+
+/* BADGE */
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.bi{background:rgba(99,102,241,.12);color:var(--indigo);}
+
+/* ALERT */
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* DIAGRAM BOX */
+.gbox{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;display:flex;justify-content:center;padding:1rem;}
+
+/* INTERVIEW Q */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* LEETCODE CARD */
+.lc-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:1.4rem 0;}
+.lc-head{padding:.75rem 1.1rem;display:flex;align-items:center;gap:.8rem;border-bottom:1px solid var(--border);}
+.lc-num{font-size:11px;font-weight:700;color:var(--slate);font-family:monospace;}
+.lc-title{font-weight:700;font-size:14px;flex:1;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+.lc-body{padding:.9rem 1.1rem;}
+.lc-prob{font-size:13px;color:var(--slate);margin-bottom:.7rem;line-height:1.6;}
+.lc-approach{font-size:12px;color:var(--muted);margin-bottom:.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.ex-box{background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:.7rem 1rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--slate);margin:.6rem 0;line-height:1.9;}
+.ex-box b{color:var(--amber);font-weight:700;}
+.ex-box em{color:var(--cyan);font-style:normal;}
+
+/* ANIM CONTROLS */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-svg-wrap{display:flex;justify-content:center;overflow-x:auto;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+
+/* DP LAB (playground) */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1.2rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:120px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.6rem;font-weight:800;font-family:'Fira Code',monospace;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+.lab-bar-wrap{margin-top:1rem;}
+.lab-bar-row{display:flex;align-items:center;gap:.8rem;margin:.5rem 0;}
+.lab-bar-label{width:110px;font-size:12px;color:var(--slate);text-align:right;flex-shrink:0;}
+.lab-bar-track{flex:1;background:var(--bg4);border-radius:100px;height:22px;overflow:hidden;border:1px solid var(--border);}
+.lab-bar{height:100%;border-radius:100px;display:flex;align-items:center;padding-left:.7rem;font-size:11px;font-weight:700;color:#000;white-space:nowrap;transition:width .6s ease;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· DP</span></div>
+  <div class="nav-links">
+    <a href="#lab">🧪 DP Lab</a>
+    <a href="#intro">What is DP</a>
+    <a href="#dp1d">1D DP</a>
+    <a href="#grid">Grid DP</a>
+    <a href="#knapsack">Knapsack</a>
+    <a href="#strings">String DP</a>
+    <a href="#lis">LIS &amp; Decisions</a>
+    <a href="#master">Master Patterns</a>
+    <a href="#practice">Practice Sheet</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-blob hb1"></div>
+  <div class="hero-blob hb2"></div>
+  <div class="hero-blob hb3"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge">CoddingBuddY · Placement Preparation Series</div>
+    <h1><em>Dynamic Programming</em><br/>Zero to Master</h1>
+    <p>Stop fearing DP. One idea — <strong style="color:var(--white)">remember what you already solved</strong> — explained with step-by-step animations, simple Python, and 40 handpicked LeetCode problems.</p>
+    <div class="chips">
+      <span class="ch ch-c">Memoization</span>
+      <span class="ch ch-p">Tabulation</span>
+      <span class="ch ch-a">1D DP</span>
+      <span class="ch ch-g">Grid DP</span>
+      <span class="ch ch-r">Knapsack</span>
+      <span class="ch ch-i">String DP</span>
+      <span class="ch ch-c">LIS Pattern</span>
+      <span class="ch ch-p">LeetCode Solutions</span>
+      <span class="ch ch-a">Interview Q&amp;A</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 00: DP LAB ═══ -->
+<div class="sec-bar" id="lab">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">00</div>
+  <div class="sec-info"><h2>The DP Lab — Feel the Difference</h2><p>Same problem, two ways. Watch memoization destroy brute force.</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="playground">
+    <p style="font-size:13.5px;color:var(--slate);margin-bottom:1rem;">Computing <strong style="color:var(--cyan);font-family:monospace;">fib(n)</strong> two ways. Naive recursion re-solves the same subproblems again and again. Memoization solves each subproblem <strong style="color:var(--green)">exactly once</strong>. Try n = 30.</p>
+    <div class="lab-row">
+      <div>
+        <label>Pick n (2 – 35)</label>
+        <input type="number" id="lab-n" value="20" min="2" max="35" onchange="runLab()" onkeydown="if(event.key==='Enter')runLab()"/>
+      </div>
+      <button class="btn btn-c" onclick="runLab()">Compute fib(n)</button>
+    </div>
+    <div class="g3">
+      <div class="lab-stat"><div class="lv" style="color:var(--white);" id="lab-ans">6765</div><div class="ll">fib(n) answer</div></div>
+      <div class="lab-stat"><div class="lv" style="color:var(--rose);" id="lab-naive">21,891</div><div class="ll">function calls — naive recursion</div></div>
+      <div class="lab-stat"><div class="lv" style="color:var(--green);" id="lab-memo">39</div><div class="ll">function calls — with memoization</div></div>
+    </div>
+    <div class="lab-bar-wrap">
+      <div class="lab-bar-row">
+        <div class="lab-bar-label">Naive O(2ⁿ)</div>
+        <div class="lab-bar-track"><div class="lab-bar" id="lab-bar-naive" style="background:var(--rose);width:100%;">21,891 calls</div></div>
+      </div>
+      <div class="lab-bar-row">
+        <div class="lab-bar-label">Memo O(n)</div>
+        <div class="lab-bar-track"><div class="lab-bar" id="lab-bar-memo" style="background:var(--green);width:8%;">39 calls</div></div>
+      </div>
+    </div>
+    <div id="lab-msg" style="margin-top:.8rem;font-size:13px;color:var(--amber);font-family:'Fira Code',monospace;"></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 01: WHAT IS DP ═══ -->
+<div class="sec-bar" id="intro">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">01</div>
+  <div class="sec-info"><h2>What is Dynamic Programming?</h2><p>The one idea, the two properties, and the four-step recipe</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st"><span class="hl">One</span> Idea Only</h2>
+      <p class="ss">DP is NOT a new algorithm — it is recursion + a notebook</p>
+      <div class="card cl" style="margin-bottom:1rem;text-align:center;padding:1.2rem;">
+        <div style="font-size:1.35rem;font-weight:800;color:var(--cyan);font-family:monospace;">DP = Recursion + Memory</div>
+        <div style="font-size:13px;color:var(--slate);margin-top:.3rem;">Never solve the same subproblem twice — write it down, look it up.</div>
+      </div>
+      <ul class="bl c">
+        <li><strong>Real-world analogy:</strong> your friend asks "what is 43 × 17?" You calculate 731. They ask again 5 minutes later — do you recalculate? No! You <strong>remember</strong>. That memory is DP.</li>
+        <li>A problem qualifies for DP when it has <strong>two properties</strong> (see right)</li>
+        <li>If the same input always gives the same answer, the answer is worth <strong>caching</strong></li>
+        <li>Every DP solution is just a smart way to fill a <strong>table of answers</strong></li>
+      </ul>
+      <div class="alert ac" style="margin-top:1rem;">
+        <div class="alert-ico">📜</div>
+        <div><b>Why the weird name?</b> Richard Bellman (1950s) chose "Dynamic Programming" partly because it sounded impressive to his funders. "Programming" here means <em>planning with tables</em>, not coding!</div>
+      </div>
+    </div>
+    <div>
+      <div class="card pl" style="margin-bottom:1rem;">
+        <h3 class="p">Property 1 — Overlapping Subproblems</h3>
+        <p style="font-size:13.5px;color:var(--slate);">The same smaller problems appear <strong style="color:var(--white)">again and again</strong>. fib(5) needs fib(3) twice, fib(2) three times. Caching pays off only when work repeats.</p>
+      </div>
+      <div class="card al" style="margin-bottom:1rem;">
+        <h3 class="a">Property 2 — Optimal Substructure</h3>
+        <p style="font-size:13.5px;color:var(--slate);">The best answer to the big problem is built from best answers to smaller ones. Shortest path to floor 10 = shortest path to floor 9 (or 8) + one step.</p>
+      </div>
+      <div class="card gl">
+        <h3 class="g">The 4-Step DP Recipe (use for EVERY problem)</h3>
+        <ul class="bl g" style="margin-top:.4rem;">
+          <li><strong>1. State</strong> — what does dp[i] mean in plain English?</li>
+          <li><strong>2. Transition</strong> — how does dp[i] come from earlier states?</li>
+          <li><strong>3. Base case</strong> — what tiny answers do we know for sure?</li>
+          <li><strong>4. Answer</strong> — which cell of the table is the final answer?</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANIM: recursion tree -->
+  <h3 style="margin:2.5rem 0 .3rem;color:var(--rose);">🎬 Animation 1 — Why naive recursion is a disaster</h3>
+  <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Watch fib(5) unfold call by call. <span style="color:var(--cyan)">Cyan</span> = first time we see this subproblem. <span style="color:var(--rose)">Rose</span> = wasted repeat work.</p>
+  <div class="anim-wrap">
+    <div class="anim-svg-wrap"><svg id="fibtree-svg" width="620" height="345" viewBox="0 0 620 345"></svg></div>
+    <div class="anim-ctrl">
+      <button class="btn btn-c" onclick="stepAnim('fibtree')">▶ Step</button>
+      <button class="btn btn-a" onclick="autoAnim('fibtree')">⏩ Auto</button>
+      <button class="btn btn-r" onclick="resetAnim('fibtree')">↺ Reset</button>
+      <span style="font-size:11.5px;color:var(--muted);">15 calls just for n=5 … for n=50 it would be ~40 trillion</span>
+    </div>
+    <div class="anim-log" id="fibtree-cap"></div>
+  </div>
+
+  <!-- ANIM: tabulation -->
+  <h3 style="margin:2.2rem 0 .3rem;color:var(--green);">🎬 Animation 2 — Tabulation: fill the table bottom-up</h3>
+  <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Same fib — but now we fill a simple array left to right. Each cell = sum of the two before it. No recursion, no repeats.</p>
+  <div class="anim-wrap">
+    <div class="anim-svg-wrap"><svg id="fibtab-svg"></svg></div>
+    <div class="anim-ctrl">
+      <button class="btn btn-c" onclick="stepAnim('fibtab')">▶ Step</button>
+      <button class="btn btn-a" onclick="autoAnim('fibtab')">⏩ Auto</button>
+      <button class="btn btn-r" onclick="resetAnim('fibtab')">↺ Reset</button>
+    </div>
+    <div class="anim-log" id="fibtab-cap"></div>
+  </div>
+
+  <!-- The 4 versions of fib -->
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--cyan);">🐍 The same problem, 4 ways — memorize this evolution</h3>
+  <div class="g2">
+    <div class="cw"><span class="cl2" style="background:var(--rose);color:#fff;">1 · NAIVE — O(2ⁿ) ❌</span>
+<pre class="py">def fib(n):
+    if n &lt;= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)
+# fib(50) would take ~30 YEARS</pre></div>
+    <div class="cw"><span class="cl2 pu">2 · MEMOIZATION (top-down) — O(n)</span>
+<pre class="py">def fib(n, memo={}):
+    if n in memo:
+        return memo[n]        # look it up!
+    if n &lt;= 1:
+        return n
+    memo[n] = fib(n - 1, memo) + fib(n - 2, memo)
+    return memo[n]</pre></div>
+    <div class="cw"><span class="cl2 gr">3 · TABULATION (bottom-up) — O(n)</span>
+<pre class="py">def fib(n):
+    if n &lt;= 1:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]</pre></div>
+    <div class="cw"><span class="cl2 am">4 · SPACE OPTIMIZED — O(n) time, O(1) space</span>
+<pre class="py">def fib(n):
+    if n &lt;= 1:
+        return n
+    prev, curr = 0, 1
+    for _ in range(2, n + 1):
+        prev, curr = curr, prev + curr
+    return curr</pre></div>
+  </div>
+  <div class="alert ag">
+    <div class="alert-ico">🎯</div>
+    <div><b>Interview rule of thumb</b>In interviews: first say the recursive idea, then add memoization, then (if asked) convert to tabulation. This shows the full thought process examiners want.</div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>What is the difference between memoization and tabulation?</span><span class="qico">+</span></div><div class="qa-a">Memoization is top-down: write the natural recursion, cache results in a dict/array so each subproblem runs once. Tabulation is bottom-up: fill a table iteratively from base cases to the answer. Same complexity; tabulation avoids recursion depth limits and is usually slightly faster, memoization is easier to derive and only computes needed states.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>How do you identify that a problem is a DP problem?</span><span class="qico">+</span></div><div class="qa-a">Signals: the problem asks for a count of ways, a min/max value, or a yes/no "can it be done" — over choices made in sequence; brute force would branch exponentially; and the same subproblem reappears. If greedy fails on examples and the answer depends only on a small "state" (index, remaining amount), it is almost certainly DP.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>Difference between Divide &amp; Conquer and DP?</span><span class="qico">+</span></div><div class="qa-a">Both split a problem into subproblems. In Divide &amp; Conquer (merge sort, binary search) the subproblems are independent — they never repeat, so there is nothing to cache. DP applies when subproblems overlap; caching turns exponential time into polynomial.</div></div>
+</div>
+</section>
+<!-- ═══ SEC 02: 1D DP ═══ -->
+<div class="sec-bar" id="dp1d">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">02</div>
+  <div class="sec-info"><h2>Level 1 — 1D DP</h2><p>One array, one loop. Where every DP journey begins.</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="alert ap"><div class="alert-ico">🧭</div><div><b>The 1D pattern</b>State is a single index: dp[i] = best answer using the first i items / steps. Transition looks back 1–2 cells. If you can say "to stand HERE, I must have come from THERE", it's 1D DP.</div></div>
+
+  <!-- LC 70 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 70</span><span class="lc-title">Climbing Stairs</span><span class="lc-diff lc-e">EASY</span><span class="b bc">The "Hello World" of DP</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> You are climbing a staircase with <code style="color:var(--cyan)">n</code> steps. Each move you climb <strong>1 or 2 steps</strong>. In how many distinct ways can you reach the top?</div>
+      <div class="ex-box"><b>Example:</b> n = 5 → <em>8 ways</em><br/>Think: to stand on step 5, your LAST move came from step 4 (a +1 hop) or step 3 (a +2 hop).<br/>So ways(5) = ways(4) + ways(3) = 5 + 3 = <em>8</em>. It's Fibonacci in disguise! 🥸</div>
+      <div class="lc-approach">🎬 Animation — filling ways[] for n = 6</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="stairs-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('stairs')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('stairs')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('stairs')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="stairs-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python — passes all test cases</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(n) time · O(n) space</span>
+<pre class="py">class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n &lt;= 2:
+            return n
+        dp = [0] * (n + 1)      # dp[i] = ways to reach step i
+        dp[1], dp[2] = 1, 2     # base cases we know for sure
+        for i in range(3, n + 1):
+            dp[i] = dp[i - 1] + dp[i - 2]
+        return dp[n]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 746 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 746</span><span class="lc-title">Min Cost Climbing Stairs</span><span class="lc-diff lc-e">EASY</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Each stair has a cost. After paying a stair's cost you may climb 1 or 2 steps. Start from stair 0 or 1. Find the <strong>minimum cost</strong> to reach the top (one past the last stair).</div>
+      <div class="ex-box"><b>Example:</b> cost = [10, 15, 20] → <em>15</em><br/>Pay 15 at stair 1, jump 2 steps → done. Same skeleton as LC 70, but <em>counting ways</em> becomes <em>taking min</em>.</div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(n)</span>
+<pre class="py">class Solution:
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        n = len(cost)
+        dp = [0] * (n + 1)      # dp[i] = min cost to STAND on step i
+        for i in range(2, n + 1):
+            dp[i] = min(dp[i - 1] + cost[i - 1],   # came from i-1
+                        dp[i - 2] + cost[i - 2])   # came from i-2
+        return dp[n]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 198 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 198</span><span class="lc-title">House Robber</span><span class="lc-diff lc-m">MEDIUM</span><span class="b bp">Take / Skip pattern</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> A robber walks down a street of houses, each holding some money. <strong>Adjacent houses cannot both be robbed</strong> (alarm!). Find the maximum money possible.</div>
+      <div class="ex-box"><b>Example:</b> nums = [2, 7, 9, 3, 1] → <em>12</em><br/>Rob houses with 2 + 9 + 1 = 12. At every house one decision: <em>ROB it</em> (add its cash to best of i-2) or <em>SKIP it</em> (keep best of i-1).</div>
+      <div class="lc-approach">🎬 Animation — rob or skip, house by house</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="robber-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('robber')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('robber')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('robber')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="robber-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(n)</span>
+<pre class="py">class Solution:
+    def rob(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n == 1:
+            return nums[0]
+        dp = [0] * n            # dp[i] = max loot from houses 0..i
+        dp[0] = nums[0]
+        dp[1] = max(nums[0], nums[1])
+        for i in range(2, n):
+            dp[i] = max(dp[i - 1],            # skip house i
+                        dp[i - 2] + nums[i])  # rob house i
+        return dp[n - 1]</pre></div>
+      <div class="alert aa"><div class="alert-ico">💡</div><div><b>Follow-up: LC 213 (houses in a circle)</b>First and last house are now adjacent. Trick: run the same rob() twice — once on houses[0..n-2], once on houses[1..n-1] — and take the max.</div></div>
+    </div>
+  </div>
+
+  <!-- LC 53 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 53</span><span class="lc-title">Maximum Subarray (Kadane's Algorithm)</span><span class="lc-diff lc-m">MEDIUM</span><span class="b ba">Most-asked DP ever</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Given an integer array (with negatives), find the <strong>contiguous subarray</strong> with the largest sum.</div>
+      <div class="ex-box"><b>Example:</b> nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] → <em>6</em>&nbsp; (subarray [4, -1, 2, 1])<br/>At each element ask: does the running sum HELP me, or is it baggage? If the sum so far is negative — drop it and start fresh.</div>
+      <div class="lc-approach">🎬 Animation — extend or restart?</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="kadane-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('kadane')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('kadane')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('kadane')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="kadane-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">KADANE · O(n) time · O(1) space</span>
+<pre class="py">class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        curr = best = nums[0]
+        for num in nums[1:]:
+            curr = max(num, curr + num)  # start fresh OR extend
+            best = max(best, curr)       # remember the peak
+        return best</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:1.6rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Why is Climbing Stairs just Fibonacci?</span><span class="qico">+</span></div><div class="qa-a">Because the transition is identical: ways(n) = ways(n-1) + ways(n-2). The last move is either a 1-step (from n-1) or a 2-step (from n-2), and those two sets of paths never overlap, so we add them. Only the base cases differ from classic Fibonacci.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>In House Robber, why does dp[i] only look at dp[i-1] and dp[i-2]?</span><span class="qico">+</span></div><div class="qa-a">If we rob house i we cannot rob i-1, so the best we can add to is dp[i-2]. If we skip house i, our total is unchanged: dp[i-1]. Looking further back (dp[i-3]) is never needed because dp[i-2] already includes any benefit of dp[i-3].</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>Is Kadane's algorithm really DP?</span><span class="qico">+</span></div><div class="qa-a">Yes — dp[i] = maximum subarray sum ENDING at index i, with transition dp[i] = max(nums[i], dp[i-1] + nums[i]). Since dp[i] depends only on dp[i-1], we keep one variable instead of an array. That variable IS the DP table, space-optimized.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 03: GRID DP ═══ -->
+<div class="sec-bar" id="grid">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">03</div>
+  <div class="sec-info"><h2>Level 2 — Grid DP</h2><p>2D tables: every cell is reached from the top or the left</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="alert aa"><div class="alert-ico">🧭</div><div><b>The Grid pattern</b>A robot walks a grid moving only right/down. dp[i][j] = answer for cell (i, j), built from dp[i-1][j] (top) and dp[i][j-1] (left). First row and first column are the base cases.</div></div>
+
+  <!-- LC 62 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 62</span><span class="lc-title">Unique Paths</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> A robot starts at the top-left of an <code style="color:var(--cyan)">m × n</code> grid and can only move <strong>right or down</strong>. How many unique paths reach the bottom-right corner?</div>
+      <div class="ex-box"><b>Example:</b> m = 3, n = 4 → <em>10 paths</em><br/>To ENTER any cell you came from above or from the left — so paths(cell) = paths(top) + paths(left). First row/column have exactly 1 path (straight line).</div>
+      <div class="lc-approach">🎬 Animation — every cell = top + left</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="upaths-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('upaths')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('upaths')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('upaths')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="upaths-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(m·n)</span>
+<pre class="py">class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        dp = [[1] * n for _ in range(m)]   # first row & col = 1
+        for i in range(1, m):
+            for j in range(1, n):
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+        return dp[m - 1][n - 1]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 64 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 64</span><span class="lc-title">Minimum Path Sum</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Same grid, but every cell holds a number. Moving only right/down, find the path from top-left to bottom-right with the <strong>smallest total sum</strong>.</div>
+      <div class="ex-box"><b>Example:</b> grid = [[1,3,1],[1,5,1],[4,2,1]] → <em>7</em>&nbsp; (path 1→3→1→1→1)<br/>Counting becomes minimising: dp[i][j] = grid[i][j] + min(top, left).</div>
+      <div class="lc-approach">🎬 Animation — cheapest way into each cell</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="minpath-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('minpath')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('minpath')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('minpath')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="minpath-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(m·n)</span>
+<pre class="py">class Solution:
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dp = [[0] * n for _ in range(m)]
+        dp[0][0] = grid[0][0]
+        for j in range(1, n):                    # first row
+            dp[0][j] = dp[0][j - 1] + grid[0][j]
+        for i in range(1, m):                    # first column
+            dp[i][0] = dp[i - 1][0] + grid[i][0]
+        for i in range(1, m):
+            for j in range(1, n):
+                dp[i][j] = grid[i][j] + min(dp[i - 1][j], dp[i][j - 1])
+        return dp[m - 1][n - 1]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 63 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 63</span><span class="lc-title">Unique Paths II (with obstacles)</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Same as Unique Paths, but some cells contain obstacles (marked 1) that cannot be entered. Count the paths that avoid them.</div>
+      <div class="ex-box"><b>Example:</b> grid = [[0,0,0],[0,1,0],[0,0,0]] → <em>2</em><br/>One rule added: an obstacle cell contributes <em>0 paths</em>. Everything else is identical.</div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(m·n)</span>
+<pre class="py">class Solution:
+    def uniquePathsWithObstacles(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dp = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    dp[i][j] = 0          # blocked → no paths
+                elif i == 0 and j == 0:
+                    dp[i][j] = 1          # start cell
+                else:
+                    top  = dp[i - 1][j] if i > 0 else 0
+                    left = dp[i][j - 1] if j > 0 else 0
+                    dp[i][j] = top + left
+        return dp[m - 1][n - 1]</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:1.6rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Can Unique Paths be solved without DP?</span><span class="qico">+</span></div><div class="qa-a">Yes — combinatorics: every path is a sequence of (m-1) downs and (n-1) rights, so the count is C(m+n-2, m-1). But interviewers usually want the DP table first; mention the formula as a bonus.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>How do you space-optimize a grid DP?</span><span class="qico">+</span></div><div class="qa-a">Each row only needs the previous row, so keep a single 1D array of width n and overwrite it row by row: dp[j] += dp[j-1]. Space drops from O(m·n) to O(n). Say this in interviews — it's an easy bonus point.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>What changes if the robot can also move diagonally?</span><span class="qico">+</span></div><div class="qa-a">Just add the third parent to the transition: dp[i][j] = dp[i-1][j] + dp[i][j-1] + dp[i-1][j-1]. The framework (state, base cases, fill order) stays identical — that's the power of thinking in transitions.</div></div>
+</div>
+</section>
+<!-- ═══ SEC 04: KNAPSACK ═══ -->
+<div class="sec-bar" id="knapsack">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">04</div>
+  <div class="sec-info"><h2>Level 3 — Knapsack Family</h2><p>Pick or don't pick — the most important DP pattern for interviews</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="alert ag"><div class="alert-ico">🎒</div><div><b>The Knapsack story</b>A thief has a bag with limited capacity and items with weights &amp; values. For each item there are only two choices: <strong>take it</strong> (capacity shrinks) or <strong>leave it</strong>. dp[item][capacity] = best value. Coin Change, Subset Sum, Target Sum — all are this story in costume.</div></div>
+
+  <!-- LC 416 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 416</span><span class="lc-title">Partition Equal Subset Sum</span><span class="lc-diff lc-m">MEDIUM</span><span class="b bg">0/1 Knapsack</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Can the array be split into <strong>two subsets with equal sums</strong>?</div>
+      <div class="ex-box"><b>Example:</b> nums = [1, 5, 11, 5] → <em>True</em>&nbsp; ([1, 5, 5] and [11])<br/>Total = 22, so we just need ONE subset summing to 11. Classic knapsack: for each number — use it or don't — can we hit sum 11?</div>
+      <div class="lc-approach">🎬 Animation — the True/False table, row per number</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="subset-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('subset')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('subset')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('subset')">↺ Reset</button>
+          <span style="font-size:11.5px;color:var(--muted);">✓ green = this sum is reachable</span>
+        </div>
+        <div class="anim-log" id="subset-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">1D KNAPSACK · O(n·target)</span>
+<pre class="py">class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        total = sum(nums)
+        if total % 2 == 1:
+            return False              # odd total → impossible
+        target = total // 2
+        dp = [False] * (target + 1)
+        dp[0] = True                  # sum 0 = pick nothing
+        for num in nums:
+            for j in range(target, num - 1, -1):   # RIGHT to LEFT!
+                dp[j] = dp[j] or dp[j - num]
+        return dp[target]</pre></div>
+      <div class="alert ar"><div class="alert-ico">⚠️</div><div><b>Why loop right-to-left?</b>In 0/1 knapsack each item may be used ONCE. Going left-to-right would let dp[j-num] already include the current number — using it twice. Right-to-left reads only "previous row" values. This is the #1 knapsack interview trap.</div></div>
+    </div>
+  </div>
+
+  <!-- LC 322 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 322</span><span class="lc-title">Coin Change</span><span class="lc-diff lc-m">MEDIUM</span><span class="b ba">Unbounded knapsack</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Given coin denominations (unlimited supply) and an amount, return the <strong>fewest coins</strong> that make the amount, or -1 if impossible.</div>
+      <div class="ex-box"><b>Example:</b> coins = [1, 2, 5], amount = 7 → <em>2</em>&nbsp; (5 + 2)<br/>To make ₹7, the LAST coin was 1, 2 or 5. So dp[7] = 1 + min(dp[6], dp[5], dp[2]). Build up from ₹0.</div>
+      <div class="lc-approach">🎬 Animation — fewest coins for every amount 0 → 7</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="coins-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('coins')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('coins')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('coins')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="coins-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(amount·coins)</span>
+<pre class="py">class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0                      # 0 coins make amount 0
+        for a in range(1, amount + 1):
+            for coin in coins:
+                if coin &lt;= a:
+                    dp[a] = min(dp[a], dp[a - coin] + 1)
+        return dp[amount] if dp[amount] != float('inf') else -1</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 518 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 518</span><span class="lc-title">Coin Change II — count the ways</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Same coins, but now count <strong>how many combinations</strong> make the amount (order doesn't matter).</div>
+      <div class="ex-box"><b>Example:</b> amount = 5, coins = [1, 2, 5] → <em>4 ways</em><br/>5 &nbsp;·&nbsp; 2+2+1 &nbsp;·&nbsp; 2+1+1+1 &nbsp;·&nbsp; 1+1+1+1+1</div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(amount·coins)</span>
+<pre class="py">class Solution:
+    def change(self, amount: int, coins: List[int]) -> int:
+        dp = [0] * (amount + 1)
+        dp[0] = 1                      # one way to make 0: take nothing
+        for coin in coins:             # coins in OUTER loop!
+            for a in range(coin, amount + 1):
+                dp[a] += dp[a - coin]
+        return dp[amount]</pre></div>
+      <div class="tw" style="margin-top:.8rem;"><table>
+        <tr><th>Loop order</th><th>Counts</th><th>Used in</th></tr>
+        <tr><td><strong style="color:var(--green)">Coins outside</strong>, amount inside</td><td>Combinations (2+1 = 1+2, counted once)</td><td>LC 518</td></tr>
+        <tr><td><strong style="color:var(--amber)">Amount outside</strong>, coins inside</td><td>Permutations (2+1 and 1+2 both count)</td><td>LC 377 Combination Sum IV</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <h3 style="margin:1.6rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>0/1 knapsack vs unbounded knapsack — the code difference?</span><span class="qico">+</span></div><div class="qa-a">One line! With a 1D array: 0/1 loops capacity right-to-left (each item once); unbounded loops left-to-right (item reusable, since dp[j-w] may already include this item). Everything else is identical.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>Why is dp[0] = True (or 1, or 0) so important in knapsack problems?</span><span class="qico">+</span></div><div class="qa-a">It encodes "the empty choice": sum 0 is achievable by picking nothing, there is 1 way to make amount 0, and it costs 0 coins. Without this seed every other cell would stay False/0/∞ — the whole table grows from dp[0].</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>How is LC 494 (Target Sum) a knapsack problem?</span><span class="qico">+</span></div><div class="qa-a">Assigning +/- signs splits nums into a positive set P and negative set N with sum(P) - sum(N) = target. Since sum(P) + sum(N) = total, we get sum(P) = (target + total) / 2 — so it reduces to "count subsets with a given sum": exact 0/1 knapsack.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 05: STRING DP ═══ -->
+<div class="sec-bar" id="strings">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">05</div>
+  <div class="sec-info"><h2>Level 4 — String DP</h2><p>Two strings, one table: compare last characters, shrink the problem</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="alert ar"><div class="alert-ico">🧭</div><div><b>The two-string pattern</b>dp[i][j] = answer for the first i chars of string 1 vs first j chars of string 2. Compare s1[i-1] with s2[j-1]: if they <strong>match</strong>, look diagonally (both shrink); if not, take the best of dropping one char from either side. Row 0 / column 0 = empty string base cases.</div></div>
+
+  <!-- LC 1143 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 1143</span><span class="lc-title">Longest Common Subsequence</span><span class="lc-diff lc-m">MEDIUM</span><span class="b br">Mother of string DP</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Given two strings, find the length of their longest <strong>common subsequence</strong> (characters in order, not necessarily adjacent).</div>
+      <div class="ex-box"><b>Example:</b> text1 = "abcde", text2 = "ace" → <em>3</em>&nbsp; ("ace")<br/>Match → 1 + diagonal. No match → max(up, left). That one sentence solves five LeetCode problems.</div>
+      <div class="lc-approach">🎬 Animation — the LCS table, cell by cell</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="lcs-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('lcs')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('lcs')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('lcs')">↺ Reset</button>
+          <span style="font-size:11.5px;color:var(--muted);">green = characters match (diagonal + 1)</span>
+        </div>
+        <div class="anim-log" id="lcs-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(m·n)</span>
+<pre class="py">class Solution:
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        m, n = len(text1), len(text2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if text1[i - 1] == text2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + 1    # match!
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        return dp[m][n]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 72 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 72</span><span class="lc-title">Edit Distance</span><span class="lc-diff lc-h">HARD</span><span class="b bi">Google favourite</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Minimum number of operations (insert, delete, replace a character) to convert word1 into word2. This powers spell-checkers and DNA alignment!</div>
+      <div class="ex-box"><b>Example:</b> word1 = "horse", word2 = "ros" → <em>3</em><br/>horse → rorse (replace h) → rose (delete r) → ros (delete e)</div>
+      <div class="lc-approach">🎬 Animation — three neighbours, pick the cheapest</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="edit-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('edit')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('edit')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('edit')">↺ Reset</button>
+          <span style="font-size:11.5px;color:var(--muted);">green = free (chars equal), amber = 1 + min(↖ replace, ↑ delete, ← insert)</span>
+        </div>
+        <div class="anim-log" id="edit-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(m·n)</span>
+<pre class="py">class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        m, n = len(word1), len(word2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(m + 1):
+            dp[i][0] = i          # delete all i chars
+        for j in range(n + 1):
+            dp[0][j] = j          # insert all j chars
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]        # free!
+                else:
+                    dp[i][j] = 1 + min(dp[i - 1][j - 1],  # replace
+                                       dp[i - 1][j],      # delete
+                                       dp[i][j - 1])      # insert
+        return dp[m][n]</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 5 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 5</span><span class="lc-title">Longest Palindromic Substring</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Return the longest substring that reads the same forwards and backwards.</div>
+      <div class="ex-box"><b>Example:</b> s = "babad" → <em>"bab"</em> (or "aba")<br/>Trick: a palindrome grows from its CENTER. Try all 2n-1 centers (each letter, each gap) and expand outward while the ends match.</div>
+      <div class="lc-approach">🐍 Python — expand around center (simplest correct approach)</div>
+      <div class="cw"><span class="cl2 gr">EXPAND AROUND CENTER · O(n²) time · O(1) space</span>
+<pre class="py">class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        def expand(left: int, right: int) -> str:
+            while left >= 0 and right &lt; len(s) and s[left] == s[right]:
+                left -= 1
+                right += 1
+            return s[left + 1 : right]     # last valid window
+
+        best = ""
+        for i in range(len(s)):
+            odd  = expand(i, i)        # center at a letter
+            even = expand(i, i + 1)    # center between letters
+            best = max(best, odd, even, key=len)
+        return best</pre></div>
+    </div>
+  </div>
+
+  <!-- LC 647 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 647</span><span class="lc-title">Palindromic Substrings</span><span class="lc-diff lc-m">MEDIUM</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Count how many substrings of s are palindromes.</div>
+      <div class="ex-box"><b>Example:</b> s = "aaa" → <em>6</em>&nbsp; ("a"×3, "aa"×2, "aaa")<br/>Same expand-around-center engine — but count every successful expansion instead of tracking the longest.</div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">EXPAND AROUND CENTER · O(n²)</span>
+<pre class="py">class Solution:
+    def countSubstrings(self, s: str) -> int:
+        count = 0
+        def expand(left: int, right: int):
+            nonlocal count
+            while left >= 0 and right &lt; len(s) and s[left] == s[right]:
+                count += 1             # every expansion = 1 palindrome
+                left -= 1
+                right += 1
+        for i in range(len(s)):
+            expand(i, i)               # odd length
+            expand(i, i + 1)           # even length
+        return count</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:1.6rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Why do string DP tables have an extra row and column?</span><span class="qico">+</span></div><div class="qa-a">Row 0 and column 0 represent the EMPTY string — LCS of "" with anything is 0; converting "" to "ros" needs 3 inserts. This padding removes all the messy "if i == 0" checks from the main loop.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>Longest Palindromic SUBSEQUENCE (LC 516) — how does LCS solve it?</span><span class="qico">+</span></div><div class="qa-a">The longest palindromic subsequence of s is exactly LCS(s, reverse(s)) — a subsequence common to the string and its reverse must read the same both ways. One line of insight, full reuse of the LCS code.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>Substring vs subsequence — why does it change the algorithm?</span><span class="qico">+</span></div><div class="qa-a">A substring is contiguous, so breaking the chain resets everything (expand-around-center, or dp that resets to 0 on mismatch). A subsequence may skip characters, so on mismatch you carry forward the best of the neighbours instead of resetting. Always ask the interviewer which one is meant!</div></div>
+</div>
+</section>
+<!-- ═══ SEC 06: LIS & DECISIONS ═══ -->
+<div class="sec-bar" id="lis">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--indigo);">06</div>
+  <div class="sec-info"><h2>Level 5 — LIS &amp; Decision DP</h2><p>Look back at ALL previous states, not just the last two</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="alert" style="background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.2);"><div class="alert-ico">🧭</div><div><b>The look-back pattern</b>Until now dp[i] looked at i-1 and i-2 only. In this level, dp[i] scans EVERY j &lt; i and asks "can state j extend to i?" — an O(n²) inner loop. LIS, Word Break, and Jump Game II all live here.</div></div>
+
+  <!-- LC 300 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 300</span><span class="lc-title">Longest Increasing Subsequence</span><span class="lc-diff lc-m">MEDIUM</span><span class="b bi">Top-5 interview classic</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Find the length of the longest <strong>strictly increasing subsequence</strong> (elements in order, may skip).</div>
+      <div class="ex-box"><b>Example:</b> nums = [10, 9, 2, 5, 3, 7, 101, 18] → <em>4</em>&nbsp; ([2, 3, 7, 101])<br/>dp[i] = length of the best increasing chain <em>ending at i</em>. For each i, check every earlier j: if nums[j] &lt; nums[i], chain j can grow by me.</div>
+      <div class="lc-approach">🎬 Animation — every element asks all elements before it</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="lis-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('lis')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('lis')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('lis')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="lis-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(n²)</span>
+<pre class="py">class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        dp = [1] * n              # every element alone = chain of 1
+        for i in range(1, n):
+            for j in range(i):
+                if nums[j] &lt; nums[i]:          # j can extend to i
+                    dp[i] = max(dp[i], dp[j] + 1)
+        return max(dp)            # best chain can end ANYWHERE</pre></div>
+      <div class="alert ac"><div class="alert-ico">🚀</div><div><b>Follow-up they always ask: can you do O(n log n)?</b>Yes — keep a list of "smallest tail of an increasing chain of each length" and binary-search (bisect_left) each number's position. Mention it; code it only if asked.</div></div>
+    </div>
+  </div>
+
+  <!-- LC 139 -->
+  <div class="lc-card">
+    <div class="lc-head"><span class="lc-num">LC 139</span><span class="lc-title">Word Break</span><span class="lc-diff lc-m">MEDIUM</span><span class="b bp">Amazon favourite</span></div>
+    <div class="lc-body">
+      <div class="lc-prob"><strong style="color:var(--white)">Question:</strong> Can the string s be segmented into a sequence of words from the dictionary (words reusable)?</div>
+      <div class="ex-box"><b>Example:</b> s = "leetcode", wordDict = ["leet", "code"] → <em>True</em><br/>dp[i] = "can the first i characters be broken?" — true if some cut point j has dp[j] true AND s[j:i] in the dictionary.</div>
+      <div class="lc-approach">🎬 Animation — finding valid cut points</div>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="wbreak-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('wbreak')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('wbreak')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('wbreak')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="wbreak-cap"></div>
+      </div>
+      <div class="lc-approach">🐍 Python</div>
+      <div class="cw"><span class="cl2 gr">TABULATION · O(n²)</span>
+<pre class="py">class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        words = set(wordDict)          # O(1) lookups
+        n = len(s)
+        dp = [False] * (n + 1)
+        dp[0] = True                   # empty prefix is fine
+        for i in range(1, n + 1):
+            for j in range(i):
+                if dp[j] and s[j:i] in words:
+                    dp[i] = True
+                    break              # one valid cut is enough
+        return dp[n]</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:1.6rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Interview Questions</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>In LIS, why is the answer max(dp) and not dp[n-1]?</span><span class="qico">+</span></div><div class="qa-a">Because dp[i] is defined as the best chain ENDING exactly at index i. The longest chain might end in the middle of the array (e.g. ending at 101, not at the final 18). Whenever your state says "ending at i", remember to take the max over all i.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>Why is Word Break not solvable greedily (always match the longest word)?</span><span class="qico">+</span></div><div class="qa-a">Counter-example: s = "aaaa", dict = ["aaa", "aa"]. Greedy grabs "aaa" and leaves "a" — stuck. DP tries every cut point, so it finds "aa" + "aa". When greedy has counter-examples and choices repeat, that's your cue for DP.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 07: MASTER PATTERNS ═══ -->
+<div class="sec-bar" id="master">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--orange);">07</div>
+  <div class="sec-info"><h2>Level 6 — Master Patterns</h2><p>Recognize the pattern in 30 seconds — the interview superpower</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">The <span class="hl">Pattern Map</span> — every DP problem you'll meet</h2>
+  <p class="ss">Read the question → find the trigger phrase → you already know the state &amp; transition</p>
+  <div class="tw"><table>
+    <tr><th>Pattern</th><th>Trigger phrase in question</th><th>State dp[...] means</th><th>Transition</th><th>Solved here</th></tr>
+    <tr><td><strong style="color:var(--cyan)">Fibonacci / 1D</strong></td><td>"ways to reach", "climb", steps of 1-2</td><td>answer for first i steps</td><td>dp[i-1] ⊕ dp[i-2]</td><td>70, 746, 198</td></tr>
+    <tr><td><strong style="color:var(--purple)">Kadane</strong></td><td>"contiguous subarray", max sum/product</td><td>best subarray ending at i</td><td>max(x, dp+x)</td><td>53</td></tr>
+    <tr><td><strong style="color:var(--amber)">Grid</strong></td><td>"m × n grid", "only right/down"</td><td>answer for cell (i, j)</td><td>from top + left</td><td>62, 63, 64</td></tr>
+    <tr><td><strong style="color:var(--green)">0/1 Knapsack</strong></td><td>"pick items once", subset, partition</td><td>can/best for capacity j</td><td>skip vs take (j−w), loop ←</td><td>416</td></tr>
+    <tr><td><strong style="color:var(--green)">Unbounded Knapsack</strong></td><td>"unlimited supply", coins</td><td>best for amount a</td><td>try every coin, loop →</td><td>322, 518</td></tr>
+    <tr><td><strong style="color:var(--rose)">Two Strings</strong></td><td>two strings, "subsequence", "convert"</td><td>answer for prefixes i, j</td><td>match→diag, else ↑/←</td><td>1143, 72</td></tr>
+    <tr><td><strong style="color:var(--indigo)">LIS / Look-back</strong></td><td>"increasing", "chain", "break into words"</td><td>best ending at i</td><td>scan all j &lt; i</td><td>300, 139</td></tr>
+  </table></div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div class="card gl">
+      <h3 class="g">✅ How to attack ANY DP problem in an interview</h3>
+      <ul class="bl g" style="margin-top:.4rem;">
+        <li><strong>1.</strong> Solve n = tiny by hand (n = 3, 4) — feel the choices</li>
+        <li><strong>2.</strong> Say the state OUT LOUD: "dp[i] = the max money using houses 0..i"</li>
+        <li><strong>3.</strong> Write the transition from the LAST decision made</li>
+        <li><strong>4.</strong> Base cases: what does the empty/smallest case equal?</li>
+        <li><strong>5.</strong> Code the loops; state the answer cell</li>
+        <li><strong>6.</strong> Bonus: mention the space optimization</li>
+      </ul>
+    </div>
+    <div class="card rl">
+      <h3 class="r">❌ The 5 classic DP mistakes</h3>
+      <ul class="bl r" style="margin-top:.4rem;">
+        <li>Vague state — if you can't say dp[i] in one sentence, stop and redefine</li>
+        <li>Wrong loop direction in 0/1 knapsack (must go right-to-left in 1D)</li>
+        <li>Forgetting dp[0] seeds (True / 1 / 0) — the whole table stays empty</li>
+        <li>Returning dp[n-1] when the state is "ending at i" (need max over all)</li>
+        <li>Off-by-one between "first i characters" (size n+1) and "index i" (size n)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Rapid-fire Interview Q&amp;A</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>What is the time complexity of a DP solution?</span><span class="qico">+</span></div><div class="qa-a">(number of states) × (work per transition). Climbing stairs: n states × O(1) = O(n). LCS: m·n states × O(1) = O(m·n). LIS: n states × O(n) scan = O(n²). This formula answers the complexity question for every DP problem.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>When would you prefer memoization over tabulation?</span><span class="qico">+</span></div><div class="qa-a">When the state space is huge but only a fraction is actually reachable (memoization computes only what's needed), or when the transition is complex and the recursive form is much clearer. Prefer tabulation when recursion depth could overflow (n ≥ ~10⁵ in Python) or when you want space optimization.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>How do you recover the actual solution, not just the value?</span><span class="qico">+</span></div><div class="qa-a">Backtrack through the table: from the answer cell, ask "which choice produced this value?" and walk to that parent cell, recording the choice. E.g. in LCS, if chars match and dp[i][j] = dp[i-1][j-1]+1, that char is in the answer; else move toward the larger neighbour.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q4</span>Greedy vs DP — how do you decide?</span><span class="qico">+</span></div><div class="qa-a">Greedy works when a locally best choice is ALWAYS globally safe (activity selection, coins 1-2-5-10). If you can find one counter-example where greedy fails (coins [1, 3, 4], amount 6: greedy 4+1+1=3 coins, optimal 3+3=2), you need DP. Try to break greedy first — interviewers love seeing that test.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q5</span>What is state compression / space optimization?</span><span class="qico">+</span></div><div class="qa-a">If dp[i] depends only on the previous row (or last 2 cells), throw away older rows: 2D→1D (grid, knapsack) or array→two variables (fib, robber). Time is unchanged; space drops an entire dimension. Always mention it — it's a free bonus point.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q6</span>Why can't DP solve every optimization problem?</span><span class="qico">+</span></div><div class="qa-a">DP needs optimal substructure AND a state small enough to enumerate. Problems like TSP have exponential state (2ⁿ subsets — DP helps but stays exponential), and problems where a "subproblem answer" depends on the whole path taken (e.g. longest SIMPLE path in a graph) break optimal substructure entirely.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 08: PRACTICE ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">08</div>
+  <div class="sec-info"><h2>The 40-Problem Practice Sheet</h2><p>Solve in order — each level unlocks the next. Tick them off! ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <h3 class="c" style="margin-bottom:.8rem;">🟢 Warm-up — 1D basics (do ALL before moving on)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>509 · Fibonacci Number</h4><p>The definition of DP itself.</p><div class="ht">Hint: dp[i] = dp[i-1] + dp[i-2]</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>70 · Climbing Stairs</h4><p>Fibonacci wearing a costume.</p><div class="ht">Hint: last move was +1 or +2</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>1137 · N-th Tribonacci</h4><p>Three terms instead of two.</p><div class="ht">Hint: keep 3 rolling variables</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>746 · Min Cost Climbing Stairs</h4><p>Counting → minimising.</p><div class="ht">Hint: min(from i-1, from i-2)</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>118 · Pascal's Triangle</h4><p>Row from previous row.</p><div class="ht">Hint: cell = two cells above</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>198 · House Robber</h4><p>The take/skip decision.</p><div class="ht">Hint: max(skip, rob + dp[i-2])</div></div>
+  </div>
+
+  <h3 class="p" style="margin:1.8rem 0 .8rem;">🟣 1D — decisions &amp; subarrays</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>213 · House Robber II</h4><p>Houses form a circle.</p><div class="ht">Hint: run rob() twice, exclude one end each time</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>53 · Maximum Subarray</h4><p>Kadane's algorithm.</p><div class="ht">Hint: extend or start fresh</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>152 · Max Product Subarray</h4><p>Kadane with a twist.</p><div class="ht">Hint: track max AND min (negatives flip!)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>740 · Delete and Earn</h4><p>House Robber in disguise.</p><div class="ht">Hint: bucket by value → rob the buckets</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>91 · Decode Ways</h4><p>Strings meet climbing stairs.</p><div class="ht">Hint: 1 digit or 2 digits (10–26)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>55 · Jump Game</h4><p>Can you reach the end?</p><div class="ht">Hint: track farthest reachable index</div></div>
+  </div>
+
+  <h3 class="a" style="margin:1.8rem 0 .8rem;">🟡 Grid DP</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>62 · Unique Paths</h4><p>The grid classic.</p><div class="ht">Hint: top + left</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>63 · Unique Paths II</h4><p>Obstacles = 0 paths.</p><div class="ht">Hint: same, blocked cell → 0</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>64 · Minimum Path Sum</h4><p>Cheapest route.</p><div class="ht">Hint: cell + min(top, left)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>120 · Triangle</h4><p>Grid DP bottom-up.</p><div class="ht">Hint: start from the last row</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>221 · Maximal Square</h4><p>Largest square of 1s.</p><div class="ht">Hint: 1 + min(top, left, diagonal)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>931 · Min Falling Path Sum</h4><p>Three parents per cell.</p><div class="ht">Hint: min of the 3 cells above</div></div>
+  </div>
+
+  <h3 class="g" style="margin:1.8rem 0 .8rem;">🟢 Knapsack family</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>416 · Partition Equal Subset Sum</h4><p>The 0/1 gateway.</p><div class="ht">Hint: subset summing to total/2</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>322 · Coin Change</h4><p>Fewest coins.</p><div class="ht">Hint: dp[a] = 1 + min over coins</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>518 · Coin Change II</h4><p>Count combinations.</p><div class="ht">Hint: coins in the OUTER loop</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>494 · Target Sum</h4><p>+/- signs → subset sum.</p><div class="ht">Hint: sum(P) = (target + total) / 2</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>1049 · Last Stone Weight II</h4><p>Split into two close halves.</p><div class="ht">Hint: closest subset to total/2</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>279 · Perfect Squares</h4><p>Coin change with squares.</p><div class="ht">Hint: coins = 1, 4, 9, 16, …</div></div>
+  </div>
+
+  <h3 class="r" style="margin:1.8rem 0 .8rem;">🔴 String DP</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>1143 · Longest Common Subsequence</h4><p>The mother pattern.</p><div class="ht">Hint: match → diag + 1</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>72 · Edit Distance</h4><p>Insert / delete / replace.</p><div class="ht">Hint: 1 + min of 3 neighbours</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>5 · Longest Palindromic Substring</h4><p>Expand around centers.</p><div class="ht">Hint: 2n-1 centers</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>647 · Palindromic Substrings</h4><p>Count every expansion.</p><div class="ht">Hint: same engine as LC 5</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>516 · Longest Palindromic Subsequence</h4><p>LCS with a mirror.</p><div class="ht">Hint: LCS(s, reversed(s))</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>115 · Distinct Subsequences</h4><p>Count matchings.</p><div class="ht">Hint: match → diag + up; else up</div></div>
+  </div>
+
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--indigo);">🔵 LIS &amp; look-back</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>300 · Longest Increasing Subsequence</h4><p>The look-back classic.</p><div class="ht">Hint: scan all j &lt; i</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>139 · Word Break</h4><p>Valid cut points.</p><div class="ht">Hint: dp[j] and s[j:i] in dict</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>673 · Number of Longest Increasing Subsequences</h4><p>LIS + a count array.</p><div class="ht">Hint: carry counts beside lengths</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>646 · Maximum Length of Pair Chain</h4><p>LIS on intervals.</p><div class="ht">Hint: sort, then LIS logic</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>354 · Russian Doll Envelopes</h4><p>2D LIS.</p><div class="ht">Hint: sort width ↑, height ↓, LIS on height</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>376 · Wiggle Subsequence</h4><p>Alternate up/down.</p><div class="ht">Hint: track up[] and down[]</div></div>
+  </div>
+
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--orange);">🟠 Boss level — mixed &amp; hard</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>309 · Best Time to Buy/Sell Stock with Cooldown</h4><p>State machine DP.</p><div class="ht">Hint: states = holding / cooldown / free</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>123 · Best Time to Buy/Sell Stock III</h4><p>At most 2 transactions.</p><div class="ht">Hint: 4 states: buy1, sell1, buy2, sell2</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>45 · Jump Game II</h4><p>Fewest jumps.</p><div class="ht">Hint: BFS-style layers over indices</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>312 · Burst Balloons</h4><p>Interval DP.</p><div class="ht">Hint: pick the LAST balloon to burst</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>10 · Regular Expression Matching</h4><p>Two-string DP, hard mode.</p><div class="ht">Hint: handle '*' as zero or more</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>44 · Wildcard Matching</h4><p>Sibling of LC 10.</p><div class="ht">Hint: '*' matches any sequence</div></div>
+  </div>
+
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Completion promise</b>If you can solve these 42 problems without hints, you can solve ANY DP problem in a placement interview. Companies rarely go beyond LC 72 / 300 / 322 difficulty for freshers. You've got this! 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Dynamic Programming — Zero to Master · For placement preparation</p>
+  <div class="links">
+    <span>🧪 DP Lab</span><span>🎬 10 Step Animations</span><span>🐍 18 Python Solutions</span><span>📝 42 Practice Problems</span><span>💬 Interview Q&amp;A</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2025 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+<script>
+/* ═══════════ PYTHON SYNTAX HIGHLIGHTER ═══════════ */
+(function(){
+  const KW = new Set(['def','class','return','if','elif','else','for','while','in','not','and','or','None','True','False','lambda','nonlocal','break','continue','import','from']);
+  const FN = new Set(['range','len','max','min','sum','set','float','int','str','list','enumerate','abs','print','sorted','reversed','bisect_left']);
+  document.querySelectorAll('pre.py').forEach(p => {
+    let t = p.textContent;
+    t = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    t = t.replace(/(#.*$)|('[^'\n]*'|"[^"\n]*")|\b([A-Za-z_]+)\b|(\d+)/gm, (m, cm, st, w, num) => {
+      if (cm)  return '<span class="cm">' + cm + '</span>';
+      if (st)  return '<span class="st2">' + st + '</span>';
+      if (num) return '<span class="nm">' + num + '</span>';
+      if (KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    });
+    p.innerHTML = t;
+  });
+})();
+
+/* ═══════════ GENERIC STEP-ANIMATION ENGINE ═══════════ */
+const NS = 'http://www.w3.org/2000/svg';
+const A = {};
+function el(tag, attrs, parent, txt){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (txt !== undefined) e.textContent = txt;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function buildGrid(svgId, cfg){
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const cw = cfg.cw || 46, chh = cfg.ch || 42, gap = 5;
+  const rlw = cfg.rowLabels ? (cfg.rlw || 84) : 10;
+  const clh = cfg.colLabels ? 24 : 10;
+  const W = rlw + cfg.cols * (cw + gap) + 10;
+  const H = clh + cfg.rows * (chh + gap) + 10;
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  if (cfg.colLabels) cfg.colLabels.forEach((L, c) => {
+    el('text', {x: rlw + c*(cw+gap) + cw/2, y: 16, 'text-anchor':'middle', 'font-size':12, fill: (cfg.hlCol === c ? '#F59E0B' : '#94A3B8'), 'font-family':'Fira Code,monospace', 'font-weight':700}, svg, L);
+  });
+  if (cfg.rowLabels) cfg.rowLabels.forEach((L, r) => {
+    el('text', {x: rlw - 10, y: clh + r*(chh+gap) + chh/2 + 4, 'text-anchor':'end', 'font-size':11.5, fill:'#94A3B8', 'font-family':'Fira Code,monospace', 'font-weight':700}, svg, L);
+  });
+  for (let r = 0; r < cfg.rows; r++) for (let c = 0; c < cfg.cols; c++){
+    el('rect', {id: svgId+'-r-'+r+'-'+c, x: rlw + c*(cw+gap), y: clh + r*(chh+gap), width: cw, height: chh, rx: 7, fill:'#070C18', stroke:'rgba(255,255,255,.14)', 'stroke-width':1.5}, svg);
+    el('text', {id: svgId+'-x-'+r+'-'+c, x: rlw + c*(cw+gap) + cw/2, y: clh + r*(chh+gap) + chh/2 + 5, 'text-anchor':'middle', 'font-size':14, 'font-weight':700, fill:'#475569', 'font-family':'Fira Code,monospace'}, svg);
+  }
+  if (cfg.prefill) cfg.prefill.forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+}
+function setCellV(svgId, r, c, v, col){
+  col = col || '#00D9FF';
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  const txt  = document.getElementById(svgId+'-x-'+r+'-'+c);
+  if (!rect) return;
+  rect.setAttribute('stroke', col);
+  txt.setAttribute('fill', col);
+  txt.textContent = v;
+}
+function hiCell(svgId, r, c, on){
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  if (rect) rect.setAttribute('fill', on ? 'rgba(245,158,11,.16)' : '#070C18');
+}
+function setCap(id, t){ document.getElementById(id+'-cap').textContent = t; }
+function regAnim(id, cfg){ A[id] = {cfg, steps: [], i: 0, timer: null, lastHi: []}; resetAnim(id); }
+function resetAnim(id){
+  const a = A[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  a.i = 0; a.lastHi = [];
+  const svgId = id + '-svg';
+  if (a.cfg.custom){ document.getElementById(svgId).innerHTML = ''; a.cfg.init(svgId); }
+  else buildGrid(svgId, a.cfg);
+  a.steps = a.cfg.steps();
+  setCap(id, 'Press ▶ Step or ⏩ Auto to begin');
+}
+function stepAnim(id){
+  const a = A[id], svgId = id + '-svg';
+  if (a.i >= a.steps.length){ setCap(id, '✅ Done! Press ↺ Reset to replay.'); return; }
+  const s = a.steps[a.i++];
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, false));
+  a.lastHi = s.h || [];
+  (s.s || []).forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, true));
+  if (s.f) s.f(svgId);
+  setCap(id, s.c);
+}
+function autoAnim(id){
+  const a = A[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; return; }
+  if (a.i >= a.steps.length) resetAnim(id);
+  stepAnim(id);
+  a.timer = setInterval(() => {
+    stepAnim(id);
+    if (a.i >= a.steps.length){ clearInterval(a.timer); a.timer = null; }
+  }, a.cfg.ms || 1400);
+}
+
+/* palette shortcuts */
+const C_CY='#00D9FF', C_PU='#A855F7', C_AM='#F59E0B', C_GR='#22C55E', C_RO='#F43F5E', C_MU='#475569', C_WH='#F1F5F9';
+
+/* ═══════════ ANIM: FIB RECURSION TREE (custom) ═══════════ */
+const FT_NODES = [
+  {x:310,y:36, l:'f(5)',k:'u'}, {x:175,y:102,l:'f(4)',k:'u',p:0},
+  {x:95, y:168,l:'f(3)',k:'u',p:1}, {x:52, y:234,l:'f(2)',k:'u',p:2},
+  {x:30, y:302,l:'f(1)',k:'b',p:3}, {x:95, y:302,l:'f(0)',k:'b',p:3},
+  {x:150,y:234,l:'f(1)',k:'d',p:2}, {x:265,y:168,l:'f(2)',k:'d',p:1},
+  {x:228,y:234,l:'f(1)',k:'d',p:7}, {x:302,y:234,l:'f(0)',k:'d',p:7},
+  {x:455,y:102,l:'f(3)',k:'D',p:0}, {x:395,y:168,l:'f(2)',k:'d',p:10},
+  {x:360,y:234,l:'f(1)',k:'d',p:11}, {x:432,y:234,l:'f(0)',k:'d',p:11},
+  {x:515,y:168,l:'f(1)',k:'d',p:10},
+];
+const FT_CAPS = [
+  'Call fib(5). It must ask for fib(4) and fib(3)…',
+  'fib(5) → fib(4). Going deeper…',
+  'fib(4) → fib(3). Deeper still…',
+  'fib(3) → fib(2). Almost at the bottom…',
+  'fib(2) → fib(1) = 1. A base case — finally a real answer!',
+  'fib(2) → fib(0) = 0. Base case. Now f(2) = 1 + 0 = 1.',
+  '⚠️ fib(3) → fib(1)… we ALREADY know f(1). First repeat.',
+  '🔁 fib(4) → fib(2) — computed 2 seconds ago! Naive recursion has no memory.',
+  '🔁 …and this f(2) re-computes f(1) again…',
+  '🔁 …and f(0) again. The waste is piling up.',
+  '😱 fib(5) → fib(3): the ENTIRE f(3) subtree gets rebuilt from scratch!',
+  '🔁 f(2) again (4th time we solve it)…',
+  '🔁 f(1) again…', '🔁 f(0) again…', '🔁 f(1) — the 5th time!',
+];
+function ftInit(svgId){
+  const svg = document.getElementById(svgId);
+  el('text', {x:310, y:335, 'text-anchor':'middle','font-size':12, fill:'#475569','font-family':'Arial'}, svg, '15 calls · only 6 unique subproblems · rose = wasted repeat work');
+}
+function ftSteps(){
+  const steps = FT_NODES.map((n, i) => ({
+    c: FT_CAPS[i],
+    f: (svgId) => {
+      const svg = document.getElementById(svgId);
+      const col = n.k==='u' ? C_CY : n.k==='b' ? C_GR : C_RO;
+      if (n.p !== undefined){
+        const par = FT_NODES[n.p];
+        el('line', {x1:par.x, y1:par.y, x2:n.x, y2:n.y, stroke:'rgba(255,255,255,.18)','stroke-width':2}, svg);
+      }
+      el('circle', {cx:n.x, cy:n.y, r:21, fill:'#0D1526', stroke:col, 'stroke-width': n.k==='D'?3.5:2.5}, svg);
+      el('text', {x:n.x, y:n.y+4, 'text-anchor':'middle','font-size':11,'font-weight':'bold', fill:col, 'font-family':'Fira Code,monospace'}, svg, n.l);
+    }
+  }));
+  steps.push({c:'💡 Total: 15 calls for just n=5. With memoization only the 6 cyan/green nodes would run — every rose node becomes a free dictionary lookup!', f:()=>{}});
+  return steps;
+}
+
+/* ═══════════ ANIM: FIB TABULATION ═══════════ */
+function fibtabSteps(){
+  const st = [{c:'Base cases: dp[0] = 0 and dp[1] = 1. Everything grows from these two seeds.', s:[[0,0,'0',C_GR],[0,1,'1',C_GR]], h:[[0,0],[0,1]]}];
+  const dp = [0,1];
+  for (let i = 2; i <= 7; i++){
+    dp[i] = dp[i-1] + dp[i-2];
+    st.push({c:`dp[${i}] = dp[${i-1}] + dp[${i-2}] = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}`, s:[[0,i,String(dp[i]),C_CY]], h:[[0,i],[0,i-1],[0,i-2]]});
+  }
+  st.push({c:'✅ fib(7) = 13. Just 8 cells, filled once each — O(n) instead of O(2ⁿ). THIS is DP.', s:[[0,7,'13',C_GR]], h:[[0,7]]});
+  return st;
+}
+
+/* ═══════════ ANIM: CLIMBING STAIRS (n = 6) ═══════════ */
+function stairsSteps(){
+  const st = [{c:'Base cases: 1 way to reach step 1, and 2 ways to reach step 2 (1+1 or 2).', s:[[0,0,'1',C_GR],[0,1,'2',C_GR]], h:[[0,0],[0,1]]}];
+  const dp = [1,2];
+  for (let i = 2; i < 6; i++){
+    dp[i] = dp[i-1] + dp[i-2];
+    st.push({c:`ways(${i+1}) = ways(${i}) + ways(${i-1}) = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]} — last hop was +1 or +2`, s:[[0,i,String(dp[i]),C_CY]], h:[[0,i],[0,i-1],[0,i-2]]});
+  }
+  st.push({c:'✅ 13 ways to climb 6 stairs. Fibonacci with different base cases!', s:[[0,5,'13',C_GR]], h:[[0,5]]});
+  return st;
+}
+
+/* ═══════════ ANIM: HOUSE ROBBER ═══════════ */
+const ROB = [2,7,9,3,1];
+function robberSteps(){
+  const st = [];
+  const dp = [];
+  dp[0] = ROB[0];
+  st.push({c:'House 1 alone → rob it. dp[0] = 2', s:[[1,0,'2',C_GR]], h:[[1,0],[0,0]]});
+  dp[1] = Math.max(ROB[0], ROB[1]);
+  st.push({c:'dp[1] = max(house1 = 2, house2 = 7) = 7 → rob house 2, skip house 1', s:[[1,1,'7',C_GR]], h:[[1,1],[0,1]]});
+  for (let i = 2; i < 5; i++){
+    const robv = dp[i-2] + ROB[i], skipv = dp[i-1];
+    dp[i] = Math.max(robv, skipv);
+    const took = robv > skipv;
+    st.push({c:`dp[${i}] = max(SKIP → ${skipv},  ROB → dp[${i-2}] + ${ROB[i]} = ${robv}) = ${dp[i]}  →  ${took ? '🚨 ROB house ' + (i+1) : '🚶 SKIP house ' + (i+1)}`,
+      s:[[1,i,String(dp[i]), took ? C_GR : C_MU]], h:[[1,i],[0,i],[1,i-1],[1,i-2]]});
+  }
+  st.push({c:'✅ Maximum loot = 12 (houses with 2 + 9 + 1 — never adjacent).', s:[[1,4,'12',C_GR]], h:[[1,4]]});
+  return st;
+}
+
+/* ═══════════ ANIM: KADANE ═══════════ */
+const KAD = [-2,1,-3,4,-1,2,1,-5,4];
+function kadaneSteps(){
+  const st = [];
+  let curr = KAD[0], best = KAD[0];
+  st.push({c:'Start: curr = best = -2 (first element is our only subarray so far)', s:[[1,0,'-2',C_CY],[2,0,'-2',C_GR]], h:[[0,0]]});
+  for (let i = 1; i < 9; i++){
+    const ext = curr + KAD[i];
+    const fresh = KAD[i] > ext;
+    curr = Math.max(KAD[i], ext);
+    const nb = Math.max(best, curr);
+    const improved = nb > best; best = nb;
+    st.push({c:`x = ${KAD[i]}: extend (${ext}) vs start fresh (${KAD[i]}) → curr = ${curr} ${fresh ? '· 🔄 old sum was baggage, dropped it!' : '· ✚ extended'}${improved ? ' · 🏆 new best = ' + best : ''}`,
+      s:[[1,i,String(curr), fresh ? C_RO : C_CY],[2,i,String(best), improved ? C_GR : C_MU]], h:[[0,i],[1,i],[2,i]]});
+  }
+  st.push({c:'✅ Best = 6, from subarray [4, -1, 2, 1]. One pass, two variables.', s:[], h:[[2,6]]});
+  return st;
+}
+
+/* ═══════════ ANIM: UNIQUE PATHS 3×4 ═══════════ */
+function upathsSteps(){
+  const st = [{c:'Base cases: first row & first column = 1 (only one straight-line way to reach them).',
+    s:[[0,0,'1',C_GR],[0,1,'1',C_GR],[0,2,'1',C_GR],[0,3,'1',C_GR],[1,0,'1',C_GR],[2,0,'1',C_GR]],
+    h:[[0,0],[0,1],[0,2],[0,3],[1,0],[2,0]]}];
+  const dp = [[1,1,1,1],[1,0,0,0],[1,0,0,0]];
+  for (let i = 1; i < 3; i++) for (let j = 1; j < 4; j++){
+    dp[i][j] = dp[i-1][j] + dp[i][j-1];
+    st.push({c:`dp[${i}][${j}] = top (${dp[i-1][j]}) + left (${dp[i][j-1]}) = ${dp[i][j]}`,
+      s:[[i,j,String(dp[i][j]), C_CY]], h:[[i,j],[i-1,j],[i,j-1]]});
+  }
+  st.push({c:'✅ 10 unique paths to the bottom-right corner of a 3×4 grid.', s:[[2,3,'10',C_GR]], h:[[2,3]]});
+  return st;
+}
+
+/* ═══════════ ANIM: MIN PATH SUM 3×3 ═══════════ */
+const MPS = [[1,3,1],[1,5,1],[4,2,1]];
+function minpathSteps(){
+  const st = [{c:'Grey numbers = cost of each cell (the input grid). We will overwrite each with the CHEAPEST total to reach it.', s:[], h:[]}];
+  const dp = [[0,0,0],[0,0,0],[0,0,0]];
+  dp[0][0] = 1;
+  st.push({c:'Start cell: dp[0][0] = its own cost = 1', s:[[0,0,'1',C_GR]], h:[[0,0]]});
+  st.push({c:'First row: can only come from the left → 1+3=4, then 4+1=5. First column: only from top → 1+1=2, 2+4=6.',
+    s:[[0,1,'4',C_GR],[0,2,'5',C_GR],[1,0,'2',C_GR],[2,0,'6',C_GR]], h:[[0,1],[0,2],[1,0],[2,0]]});
+  dp[0][1]=4; dp[0][2]=5; dp[1][0]=2; dp[2][0]=6;
+  for (let i = 1; i < 3; i++) for (let j = 1; j < 3; j++){
+    dp[i][j] = MPS[i][j] + Math.min(dp[i-1][j], dp[i][j-1]);
+    st.push({c:`dp[${i}][${j}] = cost ${MPS[i][j]} + min(top ${dp[i-1][j]}, left ${dp[i][j-1]}) = ${dp[i][j]}`,
+      s:[[i,j,String(dp[i][j]), C_CY]], h:[[i,j],[i-1,j],[i,j-1]]});
+  }
+  st.push({c:'✅ Cheapest route costs 7: 1 → 3 → 1 → 1 → 1 (across the top, then down the right edge).', s:[[2,2,'7',C_GR]], h:[[2,2]]});
+  return st;
+}
+
+/* ═══════════ ANIM: SUBSET SUM (LC 416) ═══════════ */
+function subsetSteps(){
+  const nums = [1,5,11,5], target = 11;
+  const st = [];
+  let reach = new Set([0]);
+  const rowFill = (row, set, newly) => {
+    const s = [];
+    for (let j = 0; j <= target; j++){
+      const t = set.has(j);
+      s.push([row, j, t ? '✓' : '✗', newly && newly.has(j) ? C_GR : (t ? 'rgba(34,197,94,.55)' : '#33415580') ]);
+    }
+    return s;
+  };
+  st.push({c:'Row {}: using NO numbers, only sum 0 is reachable (pick nothing). This seed powers everything.', s: rowFill(0, reach, new Set([0])), h:[[0,0]]});
+  nums.forEach((num, k) => {
+    const next = new Set(reach);
+    const newly = new Set();
+    reach.forEach(v => { if (v + num <= target && !next.has(v + num)){ next.add(v + num); newly.add(v + num); } });
+    reach = next;
+    const hi = [...newly].map(j => [k+1, j]);
+    st.push({c:`Add number ${num}: keep every ✓ from the row above (skip it), PLUS shift each ✓ right by ${num} (take it). New sums: ${[...newly].join(', ') || 'none'}`,
+      s: rowFill(k+1, reach, newly), h: hi});
+  });
+  st.push({c:'✅ dp[11] = True → subset {11} vs {1, 5, 5}. The array CAN be partitioned! 🎉', s:[], h:[[4,11]]});
+  return st;
+}
+
+/* ═══════════ ANIM: COIN CHANGE ═══════════ */
+function coinsSteps(){
+  const coins = [1,2,5], amount = 7;
+  const st = [{c:'Base case: dp[0] = 0 — zero coins needed to make ₹0.', s:[[0,0,'0',C_GR]], h:[[0,0]]}];
+  const dp = [0];
+  for (let a = 1; a <= amount; a++){
+    let bestv = Infinity, parts = [], h = [[0,a]];
+    coins.forEach(c => { if (c <= a){ parts.push(`dp[${a-c}]=${dp[a-c]}`); h.push([0, a-c]); if (dp[a-c] + 1 < bestv) bestv = dp[a-c] + 1; } });
+    dp[a] = bestv;
+    st.push({c:`dp[${a}] = 1 + min(${parts.join(', ')}) = ${bestv}  — try ending with coin 1, 2 or 5`, s:[[0,a,String(bestv), C_CY]], h});
+  }
+  st.push({c:'✅ dp[7] = 2 coins (5 + 2). Every amount built from smaller amounts.', s:[[0,7,'2',C_GR]], h:[[0,7]]});
+  return st;
+}
+
+/* ═══════════ ANIM: LCS "abcde" × "ace" ═══════════ */
+function lcsSteps(){
+  const s1 = 'abcde', s2 = 'ace';
+  const st = [];
+  const dp = Array.from({length: 6}, () => [0,0,0,0]);
+  const base = [];
+  for (let j = 0; j < 4; j++) base.push([0, j, '0', C_MU]);
+  for (let i = 1; i < 6; i++) base.push([i, 0, '0', C_MU]);
+  st.push({c:'Base row & column: LCS of anything with the EMPTY string "" is 0.', s: base, h:[]});
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 3; j++){
+    const a = s1[i-1], b = s2[j-1];
+    let cap, col;
+    if (a === b){
+      dp[i][j] = dp[i-1][j-1] + 1;
+      cap = `'${a}' == '${b}' → MATCH! diagonal + 1 = ${dp[i][j]}`;
+      col = C_GR;
+    } else {
+      dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+      cap = `'${a}' ≠ '${b}' → max(up ${dp[i-1][j]}, left ${dp[i][j-1]}) = ${dp[i][j]}`;
+      col = C_CY;
+    }
+    st.push({c: cap, s:[[i,j,String(dp[i][j]), col]], h:[[i,j],[i-1,j-1],[i-1,j],[i,j-1]]});
+  }
+  st.push({c:'✅ LCS("abcde", "ace") = 3 — the subsequence "ace". Bottom-right cell is always the answer.', s:[[5,3,'3',C_GR]], h:[[5,3]]});
+  return st;
+}
+
+/* ═══════════ ANIM: EDIT DISTANCE "horse" → "ros" ═══════════ */
+function editSteps(){
+  const w1 = 'horse', w2 = 'ros';
+  const st = [];
+  const dp = Array.from({length: 6}, () => [0,0,0,0]);
+  const base = [];
+  for (let j = 0; j <= 3; j++){ dp[0][j] = j; base.push([0, j, String(j), C_MU]); }
+  for (let i = 1; i <= 5; i++){ dp[i][0] = i; base.push([i, 0, String(i), C_MU]); }
+  st.push({c:'Base cases: "" → "ros" needs j inserts; "horse" prefix → "" needs i deletes.', s: base, h:[]});
+  for (let i = 1; i <= 5; i++) for (let j = 1; j <= 3; j++){
+    const a = w1[i-1], b = w2[j-1];
+    let cap, col;
+    if (a === b){
+      dp[i][j] = dp[i-1][j-1];
+      cap = `'${a}' == '${b}' → FREE, copy diagonal = ${dp[i][j]}`;
+      col = C_GR;
+    } else {
+      dp[i][j] = 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+      cap = `'${a}' ≠ '${b}' → 1 + min(replace ↖${dp[i-1][j-1]}, delete ↑${dp[i-1][j]}, insert ←${dp[i][j-1]}) = ${dp[i][j]}`;
+      col = C_AM;
+    }
+    st.push({c: cap, s:[[i,j,String(dp[i][j]), col]], h:[[i,j],[i-1,j-1],[i-1,j],[i,j-1]]});
+  }
+  st.push({c:'✅ Edit distance = 3: horse → rorse (replace) → rose (delete) → ros (delete).', s:[[5,3,'3',C_GR]], h:[[5,3]]});
+  return st;
+}
+
+/* ═══════════ ANIM: LIS ═══════════ */
+const LIS = [10,9,2,5,3,7,101,18];
+function lisSteps(){
+  const st = [{c:'Initialize dp = 1 everywhere — every element alone is an increasing chain of length 1.',
+    s: LIS.map((_, i) => [1, i, '1', C_MU]), h:[]}];
+  const dp = new Array(8).fill(1);
+  for (let i = 1; i < 8; i++){
+    let checks = [], bestj = -1;
+    for (let j = 0; j < i; j++){
+      if (LIS[j] < LIS[i]){
+        checks.push(`${LIS[j]}✓`);
+        if (dp[j] + 1 > dp[i]){ dp[i] = dp[j] + 1; bestj = j; }
+      } else checks.push(`${LIS[j]}✗`);
+    }
+    const h = [[0,i],[1,i]]; if (bestj >= 0) h.push([1,bestj]);
+    st.push({c:`nums[${i}] = ${LIS[i]}: look back → ${checks.join(' ')}  ⇒ dp[${i}] = ${dp[i]}${bestj>=0 ? ' (extends chain ending at ' + LIS[bestj] + ')' : ' (no smaller element before it)'}`,
+      s:[[1,i,String(dp[i]), dp[i] > 1 ? C_CY : C_MU]], h});
+  }
+  st.push({c:'✅ Answer = max(dp) = 4 → chain [2, 3, 7, 101]. Note: the best chain ends at 101, NOT at the last element!',
+    s:[[1,6,'4',C_GR]], h:[[1,2],[1,4],[1,5],[1,6]]});
+  return st;
+}
+
+/* ═══════════ ANIM: WORD BREAK "leetcode" ═══════════ */
+function wbreakSteps(){
+  const st = [{c:'dp[0] = True: the empty prefix "" needs no words. Dictionary = {leet, code}.', s:[[0,0,'T',C_GR]], h:[[0,0]]}];
+  const truth = [true, false, false, false, true, false, false, false, true];
+  const caps = {
+    1:'i=1 "l": no dictionary word ends here → False',
+    2:'i=2 "le": "le"? "e"? not in dict → False',
+    3:'i=3 "lee": no valid cut → False',
+    4:'i=4 "leet": cut at j=0 → dp[0]=T and s[0:4]="leet" ∈ dict ✓ → True!',
+    5:'i=5 "leetc": dp[4]=T but "c" ∉ dict; no other T cut → False',
+    6:'i=6 "leetco": "co" ∉ dict → False',
+    7:'i=7 "leetcod": "cod" ∉ dict → False',
+    8:'i=8 "leetcode": cut at j=4 → dp[4]=T and s[4:8]="code" ∈ dict ✓ → True!',
+  };
+  for (let i = 1; i <= 8; i++){
+    const h = [[0,i]];
+    if (i === 4) h.push([0,0]);
+    if (i === 8) h.push([0,4]);
+    st.push({c: caps[i], s:[[0,i, truth[i] ? 'T' : 'F', truth[i] ? C_GR : C_RO]], h});
+  }
+  st.push({c:'✅ dp[8] = True → "leet" + "code". The T at position 4 was the stepping stone.', s:[], h:[[0,0],[0,4],[0,8]]});
+  return st;
+}
+
+/* ═══════════ DP LAB ═══════════ */
+function runLab(){
+  let n = parseInt(document.getElementById('lab-n').value, 10);
+  if (isNaN(n)) n = 20;
+  n = Math.max(2, Math.min(35, n));
+  document.getElementById('lab-n').value = n;
+  const f = [0, 1];
+  for (let i = 2; i <= n + 1; i++) f[i] = f[i-1] + f[i-2];
+  const naive = 2 * f[n+1] - 1;
+  const memo = 2 * n - 1;
+  document.getElementById('lab-ans').textContent = f[n].toLocaleString('en-IN');
+  document.getElementById('lab-naive').textContent = naive.toLocaleString('en-IN');
+  document.getElementById('lab-memo').textContent = memo.toLocaleString('en-IN');
+  const bn = document.getElementById('lab-bar-naive'), bm = document.getElementById('lab-bar-memo');
+  bn.style.width = '100%'; bn.textContent = naive.toLocaleString('en-IN') + ' calls';
+  bm.style.width = Math.max(4, (memo / naive) * 100) + '%'; bm.textContent = memo.toLocaleString('en-IN') + ' calls';
+  const secs = naive / 1e7;
+  let t;
+  if (secs < 0.001) t = 'under a millisecond';
+  else if (secs < 1) t = (secs * 1000).toFixed(1) + ' milliseconds';
+  else if (secs < 60) t = secs.toFixed(2) + ' seconds';
+  else t = (secs / 60).toFixed(1) + ' minutes';
+  document.getElementById('lab-msg').textContent =
+    '→ naive does ' + Math.round(naive / memo).toLocaleString('en-IN') + '× more work. At 10 million calls/sec: naive ≈ ' + t + ', memo: instant.';
+}
+
+/* ═══════════ REGISTER EVERYTHING ═══════════ */
+regAnim('fibtree', {custom: true, init: ftInit, steps: ftSteps, ms: 1500});
+regAnim('fibtab',  {rows:1, cols:8, colLabels:['0','1','2','3','4','5','6','7'], steps: fibtabSteps});
+regAnim('stairs',  {rows:1, cols:6, colLabels:['step 1','step 2','step 3','step 4','step 5','step 6'], cw:64, steps: stairsSteps});
+regAnim('robber',  {rows:2, cols:5, colLabels:['🏠1','🏠2','🏠3','🏠4','🏠5'], rowLabels:['cash 💰','dp best'], cw:56,
+  prefill: ROB.map((v,i) => [0, i, String(v), C_AM]), steps: robberSteps, ms: 1900});
+regAnim('kadane',  {rows:3, cols:9, colLabels:['0','1','2','3','4','5','6','7','8'], rowLabels:['nums','curr','best'], cw:48,
+  prefill: KAD.map((v,i) => [0, i, String(v), C_AM]), steps: kadaneSteps, ms: 1900});
+regAnim('upaths',  {rows:3, cols:4, cw:56, ch:48, steps: upathsSteps});
+regAnim('minpath', {rows:3, cols:3, cw:56, ch:48,
+  prefill: [[0,0,'1'],[0,1,'3'],[0,2,'1'],[1,0,'1'],[1,1,'5'],[1,2,'1'],[2,0,'4'],[2,1,'2'],[2,2,'1']].map(x => [x[0], x[1], x[2], '#33415580']),
+  steps: minpathSteps, ms: 1700});
+regAnim('subset',  {rows:5, cols:12, colLabels:['0','1','2','3','4','5','6','7','8','9','10','11'], hlCol: 11,
+  rowLabels:['{}','+ 1','+ 5','+ 11','+ 5'], cw:36, ch:36, steps: subsetSteps, ms: 2300});
+regAnim('coins',   {rows:1, cols:8, colLabels:['₹0','₹1','₹2','₹3','₹4','₹5','₹6','₹7'], steps: coinsSteps, ms: 1800});
+regAnim('lcs',     {rows:6, cols:4, colLabels:['""','a','c','e'], rowLabels:['""','a','b','c','d','e'], rlw: 50, cw:44, ch:38, steps: lcsSteps, ms: 1600});
+regAnim('edit',    {rows:6, cols:4, colLabels:['""','r','o','s'], rowLabels:['""','h','o','r','s','e'], rlw: 50, cw:44, ch:38, steps: editSteps, ms: 1800});
+regAnim('lis',     {rows:2, cols:8, colLabels:['0','1','2','3','4','5','6','7'], rowLabels:['nums','dp'], cw:48,
+  prefill: LIS.map((v,i) => [0, i, String(v), C_AM]), steps: lisSteps, ms: 2100});
+regAnim('wbreak',  {rows:1, cols:9, colLabels:['""','l','e','e','t','c','o','d','e'], cw:40, steps: wbreakSteps, ms: 1800});
+runLab();
+
+/* ═══════════ NAV ACTIVE LINK ═══════════ */
+const secIds = ['lab','intro','dp1d','grid','knapsack','strings','lis','master','practice'];
+window.addEventListener('scroll', () => {
+  let cur = secIds[0];
+  secIds.forEach(id => {
+    const s = document.getElementById(id);
+    if (s && s.getBoundingClientRect().top < 120) cur = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('act', a.getAttribute('href') === '#' + cur));
+}, {passive: true});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

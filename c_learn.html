@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>C Language — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(34,197,94,.25);
+  --green:#22C55E;--cyan:#00D9FF;--blue:#3B82F6;--amber:#F59E0B;
+  --purple:#A855F7;--rose:#F43F5E;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --sidebar:260px;--r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--green);border-radius:3px;}
+
+/* ── TOP NAV ── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(7,12,24,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);height:58px;
+  display:flex;align-items:center;padding:0 1.25rem;gap:1rem;
+}
+.topnav-back{
+  display:flex;align-items:center;gap:.5rem;color:var(--slate);font-size:13px;
+  text-decoration:none;padding:.35rem .8rem;border-radius:8px;
+  border:1px solid var(--border);transition:all .2s;
+}
+.topnav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.topnav-title{
+  font-size:1rem;font-weight:700;
+  background:linear-gradient(135deg,var(--green),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topnav-lang{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.3rem .9rem;border-radius:100px;font-size:12px;font-weight:700;
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);
+  margin-left:auto;
+}
+.topnav-progress{
+  display:flex;align-items:center;gap:.6rem;font-size:12px;color:var(--slate);
+}
+.progress-bar-wrap{width:100px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;}
+.progress-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s ease;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:100vh;padding-top:58px;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;position:fixed;top:58px;left:0;bottom:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  overflow-y:auto;padding:1rem 0;z-index:100;
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sb-section{padding:.4rem 1rem .2rem;font-size:10px;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:.5rem;}
+.sb-item{
+  display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem .55rem 1.25rem;
+  font-size:13px;color:var(--slate);cursor:pointer;transition:all .18s;
+  border-left:2px solid transparent;text-decoration:none;
+}
+.sb-item:hover{color:var(--white);background:var(--glass);}
+.sb-item.active{color:var(--green);background:rgba(34,197,94,.07);border-left-color:var(--green);}
+.sb-item.done .sb-dot{background:var(--green);}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .2s;}
+.sb-item.active .sb-dot{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.6);}
+.sb-num{font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace;}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:var(--sidebar);flex:1;padding:2.5rem 2rem 5rem;max-width:900px;}
+
+/* ── TOPIC PAGE ── */
+.topic-page{display:none;}
+.topic-page.active{display:block;}
+
+/* ── CONTENT STYLES ── */
+.topic-header{margin-bottom:2rem;}
+.topic-tag{
+  display:inline-block;padding:.2rem .75rem;border-radius:100px;font-size:11px;
+  font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;
+  background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);
+}
+.topic-title{font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:800;line-height:1.1;
+  letter-spacing:-.02em;margin-bottom:.5rem;}
+.topic-sub{font-size:15px;color:var(--slate);line-height:1.7;}
+
+.lesson-block{margin-bottom:2.5rem;}
+.lesson-block h3{font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:.75rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+.lesson-block h3 .icon{font-size:1rem;}
+.lesson-block p{font-size:14px;color:var(--slate);line-height:1.85;margin-bottom:.75rem;}
+.lesson-block p strong{color:var(--white);}
+.lesson-block ul,.lesson-block ol{padding-left:1.4rem;font-size:14px;color:var(--slate);line-height:2;}
+.lesson-block li strong{color:var(--white);}
+.lesson-block li code{
+  font-family:'Fira Code','Courier New',monospace;font-size:12px;
+  background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;color:var(--cyan);
+}
+
+/* Real-life analogy box */
+.analogy{
+  background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);
+  border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;
+  padding:1rem 1.25rem;margin:.8rem 0 1rem;
+}
+.analogy .label{font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:.35rem;}
+.analogy p{font-size:13.5px;color:#CBD5E1;line-height:1.75;margin:0;}
+
+/* Info / tip / warning boxes */
+.info-box{
+  border-radius:var(--r);padding:1rem 1.25rem;margin:.8rem 0;
+  display:flex;gap:.75rem;align-items:flex-start;
+}
+.info-box.info{background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.15);}
+.info-box.tip{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);}
+.info-box.warn{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);}
+.info-box .ib-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.info-box .ib-text{font-size:13.5px;color:var(--slate);line-height:1.75;}
+.info-box .ib-text strong{color:var(--white);}
+
+/* Code block */
+.code-block{
+  background:#0A0F1A;border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r);overflow:hidden;margin:.75rem 0 1.2rem;
+}
+.code-header{
+  display:flex;align-items:center;padding:.55rem 1rem;
+  background:#0D1526;border-bottom:1px solid rgba(255,255,255,.06);
+  gap:.6rem;
+}
+.code-dots{display:flex;gap:.35rem;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.cd1{background:#F43F5E;}.cd2{background:#F59E0B;}.cd3{background:#22C55E;}
+.code-lang{font-size:11px;color:var(--muted);font-family:monospace;margin-left:.4rem;}
+.code-copy{
+  margin-left:auto;font-size:11px;color:var(--muted);cursor:pointer;
+  padding:.2rem .6rem;border-radius:5px;border:1px solid var(--border);
+  background:transparent;transition:all .2s;
+}
+.code-copy:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.code-body{padding:1.2rem 1.4rem;overflow-x:auto;}
+.code-body pre{margin:0;font-family:'Fira Code','Courier New',monospace;
+  font-size:13px;line-height:1.9;white-space:pre;}
+
+/* Syntax colors */
+.kw{color:#A855F7;}
+.fn{color:#00D9FF;}
+.str{color:#22C55E;}
+.num{color:#F59E0B;}
+.cmt{color:#475569;font-style:italic;}
+.op{color:#E2E8F0;}
+.inc{color:#F43F5E;}
+.type{color:#FB923C;}
+
+/* Output block */
+.output-block{
+  background:#050A05;border:1px solid rgba(34,197,94,.15);border-radius:var(--r);
+  padding:1rem 1.4rem;margin-top:-.5rem;margin-bottom:1.2rem;
+}
+.output-label{font-size:10px;color:var(--green);font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;}
+.output-block pre{font-family:'Fira Code',monospace;font-size:13px;
+  color:#22C55E;line-height:1.8;white-space:pre;}
+
+/* Mini quiz */
+.quiz-block{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.25rem;margin:1.5rem 0;
+}
+.quiz-q{font-size:14px;font-weight:700;margin-bottom:.8rem;}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem;}
+.quiz-opt{
+  padding:.6rem 1rem;border-radius:8px;font-size:13px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;text-align:left;color:var(--slate);
+}
+.quiz-opt:hover{background:rgba(0,217,255,.05);border-color:rgba(0,217,255,.2);color:var(--white);}
+.quiz-opt.correct{background:rgba(34,197,94,.1);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:rgba(244,63,94,.1);border-color:var(--rose);color:var(--rose);}
+.quiz-feedback{margin-top:.75rem;font-size:13px;display:none;}
+
+/* Nav buttons */
+.topic-nav{
+  display:flex;justify-content:space-between;margin-top:3rem;
+  padding-top:1.5rem;border-top:1px solid var(--border);
+}
+.tnav-btn{
+  display:flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;
+  border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;border:1px solid var(--border);background:var(--glass);color:var(--slate);
+}
+.tnav-btn:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.tnav-btn.next{background:linear-gradient(135deg,var(--green),#16A34A);
+  color:#000;border:none;font-weight:700;}
+.tnav-btn.next:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(34,197,94,.35);}
+
+/* ── WELCOME SCREEN ── */
+.welcome-screen{padding:2rem 0;}
+.welcome-screen h1{font-size:2rem;font-weight:800;margin-bottom:.4rem;text-align:center;}
+.welcome-screen>p{color:var(--slate);font-size:14px;max-width:520px;margin:0 auto 2rem;line-height:1.75;text-align:center;}
+.start-btn{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 2.5rem;
+  border-radius:12px;background:linear-gradient(135deg,var(--green),#16A34A);
+  color:#000;font-size:15px;font-weight:700;cursor:pointer;border:none;
+  box-shadow:0 4px 24px rgba(34,197,94,.3);transition:all .25s;
+}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(34,197,94,.45);}
+
+/* ── CODE ANATOMY ── */
+.anatomy-wrap{
+  background:#0A0F1A;border:1px solid rgba(34,197,94,.2);border-radius:18px;
+  overflow:hidden;margin:0 0 2rem;
+}
+.anatomy-topbar{
+  background:#0D1526;padding:.6rem 1.2rem;display:flex;align-items:center;gap:.5rem;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.anatomy-dots{display:flex;gap:.4rem;}
+.anatomy-dot{width:11px;height:11px;border-radius:50%;}
+.ad1{background:#F43F5E;}.ad2{background:#F59E0B;}.ad3{background:#22C55E;}
+.anatomy-file{font-size:11px;color:var(--muted);font-family:monospace;margin-left:.5rem;}
+.anatomy-hint{margin-left:auto;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:.3rem;}
+.anatomy-hint span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);animation:ablink 1.2s ease infinite;}
+@keyframes ablink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+.anatomy-code-area{padding:1.8rem 2rem;font-family:'Fira Code','Courier New',monospace;font-size:14px;line-height:2.4;position:relative;}
+/* plain text tokens */
+.ct{color:#CBD5E1;}
+.ct-kw{color:#A855F7;}
+.ct-fn{color:#00D9FF;}
+.ct-str{color:#22C55E;}
+.ct-cmt{color:#475569;font-style:italic;}
+
+/* annotated (clickable) token */
+.atoken{
+  position:relative;display:inline-flex;align-items:center;gap:3px;
+  cursor:pointer;border-radius:5px;padding:1px 4px;
+  border:1.5px dashed;transition:all .2s;
+}
+.atoken:hover{filter:brightness(1.3);}
+.atoken.active-tok{box-shadow:0 0 0 3px rgba(34,197,94,.3);}
+
+/* color themes for tokens */
+.atoken.t-pre   {color:#F43F5E;border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.06);}
+.atoken.t-hdr   {color:#FB923C;border-color:rgba(251,146,60,.4);background:rgba(251,146,60,.06);}
+.atoken.t-ret   {color:#A855F7;border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.06);}
+.atoken.t-entry {color:#00D9FF;border-color:rgba(0,217,255,.4);background:rgba(0,217,255,.06);}
+.atoken.t-param {color:#F59E0B;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06);}
+.atoken.t-block {color:#22C55E;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06);}
+.atoken.t-print {color:#00D9FF;border-color:rgba(0,217,255,.4);background:rgba(0,217,255,.06);}
+.atoken.t-strlit{color:#22C55E;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06);}
+.atoken.t-esc   {color:#F59E0B;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06);}
+.atoken.t-rtn   {color:#A855F7;border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.06);}
+.atoken.t-zero  {color:#F43F5E;border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.06);}
+
+/* badge number inside token */
+.abadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:800;
+  background:currentColor;flex-shrink:0;
+}
+.abadge span{color:#000;}
+
+/* panel that slides in when token clicked */
+.anatomy-panel{
+  border-top:1px solid rgba(255,255,255,.06);
+  max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .3s ease;
+  opacity:0;
+}
+.anatomy-panel.open{max-height:400px;opacity:1;}
+.anatomy-panel-inner{padding:1.4rem 2rem;display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;}
+.ap-icon-wrap{
+  width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;flex-shrink:0;
+}
+.ap-tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;}
+.ap-title{font-size:1.1rem;font-weight:800;margin-bottom:.5rem;}
+.ap-what{font-size:13px;color:var(--slate);line-height:1.7;margin-bottom:.5rem;}
+.ap-what strong{color:var(--white);}
+.ap-why{
+  font-size:12px;color:var(--amber);background:rgba(245,158,11,.06);
+  border-left:2px solid var(--amber);padding:.5rem .8rem;border-radius:0 8px 8px 0;
+  line-height:1.7;margin-bottom:.75rem;
+}
+.ap-btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+.ap-btn-topic{
+  padding:.45rem 1.1rem;border-radius:8px;font-size:12px;font-weight:700;
+  background:linear-gradient(135deg,var(--green),#16A34A);color:#000;
+  border:none;cursor:pointer;transition:all .2s;
+}
+.ap-btn-topic:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(34,197,94,.35);}
+.ap-btn-close{
+  padding:.45rem 1rem;border-radius:8px;font-size:12px;font-weight:600;
+  background:transparent;color:var(--muted);border:1px solid var(--border);cursor:pointer;transition:all .2s;
+}
+.ap-btn-close:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+
+/* legend strip below code */
+.anatomy-legend{
+  display:flex;flex-wrap:wrap;gap:.5rem;padding:.8rem 1.5rem;
+  background:#050A14;border-top:1px solid rgba(255,255,255,.04);
+}
+.aleg-item{
+  display:flex;align-items:center;gap:.4rem;font-size:11px;color:var(--muted);cursor:pointer;
+  padding:.25rem .6rem;border-radius:5px;transition:background .15s;
+}
+.aleg-item:hover{background:rgba(255,255,255,.04);color:var(--white);}
+.aleg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.data-table th{
+  background:rgba(34,197,94,.08);color:var(--green);padding:.6rem 1rem;
+  text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  border-bottom:1px solid rgba(34,197,94,.2);
+}
+.data-table td{
+  padding:.6rem 1rem;border-bottom:1px solid var(--border);
+  color:var(--slate);vertical-align:top;
+}
+.data-table td:first-child{color:var(--white);font-family:monospace;font-size:12px;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(255,255,255,.02);}
+
+/* Mobile */
+.mob-menu-btn{display:none;background:none;border:none;color:var(--white);font-size:1.4rem;cursor:pointer;padding:.2rem .5rem;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:1.5rem 1rem 4rem;}
+  .mob-menu-btn{display:block;}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;}
+  .sidebar-overlay.show{display:block;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<div class="topnav">
+  <button class="mob-menu-btn" id="mobMenuBtn">☰</button>
+  <a href="index.html" class="topnav-back">← Back</a>
+  <span class="topnav-title">CoddingBuddY</span>
+  <span class="topnav-lang">
+    <span style="font-family:monospace;font-weight:900;">C</span> Language
+  </span>
+  <a href="compiler.html" style="margin-left:auto;padding:5px 14px;border-radius:7px;background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.25);color:var(--cyan);font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap">⚡ Compiler</a>
+  <div class="topnav-progress">
+    <span id="progressText">0 / 10</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-section">Getting Started</div>
+    <a class="sb-item active" data-topic="welcome" onclick="showTopic('welcome')">
+      <span class="sb-dot"></span> Welcome to C
+    </a>
+
+    <div class="sb-section">Core Concepts</div>
+    <a class="sb-item" data-topic="intro" onclick="showTopic('intro')">
+      <span class="sb-dot"></span> Introduction to C
+      <span class="sb-num">01</span>
+    </a>
+    <a class="sb-item" href="variables.html">
+      <span class="sb-dot" style="background:var(--green);"></span> Variables & Data Types
+      <span class="sb-num">02</span>
+    </a>
+    <a class="sb-item" href="operators.html">
+      <span class="sb-dot"></span> Operators
+      <span class="sb-num">03</span>
+    </a>
+    <a class="sb-item" href="keywords.html">
+      <span class="sb-dot"></span> Keywords
+      <span class="sb-num">04</span>
+    </a>
+    <a class="sb-item" data-topic="control" onclick="showTopic('control')">
+      <span class="sb-dot"></span> Control Flow
+      <span class="sb-num">05</span>
+    </a>
+    <a class="sb-item" data-topic="loops" onclick="showTopic('loops')">
+      <span class="sb-dot"></span> Loops
+      <span class="sb-num">06</span>
+    </a>
+    <a class="sb-item" data-topic="functions" onclick="showTopic('functions')">
+      <span class="sb-dot"></span> Functions
+      <span class="sb-num">07</span>
+    </a>
+
+    <div class="sb-section">Memory & Pointers</div>
+    <a class="sb-item" data-topic="arrays" onclick="showTopic('arrays')">
+      <span class="sb-dot"></span> Arrays & Strings
+      <span class="sb-num">08</span>
+    </a>
+    <a class="sb-item" data-topic="pointers" onclick="showTopic('pointers')">
+      <span class="sb-dot"></span> Pointers
+      <span class="sb-num">09</span>
+    </a>
+    <a class="sb-item" data-topic="structures" onclick="showTopic('structures')">
+      <span class="sb-dot"></span> Structures
+      <span class="sb-num">10</span>
+    </a>
+    <a class="sb-item" data-topic="fileio" onclick="showTopic('fileio')">
+      <span class="sb-dot"></span> File I/O
+      <span class="sb-num">11</span>
+    </a>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- ════ WELCOME ════ -->
+    <div class="topic-page active" id="page-welcome">
+      <div class="welcome-screen">
+        <h1>C <span style="color:var(--green);">Language</span> — Welcome!</h1>
+        <p>C is the "Mother of All Languages." Java, Python, JavaScript — almost every modern language borrowed ideas from C. Start here and understand how a computer really thinks.</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin:1.5rem 0;">
+          <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:.7rem 1.2rem;text-align:center;min-width:130px;">
+            <div style="font-size:1.5rem;">⚡</div>
+            <div style="font-size:12px;font-weight:700;color:var(--green);margin-top:.3rem;">Blazing Fast</div>
+            <div style="font-size:11px;color:var(--slate);">Near machine speed</div>
+          </div>
+          <div style="background:rgba(0,217,255,.07);border:1px solid rgba(0,217,255,.2);border-radius:10px;padding:.7rem 1.2rem;text-align:center;min-width:130px;">
+            <div style="font-size:1.5rem;">🧠</div>
+            <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-top:.3rem;">Memory Control</div>
+            <div style="font-size:11px;color:var(--slate);">Pointers & manual alloc</div>
+          </div>
+          <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:.7rem 1.2rem;text-align:center;min-width:130px;">
+            <div style="font-size:1.5rem;">🏗️</div>
+            <div style="font-size:12px;font-weight:700;color:var(--purple);margin-top:.3rem;">Foundation</div>
+            <div style="font-size:11px;color:var(--slate);">OS, DSA, compilers</div>
+          </div>
+          <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:.7rem 1.2rem;text-align:center;min-width:130px;">
+            <div style="font-size:1.5rem;">🌍</div>
+            <div style="font-size:12px;font-weight:700;color:var(--amber);margin-top:.3rem;">Universal</div>
+            <div style="font-size:11px;color:var(--slate);">Embedded to servers</div>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <button class="start-btn" onclick="showTopic('intro')">🚀 Start Learning C →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ 01 — INTRODUCTION ════ -->
+    <div class="topic-page" id="page-intro">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 01</div>
+        <h1 class="topic-title">Introduction to C</h1>
+        <p class="topic-sub">Why C? What is C? And what does your first C program actually do?</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🌍</span> Why Learn C?</h3>
+        <p>C is called the <strong>"Mother of All Languages"</strong>. Java, Python, JavaScript — almost every modern language borrowed ideas from C. Learning C means you understand <strong>how a computer thinks</strong>, not just how a language works.</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Learning C is like learning to drive a manual car. It's harder than automatic, but once you know it — you understand exactly what's happening under the hood. Every other car becomes easier after that.</p>
+        </div>
+        <ul>
+          <li><strong>Speed:</strong> C programs are blazing fast. Operating systems like Linux are written in C.</li>
+          <li><strong>Control:</strong> You control memory directly. Nothing happens without you knowing.</li>
+          <li><strong>Foundation:</strong> DSA, embedded systems, compilers — all use C concepts.</li>
+        </ul>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> Your First C Program — Decoded</h3>
+        <p>Click any highlighted token below to understand exactly what it does and why it's written that way.</p>
+
+        <div class="anatomy-wrap">
+          <div class="anatomy-topbar">
+            <div class="anatomy-dots">
+              <div class="anatomy-dot ad1"></div>
+              <div class="anatomy-dot ad2"></div>
+              <div class="anatomy-dot ad3"></div>
+            </div>
+            <span class="anatomy-file">hello.c — Interactive Code Map</span>
+            <span class="anatomy-hint"><span></span> Click any circled token</span>
+          </div>
+
+          <div class="anatomy-code-area">
+            <span class="atoken t-pre"  data-tid="pre"   onclick="openPanel('pre')"  ><span class="abadge"><span>1</span></span>#include</span><span class="ct"> </span><span class="atoken t-hdr"   data-tid="hdr"   onclick="openPanel('hdr')"  ><span class="abadge"><span>2</span></span>&lt;stdio.h&gt;</span><br>
+            <br>
+            <span class="atoken t-ret"   data-tid="ret"   onclick="openPanel('ret')"  ><span class="abadge"><span>3</span></span>int</span><span class="ct"> </span><span class="atoken t-entry" data-tid="entry" onclick="openPanel('entry')"><span class="abadge"><span>4</span></span>main</span><span class="atoken t-param" data-tid="param" onclick="openPanel('param')"><span class="abadge"><span>5</span></span>()</span><span class="ct"> </span><span class="atoken t-block" data-tid="block" onclick="openPanel('block')"><span class="abadge"><span>6</span></span>{</span><br>
+            <span class="ct">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="atoken t-print"  data-tid="print"  onclick="openPanel('print')" ><span class="abadge"><span>7</span></span>printf</span><span class="ct">(</span><span class="atoken t-strlit" data-tid="strlit" onclick="openPanel('strlit')"><span class="abadge"><span>8</span></span>"Hello, World!<span class="atoken t-esc" data-tid="esc" onclick="openPanel('esc');event.stopPropagation()" style="border:none;background:none;padding:0;margin:0;"><span class="abadge" style="width:14px;height:14px;font-size:8px;"><span>9</span></span>\n</span>"</span><span class="ct">);</span><br>
+            <span class="ct">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="atoken t-rtn"   data-tid="rtn"   onclick="openPanel('rtn')"  ><span class="abadge"><span>10</span></span>return</span><span class="ct"> </span><span class="atoken t-zero"  data-tid="zero"  onclick="openPanel('zero')" ><span class="abadge"><span>11</span></span>0</span><span class="ct">;</span><br>
+            <span class="atoken t-block" data-tid="block" onclick="openPanel('block')" style="margin-top:.2rem;"><span class="abadge"><span>6</span></span>}</span>
+          </div>
+
+          <div class="anatomy-panel" id="anatomy-panel">
+            <div class="anatomy-panel-inner" id="anatomy-panel-inner"></div>
+          </div>
+
+          <div class="anatomy-legend">
+            <div class="aleg-item" onclick="openPanel('pre')"><div class="aleg-dot" style="background:#F43F5E"></div> ① Preprocessor</div>
+            <div class="aleg-item" onclick="openPanel('hdr')"><div class="aleg-dot" style="background:#FB923C"></div> ② Header File</div>
+            <div class="aleg-item" onclick="openPanel('ret')"><div class="aleg-dot" style="background:#A855F7"></div> ③ Return Type</div>
+            <div class="aleg-item" onclick="openPanel('entry')"><div class="aleg-dot" style="background:#00D9FF"></div> ④ Entry Point</div>
+            <div class="aleg-item" onclick="openPanel('param')"><div class="aleg-dot" style="background:#F59E0B"></div> ⑤ Parameters</div>
+            <div class="aleg-item" onclick="openPanel('block')"><div class="aleg-dot" style="background:#22C55E"></div> ⑥ Code Block</div>
+            <div class="aleg-item" onclick="openPanel('print')"><div class="aleg-dot" style="background:#00D9FF"></div> ⑦ printf()</div>
+            <div class="aleg-item" onclick="openPanel('strlit')"><div class="aleg-dot" style="background:#22C55E"></div> ⑧ String</div>
+            <div class="aleg-item" onclick="openPanel('esc')"><div class="aleg-dot" style="background:#F59E0B"></div> ⑨ \n Escape</div>
+            <div class="aleg-item" onclick="openPanel('rtn')"><div class="aleg-dot" style="background:#A855F7"></div> ⑩ return</div>
+            <div class="aleg-item" onclick="openPanel('zero')"><div class="aleg-dot" style="background:#F43F5E"></div> ⑪ Exit Code</div>
+          </div>
+        </div>
+
+        <div class="output-block" style="margin-top:.5rem;">
+          <div class="output-label">Output</div>
+          <pre>Hello, World!</pre>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">💡</span>
+          <span class="ib-text"><strong>#include &lt;stdio.h&gt;</strong> adds the "Standard Input Output" library — it gives you <code>printf</code> and <code>scanf</code>. Without it, C doesn't know what printf is.</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⚙️</span> How a C Program Runs</h3>
+        <p>Your code goes through 4 stages before it runs:</p>
+        <ol>
+          <li><strong>Write</strong> — You type C code in a file (hello.c)</li>
+          <li><strong>Compile</strong> — Compiler converts C → machine code (<code>gcc hello.c -o hello</code>)</li>
+          <li><strong>Link</strong> — Connects your code with library functions</li>
+          <li><strong>Execute</strong> — The program runs (<code>./hello</code>)</li>
+        </ol>
+        <div class="info-box tip">
+          <span class="ib-icon">✅</span>
+          <span class="ib-text">If you see <strong>error: 'printf' undeclared</strong>, it means you forgot <code>#include &lt;stdio.h&gt;</code>. That's the most common first mistake!</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎯</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">What does <code>#include &lt;stdio.h&gt;</code> do?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">A. Starts the program</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,true)">B. Includes the standard input/output library</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">C. Declares the main function</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">D. Exits the program</button>
+          </div>
+          <div class="quiz-feedback" id="qfeed1"></div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('welcome')">← Welcome</button>
+        <a href="variables.html" class="tnav-btn next">Variables & Data Types →</a>
+      </div>
+    </div>
+
+    <!-- ════ 02 — VARIABLES ════ -->
+    <div class="topic-page" id="page-variables">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 02</div>
+        <h1 class="topic-title">Variables & Data Types</h1>
+        <p class="topic-sub">Opening full interactive lesson...</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📦</span> What is a Variable?</h3>
+        <p>A variable is a <strong>named box in memory</strong> that holds a value. You give it a name, tell C what type of data it will hold, and then store a value.</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Think of a variable like a labeled jar. <code>int age = 20;</code> is like writing "Age" on a jar and putting the number 20 inside. Anytime you need the age, you open that jar.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — variables.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cmt">// Declaration + Initialization</span>
+    <span class="kw">int</span> age = <span class="num">20</span>;
+    <span class="kw">float</span> gpa = <span class="num">8.7</span>;
+    <span class="kw">char</span> grade = <span class="str">'A'</span>;
+
+    <span class="fn">printf</span>(<span class="str">"Age: %d\n"</span>, age);
+    <span class="fn">printf</span>(<span class="str">"GPA: %.1f\n"</span>, gpa);
+    <span class="fn">printf</span>(<span class="str">"Grade: %c\n"</span>, grade);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">Output</div>
+          <pre>Age: 20
+GPA: 8.7
+Grade: A</pre>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📊</span> C Data Types</h3>
+        <p>C needs to know <strong>what kind of data</strong> a variable will hold so it can allocate the right amount of memory.</p>
+        <table class="data-table">
+          <tr><th>Type</th><th>Size</th><th>Range</th><th>Format</th><th>Use For</th></tr>
+          <tr><td>int</td><td>4 bytes</td><td>-2B to +2B</td><td>%d</td><td>Whole numbers</td></tr>
+          <tr><td>float</td><td>4 bytes</td><td>6-7 decimals</td><td>%f</td><td>Decimal numbers</td></tr>
+          <tr><td>double</td><td>8 bytes</td><td>15-16 decimals</td><td>%lf</td><td>Precise decimals</td></tr>
+          <tr><td>char</td><td>1 byte</td><td>-128 to 127</td><td>%c</td><td>Single character</td></tr>
+          <tr><td>long</td><td>8 bytes</td><td>Very large int</td><td>%ld</td><td>Big numbers</td></tr>
+        </table>
+        <div class="info-box warn">
+          <span class="ib-icon">⚠️</span>
+          <span class="ib-text"><strong>Common mistake:</strong> Using <code>%d</code> for a float gives garbage output. Always match the format specifier to the variable type!</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔡</span> scanf — Taking Input</h3>
+        <p><code>scanf</code> reads input from the keyboard and stores it in a variable. Notice the <strong>&amp; (address-of)</strong> operator — we're telling scanf <em>where</em> in memory to put the value.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — input.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> num;
+    <span class="fn">printf</span>(<span class="str">"Enter a number: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;num);     <span class="cmt">// &amp; gives address of 'num'</span>
+    <span class="fn">printf</span>(<span class="str">"You entered: %d\n"</span>, num);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎯</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">Which format specifier is used for <code>float</code> in printf?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">A. %d</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,true)">B. %f</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">C. %c</button>
+            <button class="quiz-opt" onclick="quizAnswer(this,false)">D. %s</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('intro')">← Introduction to C</button>
+        <button class="tnav-btn next" onclick="showTopic('operators')">Operators →</button>
+      </div>
+    </div>
+
+    <!-- ════ 03 — OPERATORS ════ -->
+    <div class="topic-page" id="page-operators">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 03</div>
+        <h1 class="topic-title">Operators</h1>
+        <p class="topic-sub">The tools that let your program calculate, compare, and make decisions.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">➕</span> Arithmetic Operators</h3>
+        <p>Used to perform <strong>mathematical operations</strong> on numbers.</p>
+        <table class="data-table">
+          <tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr>
+          <tr><td>+</td><td>Addition</td><td>5 + 3</td><td>8</td></tr>
+          <tr><td>-</td><td>Subtraction</td><td>5 - 3</td><td>2</td></tr>
+          <tr><td>*</td><td>Multiplication</td><td>5 * 3</td><td>15</td></tr>
+          <tr><td>/</td><td>Division</td><td>10 / 3</td><td>3 (int!)</td></tr>
+          <tr><td>%</td><td>Modulus (remainder)</td><td>10 % 3</td><td>1</td></tr>
+        </table>
+        <div class="info-box warn">
+          <span class="ib-icon">⚠️</span>
+          <span class="ib-text"><strong>Integer division:</strong> <code>10 / 3</code> gives <code>3</code>, not <code>3.33</code>. C chops off the decimal when both values are integers. Use <code>10.0 / 3</code> or cast to float for the actual result.</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⚖️</span> Relational & Logical Operators</h3>
+        <p>Used to <strong>compare values</strong> and <strong>combine conditions</strong>. They return 1 (true) or 0 (false).</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — operators.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> a = <span class="num">10</span>, b = <span class="num">20</span>;
+
+    <span class="cmt">// Relational — compare values</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, a == b);   <span class="cmt">// 0 (false)</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, a &lt; b);    <span class="cmt">// 1 (true)</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, a != b);   <span class="cmt">// 1 (true)</span>
+
+    <span class="cmt">// Logical — combine conditions</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, (a &lt; b) &amp;&amp; (b &lt; <span class="num">50</span>));  <span class="cmt">// 1 (AND)</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, (a &gt; b) || (b &lt; <span class="num">50</span>));  <span class="cmt">// 1 (OR)</span>
+    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, !(a &lt; b));              <span class="cmt">// 0 (NOT)</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔧</span> Increment / Decrement & Assignment</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="kw">int</span> x = <span class="num">5</span>;
+
+x++;        <span class="cmt">// x becomes 6 (post-increment)</span>
+++x;        <span class="cmt">// x becomes 7 (pre-increment)</span>
+x--;        <span class="cmt">// x becomes 6 (post-decrement)</span>
+
+x += <span class="num">10</span>;   <span class="cmt">// x = x + 10 → shorthand assignment</span>
+x *= <span class="num">2</span>;    <span class="cmt">// x = x * 2</span>
+x %= <span class="num">3</span>;    <span class="cmt">// x = x % 3</span></pre></div>
+        </div>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p><code>x++</code> is like a ticket counter. It shows the current number first, then advances. <code>++x</code> advances first, then shows the new number.</p>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('variables')">← Variables</button>
+        <button class="tnav-btn next" onclick="showTopic('control')">Control Flow →</button>
+      </div>
+    </div>
+
+    <!-- ════ 04 — CONTROL FLOW ════ -->
+    <div class="topic-page" id="page-control">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 04</div>
+        <h1 class="topic-title">Control Flow</h1>
+        <p class="topic-sub">Make your program <strong>think</strong> — take different paths based on conditions.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔀</span> if / else if / else</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>You wake up in the morning. <strong>If</strong> it's raining → carry an umbrella. <strong>Else if</strong> it's cloudy → wear a jacket. <strong>Else</strong> → wear casual clothes. Programs make the same kind of decisions.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — grades.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> marks;
+    <span class="fn">printf</span>(<span class="str">"Enter your marks: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;marks);
+
+    <span class="kw">if</span> (marks &gt;= <span class="num">90</span>) {
+        <span class="fn">printf</span>(<span class="str">"Grade: A+\n"</span>);
+    } <span class="kw">else if</span> (marks &gt;= <span class="num">75</span>) {
+        <span class="fn">printf</span>(<span class="str">"Grade: A\n"</span>);
+    } <span class="kw">else if</span> (marks &gt;= <span class="num">60</span>) {
+        <span class="fn">printf</span>(<span class="str">"Grade: B\n"</span>);
+    } <span class="kw">else</span> {
+        <span class="fn">printf</span>(<span class="str">"Grade: C\n"</span>);
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔄</span> switch Statement</h3>
+        <p>When you're comparing a variable to many fixed values, <code>switch</code> is cleaner than chained <code>else if</code>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — switch.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="kw">int</span> day = <span class="num">3</span>;
+
+<span class="kw">switch</span>(day) {
+    <span class="kw">case</span> <span class="num">1</span>: <span class="fn">printf</span>(<span class="str">"Monday\n"</span>);    <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">2</span>: <span class="fn">printf</span>(<span class="str">"Tuesday\n"</span>);   <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">3</span>: <span class="fn">printf</span>(<span class="str">"Wednesday\n"</span>); <span class="kw">break</span>;
+    <span class="kw">default</span>: <span class="fn">printf</span>(<span class="str">"Other day\n"</span>);
+}</pre></div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">Output</div>
+          <pre>Wednesday</pre>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">⚠️</span>
+          <span class="ib-text">Always use <code>break</code> in each case. Without it, C "falls through" to the next case — a common bug!</span>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('operators')">← Operators</button>
+        <button class="tnav-btn next" onclick="showTopic('loops')">Loops →</button>
+      </div>
+    </div>
+
+    <!-- ════ 05 — LOOPS ════ -->
+    <div class="topic-page" id="page-loops">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 05</div>
+        <h1 class="topic-title">Loops</h1>
+        <p class="topic-sub">Repeat actions without repeating code. Loops are the backbone of every algorithm.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔁</span> for Loop</h3>
+        <p>Use <code>for</code> when you <strong>know in advance</strong> how many times you want to repeat.</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Doing 10 push-ups: <strong>Start at 1 → do one → count + 1 → stop when you reach 10.</strong> That's exactly what a for loop does.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — for_loop.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// Print 1 to 5</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">5</span>; i++) {
+    <span class="fn">printf</span>(<span class="str">"%d "</span>, i);
+}
+<span class="cmt">// Output: 1 2 3 4 5</span>
+
+<span class="cmt">// Sum of 1 to 100</span>
+<span class="kw">int</span> sum = <span class="num">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">100</span>; i++) {
+    sum += i;
+}
+<span class="fn">printf</span>(<span class="str">"Sum = %d\n"</span>, sum);   <span class="cmt">// Sum = 5050</span></pre></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔄</span> while & do-while Loops</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — while.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// while: check first, then execute</span>
+<span class="kw">int</span> i = <span class="num">1</span>;
+<span class="kw">while</span> (i &lt;= <span class="num">5</span>) {
+    <span class="fn">printf</span>(<span class="str">"%d "</span>, i);
+    i++;
+}
+
+<span class="cmt">// do-while: execute at least ONCE, then check</span>
+<span class="kw">int</span> n;
+<span class="kw">do</span> {
+    <span class="fn">printf</span>(<span class="str">"Enter positive number: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;n);
+} <span class="kw">while</span> (n &lt;= <span class="num">0</span>);  <span class="cmt">// repeat until valid input</span></pre></div>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">💡</span>
+          <span class="ib-text"><strong>When to use what?</strong> Use <code>for</code> when count is known. Use <code>while</code> when condition-based. Use <code>do-while</code> when the block must run at least once (like menus and input validation).</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⭐</span> Classic Pattern: Nested Loops</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — star_pattern.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// Print a 5-row star triangle</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">5</span>; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">1</span>; j &lt;= i; j++) {
+        <span class="fn">printf</span>(<span class="str">"* "</span>);
+    }
+    <span class="fn">printf</span>(<span class="str">"\n"</span>);
+}</pre></div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">Output</div>
+          <pre>*
+* *
+* * *
+* * * *
+* * * * *</pre>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('control')">← Control Flow</button>
+        <button class="tnav-btn next" onclick="showTopic('functions')">Functions →</button>
+      </div>
+    </div>
+
+    <!-- ════ 06 — FUNCTIONS ════ -->
+    <div class="topic-page" id="page-functions">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 06</div>
+        <h1 class="topic-title">Functions</h1>
+        <p class="topic-sub">Break your program into reusable, manageable blocks of logic.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📦</span> What is a Function?</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>A function is like a <strong>coffee machine</strong>. You press a button (call the function), it runs a process internally, and gives you coffee (returns a value). You don't need to know HOW it makes coffee — just that it works.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — functions.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cmt">// Function definition: return_type name(parameters)</span>
+<span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+    <span class="kw">return</span> a + b;
+}
+
+<span class="kw">void</span> <span class="fn">greet</span>() {          <span class="cmt">// void = returns nothing</span>
+    <span class="fn">printf</span>(<span class="str">"Hello, Buddy!\n"</span>);
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">greet</span>();              <span class="cmt">// function call</span>
+    <span class="kw">int</span> result = <span class="fn">add</span>(<span class="num">5</span>, <span class="num">3</span>);
+    <span class="fn">printf</span>(<span class="str">"Sum = %d\n"</span>, result);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">Output</div>
+          <pre>Hello, Buddy!
+Sum = 8</pre>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔄</span> Recursion</h3>
+        <p>A function that <strong>calls itself</strong>. Essential for problems that have repeated sub-problems (factorial, fibonacci, tree traversal).</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — factorial.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n == <span class="num">0</span> || n == <span class="num">1</span>)
+        <span class="kw">return</span> <span class="num">1</span>;           <span class="cmt">// base case — stop here</span>
+    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>);  <span class="cmt">// recursive call</span>
+}
+
+<span class="cmt">// factorial(4) = 4 * factorial(3)</span>
+<span class="cmt">//              = 4 * 3 * factorial(2)</span>
+<span class="cmt">//              = 4 * 3 * 2 * factorial(1)</span>
+<span class="cmt">//              = 4 * 3 * 2 * 1 = 24</span></pre></div>
+        </div>
+        <div class="info-box tip">
+          <span class="ib-icon">✅</span>
+          <span class="ib-text">Every recursion needs a <strong>base case</strong>. Without it, the function calls itself forever and causes a stack overflow!</span>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('loops')">← Loops</button>
+        <button class="tnav-btn next" onclick="showTopic('arrays')">Arrays & Strings →</button>
+      </div>
+    </div>
+
+    <!-- ════ 07 — ARRAYS ════ -->
+    <div class="topic-page" id="page-arrays">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 07</div>
+        <h1 class="topic-title">Arrays & Strings</h1>
+        <p class="topic-sub">Store and manage collections of data efficiently.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> Arrays</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>An array is like a <strong>train</strong>. Each compartment (index) holds one passenger (value). You access any compartment directly by its number — compartment 0, compartment 1, etc.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — arrays.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cmt">// Declare array of 5 ints</span>
+    <span class="kw">int</span> marks[<span class="num">5</span>] = {<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>, <span class="num">95</span>, <span class="num">88</span>};
+
+    <span class="cmt">// Access by index (starts from 0)</span>
+    <span class="fn">printf</span>(<span class="str">"First: %d\n"</span>, marks[<span class="num">0</span>]);   <span class="cmt">// 85</span>
+    <span class="fn">printf</span>(<span class="str">"Last: %d\n"</span>, marks[<span class="num">4</span>]);    <span class="cmt">// 88</span>
+
+    <span class="cmt">// Loop through array</span>
+    <span class="kw">int</span> sum = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {
+        sum += marks[i];
+    }
+    <span class="fn">printf</span>(<span class="str">"Average: %.1f\n"</span>, (<span class="kw">float</span>)sum / <span class="num">5</span>);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔡</span> Strings in C</h3>
+        <p>C doesn't have a built-in string type. A string is just a <strong>character array</strong> that ends with <code>'\0'</code> (null terminator).</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — strings.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="inc">#include</span> <span class="str">&lt;string.h&gt;</span>   <span class="cmt">// for strlen, strcpy, etc.</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">char</span> name[] = <span class="str">"Naresh"</span>;   <span class="cmt">// auto null-terminated</span>
+    <span class="fn">printf</span>(<span class="str">"Name: %s\n"</span>, name);
+    <span class="fn">printf</span>(<span class="str">"Length: %lu\n"</span>, <span class="fn">strlen</span>(name));  <span class="cmt">// 6</span>
+
+    <span class="kw">char</span> greet[<span class="num">50</span>];
+    <span class="fn">scanf</span>(<span class="str">"%s"</span>, greet);       <span class="cmt">// reads one word</span>
+    <span class="fn">printf</span>(<span class="str">"Hi, %s!\n"</span>, greet);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('functions')">← Functions</button>
+        <button class="tnav-btn next" onclick="showTopic('pointers')">Pointers →</button>
+      </div>
+    </div>
+
+    <!-- ════ 08 — POINTERS ════ -->
+    <div class="topic-page" id="page-pointers">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 08</div>
+        <h1 class="topic-title">Pointers</h1>
+        <p class="topic-sub">The superpower of C. Understand pointers and you understand memory itself.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📍</span> What is a Pointer?</h3>
+        <p>A pointer is a variable that <strong>stores a memory address</strong> — not a value, but the <em>location</em> of a value.</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Your friend's house has an address (say, "Block 3, Flat 12"). A pointer is like that <strong>address on a piece of paper</strong>. The paper isn't the house — but it tells you exactly where the house is. You can go there and get what's inside.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — pointers.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> x = <span class="num">42</span>;
+    <span class="kw">int</span> *p = &amp;x;   <span class="cmt">// p stores the ADDRESS of x</span>
+
+    <span class="fn">printf</span>(<span class="str">"Value of x:   %d\n"</span>, x);    <span class="cmt">// 42</span>
+    <span class="fn">printf</span>(<span class="str">"Address of x: %p\n"</span>, &amp;x);   <span class="cmt">// e.g. 0x7ffd...</span>
+    <span class="fn">printf</span>(<span class="str">"p holds:      %p\n"</span>, p);    <span class="cmt">// same address</span>
+    <span class="fn">printf</span>(<span class="str">"Value at p:   %d\n"</span>, *p);   <span class="cmt">// 42 (dereference)</span>
+
+    *p = <span class="num">100</span>;    <span class="cmt">// change x through the pointer</span>
+    <span class="fn">printf</span>(<span class="str">"x is now: %d\n"</span>, x);       <span class="cmt">// 100</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">💡</span>
+          <span class="ib-text"><strong>&amp;</strong> = "give me the address of" &nbsp;|&nbsp; <strong>*</strong> = "go to that address and give me what's there" (dereference)</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔗</span> Pointers & Functions (Pass by Reference)</h3>
+        <p>In C, function arguments are copied by default. To modify the <strong>original variable</strong>, pass its address using a pointer.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — swap.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="kw">void</span> <span class="fn">swap</span>(<span class="kw">int</span> *a, <span class="kw">int</span> *b) {
+    <span class="kw">int</span> temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> x = <span class="num">10</span>, y = <span class="num">20</span>;
+    <span class="fn">swap</span>(&amp;x, &amp;y);    <span class="cmt">// pass addresses</span>
+    <span class="fn">printf</span>(<span class="str">"%d %d\n"</span>, x, y);  <span class="cmt">// 20 10</span>
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('arrays')">← Arrays & Strings</button>
+        <button class="tnav-btn next" onclick="showTopic('structures')">Structures →</button>
+      </div>
+    </div>
+
+    <!-- ════ 09 — STRUCTURES ════ -->
+    <div class="topic-page" id="page-structures">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 09</div>
+        <h1 class="topic-title">Structures</h1>
+        <p class="topic-sub">Group related data together — the building block of objects in C.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧱</span> What is a Structure?</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>A student has a name, age, and marks. Instead of 3 separate variables, a <strong>struct</strong> groups them under one "Student" blueprint — like a form that has multiple fields.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — structs.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cmt">// Define the structure (blueprint)</span>
+<span class="kw">struct</span> Student {
+    <span class="kw">char</span> name[<span class="num">50</span>];
+    <span class="kw">int</span> age;
+    <span class="kw">float</span> marks;
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cmt">// Create a variable of type Student</span>
+    <span class="kw">struct</span> Student s1;
+
+    s1.age = <span class="num">20</span>;
+    s1.marks = <span class="num">92.5</span>;
+
+    <span class="fn">printf</span>(<span class="str">"Age: %d\n"</span>, s1.age);
+    <span class="fn">printf</span>(<span class="str">"Marks: %.1f\n"</span>, s1.marks);
+
+    <span class="kmt">// Array of students</span>
+    <span class="kw">struct</span> Student class[<span class="num">3</span>];
+    class[<span class="num">0</span>].age = <span class="num">19</span>;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('pointers')">← Pointers</button>
+        <button class="tnav-btn next" onclick="showTopic('fileio')">File I/O →</button>
+      </div>
+    </div>
+
+    <!-- ════ 10 — FILE I/O ════ -->
+    <div class="topic-page" id="page-fileio">
+      <div class="topic-header">
+        <div class="topic-tag">Topic 10</div>
+        <h1 class="topic-title">File I/O</h1>
+        <p class="topic-sub">Make your programs persistent — read from and write to files.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📁</span> Working with Files</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>File I/O is like a notebook. You <strong>open</strong> it, <strong>write</strong> something, and <strong>close</strong> it. Next time you open it, what you wrote is still there. Without files, data disappears when your program ends.</p>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><div class="code-dot cd1"></div><div class="code-dot cd2"></div><div class="code-dot cd3"></div></div>
+            <span class="code-lang">C — fileio.c</span>
+            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+          </div>
+          <div class="code-body"><pre><span class="inc">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cmt">// ── WRITE to a file ──</span>
+    FILE *fp = <span class="fn">fopen</span>(<span class="str">"data.txt"</span>, <span class="str">"w"</span>);   <span class="cmt">// "w" = write mode</span>
+    <span class="kw">if</span> (fp == NULL) {
+        <span class="fn">printf</span>(<span class="str">"Error opening file!\n"</span>);
+        <span class="kw">return</span> <span class="num">1</span>;
+    }
+    <span class="fn">fprintf</span>(fp, <span class="str">"Hello from CoddingBuddY!\n"</span>);
+    <span class="fn">fprintf</span>(fp, <span class="str">"Score: %d\n"</span>, <span class="num">95</span>);
+    <span class="fn">fclose</span>(fp);   <span class="cmt">// always close the file</span>
+
+    <span class="cmt">// ── READ from the file ──</span>
+    fp = <span class="fn">fopen</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>);   <span class="cmt">// "r" = read mode</span>
+    <span class="kw">char</span> line[<span class="num">100</span>];
+    <span class="kw">while</span> (<span class="fn">fgets</span>(line, <span class="kw">sizeof</span>(line), fp) != NULL) {
+        <span class="fn">printf</span>(<span class="str">"%s"</span>, line);
+    }
+    <span class="fn">fclose</span>(fp);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+        </div>
+        <div class="output-block">
+          <div class="output-label">Output (reads data.txt)</div>
+          <pre>Hello from CoddingBuddY!
+Score: 95</pre>
+        </div>
+        <table class="data-table">
+          <tr><th>Mode</th><th>Meaning</th></tr>
+          <tr><td>"r"</td><td>Read (file must exist)</td></tr>
+          <tr><td>"w"</td><td>Write (creates or overwrites)</td></tr>
+          <tr><td>"a"</td><td>Append (adds to end)</td></tr>
+          <tr><td>"r+"</td><td>Read + Write</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎉</span> You've Completed C Language!</h3>
+        <div class="info-box tip">
+          <span class="ib-icon">🏆</span>
+          <span class="ib-text"><strong>Congratulations!</strong> You've covered all 10 core topics of C Language — from Hello World to File I/O, from pointers to structures. You now have a strong foundation to tackle DSA in C or move to C++.</span>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;">
+          <a href="index.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:10px;background:var(--glass);border:1px solid var(--border);color:var(--white);text-decoration:none;font-size:13px;font-weight:600;">← Back to Home</a>
+          <a href="cpp_learn.html" style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;text-decoration:none;font-size:13px;font-weight:700;">Next: C++ →</a>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('structures')">← Structures</button>
+        <button class="tnav-btn next" onclick="showTopic('welcome')">🏠 Back to Start</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ═══ CODE ANATOMY DATA ═══ */
+const ANATOMY = {
+  pre: {
+    icon:'🔧', color:'#F43F5E', bg:'rgba(244,63,94,.12)',
+    tag:'Preprocessor Directive',
+    title:'#include',
+    what:'<strong>#include</strong> is a <strong>preprocessor directive</strong> — it runs before compilation even starts. It tells the C compiler to literally copy-paste the contents of another file into your code.',
+    why:'Without #include, C would not know what <code>printf</code>, <code>scanf</code>, or any standard functions are. You\'d get a compilation error every time.',
+    topic:'intro'
+  },
+  hdr: {
+    icon:'📦', color:'#FB923C', bg:'rgba(251,146,60,.12)',
+    tag:'Header File',
+    title:'&lt;stdio.h&gt;',
+    what:'<strong>stdio.h</strong> stands for <strong>Standard Input/Output</strong>. It is a header file that contains declarations for input/output functions like <code>printf</code> (print to screen) and <code>scanf</code> (read from keyboard).',
+    why:'Think of it as a <strong>toolkit you import</strong>. The angle brackets &lt; &gt; mean: look for this file in the system\'s standard library folder, not your project folder.',
+    topic:'intro'
+  },
+  ret: {
+    icon:'↩️', color:'#A855F7', bg:'rgba(168,85,247,.12)',
+    tag:'Return Type',
+    title:'int',
+    what:'This <strong>int</strong> tells the compiler: "when main() finishes, it will hand back an <strong>integer</strong> value to the operating system." That value signals whether the program ran successfully.',
+    why:'The OS needs to know if your program succeeded or failed. <code>return 0</code> at the end sends that integer back. If you write <code>void main()</code> you can\'t return a value — this is considered bad practice in C.',
+    topic:'variables'
+  },
+  entry: {
+    icon:'🚪', color:'#00D9FF', bg:'rgba(0,217,255,.12)',
+    tag:'Program Entry Point',
+    title:'main',
+    what:'<strong>main</strong> is the <strong>starting point of every C program</strong>. When you run a C program, the operating system looks for a function called exactly <code>main</code> and begins execution from line 1 of its body.',
+    why:'You can write 100 other functions in your file, but none of them will run unless you call them from main (directly or indirectly). It is the root of your program\'s execution tree.',
+    topic:'functions'
+  },
+  param: {
+    icon:'📋', color:'#F59E0B', bg:'rgba(245,158,11,.12)',
+    tag:'Parameter List',
+    title:'()',
+    what:'The <strong>parentheses ()</strong> after main hold the <strong>parameters</strong> — values passed into the function. Empty <code>()</code> means main takes no arguments in this program.',
+    why:'In advanced usage: <code>int main(int argc, char *argv[])</code> — this lets your program receive command-line arguments. For now, empty () is all you need.',
+    topic:'functions'
+  },
+  block: {
+    icon:'📂', color:'#22C55E', bg:'rgba(34,197,94,.12)',
+    tag:'Code Block',
+    title:'{ }  Curly Braces',
+    what:'The <strong>curly braces { }</strong> define a <strong>code block</strong> — a group of statements that belong together. The opening <code>{</code> starts main\'s body; the closing <code>}</code> ends it. Everything in between is what main() executes.',
+    why:'In C, every function, loop, if-statement, and switch must have its code wrapped in { }. They tell the compiler exactly where a block of logic begins and ends.',
+    topic:'control'
+  },
+  print: {
+    icon:'🖨️', color:'#00D9FF', bg:'rgba(0,217,255,.12)',
+    tag:'Output Function',
+    title:'printf()',
+    what:'<strong>printf</strong> stands for <strong>"print formatted"</strong>. It is a function from &lt;stdio.h&gt; that displays text (and variable values) to the terminal/screen.',
+    why:'It is one of the most used functions in all of C. The <strong>f</strong> in printf means it can format output — you can embed variable values using format specifiers like <code>%d</code> (integer), <code>%f</code> (float), <code>%s</code> (string).',
+    topic:'variables'
+  },
+  strlit: {
+    icon:'💬', color:'#22C55E', bg:'rgba(34,197,94,.12)',
+    tag:'String Literal',
+    title:'"Hello, World!"',
+    what:'This is a <strong>string literal</strong> — a fixed sequence of characters wrapped in <strong>double quotes " "</strong>. In C, strings are stored as arrays of characters ending with a hidden <code>\\0</code> (null character).',
+    why:'Single quotes are for single characters: <code>\'A\'</code>. Double quotes are for strings: <code>"Hello"</code>. Never mix them up — they are different types in C.',
+    topic:'arrays'
+  },
+  esc: {
+    icon:'↵', color:'#F59E0B', bg:'rgba(245,158,11,.12)',
+    tag:'Escape Sequence',
+    title:'\\n — Newline',
+    what:'<strong>\\n</strong> is an <strong>escape sequence</strong> — a special two-character combination that represents a single invisible character: the <strong>newline</strong>. It moves the cursor to the next line after printing.',
+    why:'You can\'t press Enter inside a string to create a new line — the compiler would error. Instead, use <code>\\n</code>. Other escapes: <code>\\t</code> = tab, <code>\\\\</code> = backslash, <code>\\"</code> = double quote inside a string.',
+    topic:'variables'
+  },
+  rtn: {
+    icon:'🏁', color:'#A855F7', bg:'rgba(168,85,247,.12)',
+    tag:'Return Statement',
+    title:'return',
+    what:'<strong>return</strong> ends the function and sends a value back to whoever called it. Here, <code>return 0;</code> ends main() and returns 0 to the operating system.',
+    why:'The return statement is how functions <strong>communicate results</strong>. In main(), it also signals the OS: 0 = everything went fine. Non-zero = something went wrong (useful for scripting and error handling).',
+    topic:'functions'
+  },
+  zero: {
+    icon:'✅', color:'#F43F5E', bg:'rgba(244,63,94,.12)',
+    tag:'Exit Code',
+    title:'0  (Success)',
+    what:'The value <strong>0</strong> here is the <strong>exit code</strong> returned to the operating system. In Unix/Linux/Windows convention: <code>0 = success</code>, any non-zero number = an error occurred.',
+    why:'Shell scripts, CI/CD pipelines, and build tools check this exit code to know if your program succeeded. Returning 0 is the correct and expected behavior for a program that ran without errors.',
+    topic:'control'
+  }
+};
+
+let activePanel = null;
+
+function openPanel(tid) {
+  const data = ANATOMY[tid];
+  if (!data) return;
+
+  // deactivate old token highlights
+  document.querySelectorAll('.atoken').forEach(t => t.classList.remove('active-tok'));
+  // highlight all tokens with this tid
+  document.querySelectorAll(`.atoken[data-tid="${tid}"]`).forEach(t => t.classList.add('active-tok'));
+
+  const panel = document.getElementById('anatomy-panel');
+  const inner = document.getElementById('anatomy-panel-inner');
+
+  inner.innerHTML = `
+    <div class="ap-icon-wrap" style="background:${data.bg};">${data.icon}</div>
+    <div>
+      <div class="ap-tag" style="color:${data.color};">${data.tag}</div>
+      <div class="ap-title">${data.title}</div>
+      <div class="ap-what">${data.what}</div>
+      <div class="ap-why">💡 ${data.why}</div>
+      <div class="ap-btns">
+        <button class="ap-btn-topic" onclick="showTopic('${data.topic}')">→ Open Topic</button>
+        <button class="ap-btn-close" onclick="closePanel()">✕ Close</button>
+      </div>
+    </div>
+  `;
+
+  panel.classList.add('open');
+  activePanel = tid;
+}
+
+function closePanel() {
+  document.getElementById('anatomy-panel').classList.remove('open');
+  document.querySelectorAll('.atoken').forEach(t => t.classList.remove('active-tok'));
+  activePanel = null;
+}
+
+const TOPICS = ['welcome','intro','variables','operators','control','loops','functions','arrays','pointers','structures','fileio'];
+const LESSON_COUNT = 10;
+const completed = new Set();
+
+function showTopic(id) {
+  // Topics with dedicated full pages
+  if (id === 'variables') { window.location.href = 'variables.html'; return; }
+  if (id === 'operators') { window.location.href = 'operators.html'; return; }
+  if (id === 'keywords')  { window.location.href = 'keywords.html';  return; }
+
+  document.querySelectorAll('.topic-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+
+  const sbItem = document.querySelector(`[data-topic="${id}"]`);
+  if (sbItem) sbItem.classList.add('active');
+
+  // mark as done (except welcome)
+  if (id !== 'welcome') {
+    completed.add(id);
+    const dot = sbItem?.querySelector('.sb-dot');
+    if (dot) dot.style.background = 'var(--green)';
+    updateProgress();
+  }
+
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+function updateProgress() {
+  const done = completed.size;
+  document.getElementById('progressText').textContent = done + ' / ' + LESSON_COUNT;
+  document.getElementById('progressFill').style.width = (done / LESSON_COUNT * 100) + '%';
+}
+
+// quiz
+function quizAnswer(btn, correct) {
+  const opts = btn.closest('.quiz-opts').querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  if (correct) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    opts.forEach(o => { if (o.dataset.correct === 'true') o.classList.add('correct'); });
+  }
+}
+
+// copy code
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// mobile menu
+document.getElementById('mobMenuBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

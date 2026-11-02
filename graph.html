@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Graphs — Zero to Master — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover{background:var(--bg3);color:var(--cyan);}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--indigo);opacity:.13;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--cyan);opacity:.12;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--rose);opacity:.09;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:840px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.35);border-radius:100px;font-size:12px;color:var(--indigo);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--indigo);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:620px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+@media(max-width:820px){.g2,.g3{grid-template-columns:1fr;}}
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}
+td code, li code, p code, div code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}ul.bl.i li::before{background:var(--indigo);}
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-svg-wrap{display:flex;justify-content:center;overflow-x:auto;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+.chipstrip{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem;justify-content:center;min-height:30px;align-items:center;}
+.mchip{padding:.2rem .7rem;border-radius:100px;border:1px solid rgba(168,85,247,.4);background:rgba(168,85,247,.1);color:var(--purple);font-size:12px;font-weight:700;font-family:'Fira Code',monospace;animation:vpop .3s ease;}
+.mchip.q{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.1);color:var(--amber);}
+.mchip.hit{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);}
+.striplabel{font-size:11px;color:var(--muted);font-family:'Fira Code',monospace;}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;margin-right:.35rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+.pat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(99,102,241,.12);color:var(--indigo);}
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· Graphs</span></div>
+  <div class="nav-links">
+    <a href="#lab">🧪 Ripple Lab</a>
+    <a href="#intro">What is a Graph</a>
+    <a href="#repr">Representations</a>
+    <a href="#bfs">BFS</a>
+    <a href="#dfs">DFS</a>
+    <a href="#islands">Islands</a>
+    <a href="#topo">Topo Sort</a>
+    <a href="#dijkstra">Dijkstra</a>
+    <a href="#master">Master Map</a>
+    <a href="#practice">Practice Sheet</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-blob hb1"></div>
+  <div class="hero-blob hb2"></div>
+  <div class="hero-blob hb3"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge">CoddingBuddY · Placement Preparation Series</div>
+    <h1><em>Graphs</em><br/>Zero to Master</h1>
+    <p>Google Maps, Instagram followers, course prerequisites — they're all graphs. Learn to <strong style="color:var(--white)">see the graph hiding in the question</strong>, then walk it with BFS, DFS, Topological Sort and Dijkstra — every algorithm animated node by node.</p>
+    <div class="chips">
+      <span class="ch ch-i">Adjacency List</span>
+      <span class="ch ch-c">BFS</span>
+      <span class="ch ch-p">DFS</span>
+      <span class="ch ch-g">Connected Components</span>
+      <span class="ch ch-a">Grid = Graph</span>
+      <span class="ch ch-r">Cycle Detection</span>
+      <span class="ch ch-c">Topological Sort</span>
+      <span class="ch ch-a">Dijkstra</span>
+      <span class="ch ch-g">36 Problems</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 00: RIPPLE LAB ═══ -->
+<div class="sec-bar" id="lab">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">00</div>
+  <div class="sec-info"><h2>The Ripple Lab — Watch News Spread</h2><p>Drop a rumor on any person in this friend network and watch it ripple outward — that ripple IS breadth-first search</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="playground">
+    <p style="font-size:13.5px;color:var(--slate);margin-bottom:1rem;">Seven friends. Lines = friendships. Pick who hears the rumor first, press <strong style="color:var(--cyan)">▶ Spread</strong>, and watch it travel <strong style="color:var(--amber)">level by level</strong> — friends first, then friends-of-friends. The number of waves = the "degrees of separation".</p>
+    <div class="opchips" id="rl-chips" style="justify-content:center;"></div>
+    <div class="anim-svg-wrap"><svg id="ripple-svg"></svg></div>
+    <div class="anim-ctrl" style="justify-content:center;">
+      <button class="btn btn-c" onclick="rippleSpread()">▶ Spread the rumor</button>
+      <button class="btn btn-r" onclick="rippleReset()">↺ Reset</button>
+    </div>
+    <div class="anim-log" id="rl-msg" style="text-align:center;">Pick a person above, then press Spread.</div>
+  </div>
+  <div class="alert ag">
+    <div class="alert-ico">🎯</div>
+    <div><b>You just learned BFS</b>That level-by-level ripple is exactly Breadth-First Search — the single most important graph algorithm. Everything on this page builds on the picture you just watched.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 01: WHAT IS A GRAPH ═══ -->
+<div class="sec-bar" id="intro">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--indigo);">01</div>
+  <div class="sec-info"><h2>Level 1 — What is a Graph?</h2><p>Dots and lines — the most flexible data structure in computer science</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Dots + lines = <span class="hl" style="color:var(--indigo)">everything</span></h2>
+      <p class="ss">A graph is just a set of vertices (nodes) connected by edges. That's the whole definition.</p>
+      <ul class="bl i">
+        <li><strong>Vertex (node):</strong> a thing — a person, a city, a webpage, a course.</li>
+        <li><strong>Edge:</strong> a relationship — friendship, road, hyperlink, prerequisite.</li>
+        <li><strong>Degree:</strong> how many edges touch a vertex.</li>
+        <li><strong>Path:</strong> a sequence of edges from one vertex to another. <strong>Cycle:</strong> a path that returns to its start.</li>
+        <li>A <strong>tree</strong> is just a graph with no cycles and exactly n−1 edges — trees are baby graphs!</li>
+      </ul>
+      <div class="alert ac" style="margin-top:1rem;">
+        <div class="alert-ico">🌍</div>
+        <div><b>Spot the graph in the wild</b>Google Maps (cities + roads, weighted) · Instagram (users + follows, directed) · WhatsApp groups (users + shared groups) · Course prerequisites (courses + "must do first", directed acyclic) · Your brain (neurons + synapses).</div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--indigo);">The 4 flavors you must recognize</h3>
+      <div class="tw"><table>
+        <tr><th>Type</th><th>Edges</th><th>Example</th></tr>
+        <tr><td><strong style="color:var(--cyan)">Undirected</strong></td><td>two-way: A—B</td><td>Facebook friends (mutual)</td></tr>
+        <tr><td><strong style="color:var(--purple)">Directed (digraph)</strong></td><td>one-way: A→B</td><td>Instagram follows, prerequisites</td></tr>
+        <tr><td><strong style="color:var(--amber)">Weighted</strong></td><td>edges carry a cost</td><td>roads with distances</td></tr>
+        <tr><td><strong style="color:var(--green)">DAG</strong></td><td>directed + no cycles</td><td>course plan, build pipelines</td></tr>
+      </table></div>
+      <div class="alert ap" style="margin-top:1rem;">
+        <div class="alert-ico">🧠</div>
+        <div><b>The interview meta-skill</b>Hard part is NOT the algorithm — it's noticing the question IS a graph. "Cities and flights" → graph. "Words differing by one letter" → graph. "Grid of land and water" → graph. Once you see it, you only ever apply BFS/DFS/Topo/Dijkstra.</div>
+      </div>
+      <div class="cw" style="margin-top:1.2rem;"><span class="cl2 pu">graph vocabulary in 10 seconds</span>
+<pre class="py"># V = number of vertices, E = number of edges
+# sparse graph:  E ≈ V     (most real graphs)
+# dense graph:   E ≈ V²    (everyone connected)
+# connected: every vertex reachable from any other
+# component: one connected "island" of the graph</pre></div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 02: REPRESENTATIONS ═══ -->
+<div class="sec-bar" id="repr">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">02</div>
+  <div class="sec-info"><h2>Level 1 — Storing a Graph in Code</h2><p>Adjacency list vs adjacency matrix — click a node and see both</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">🧪 Node Explorer — <span class="hl">click any node</span></h2>
+      <p class="ss">The same graph stored two ways. Click a node: its neighbors light up in the drawing AND in both storages</p>
+      <div class="playground" style="padding:1.1rem;">
+        <div class="anim-svg-wrap"><svg id="repr-svg" style="cursor:pointer;"></svg></div>
+        <div class="anim-log" id="repr-msg" style="text-align:center;">Click a circle above ☝️</div>
+      </div>
+      <div class="alert ac" style="margin-top:1rem;">
+        <div class="alert-ico">🏆</div>
+        <div><b>Which one in interviews?</b>Adjacency LIST, 95% of the time. Real graphs are sparse — the matrix wastes V² memory mostly storing zeros. Use the matrix only when the graph is tiny/dense or you need O(1) "is A connected to B?" checks.</div>
+      </div>
+    </div>
+    <div>
+      <div class="cw"><span class="cl2">adjacency LIST — the default (dict of lists)</span>
+<pre class="py">graph = {
+    "A": ["B", "C"],
+    "B": ["A", "D"],
+    "C": ["A", "E"],
+    "D": ["B", "E", "F"],
+    "E": ["C", "D", "F"],
+    "F": ["D", "E", "G"],
+    "G": ["F"],
+}
+# neighbors of D?  graph["D"]  → O(1) to reach
+# memory: O(V + E) — only what exists</pre></div>
+      <div id="repr-list" style="font-family:'Fira Code',monospace;font-size:12.5px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;line-height:2;"></div>
+      <div style="font-size:11px;color:var(--muted);margin:.8rem 0 .3rem;font-family:monospace;">adjacency MATRIX (1 = edge exists)</div>
+      <div class="tw"><table id="repr-mat" style="text-align:center;font-family:'Fira Code',monospace;"></table></div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Question</th><th style="color:var(--cyan)">List</th><th style="color:var(--purple)">Matrix</th></tr>
+        <tr><td>Memory</td><td class="yes">O(V + E)</td><td class="no">O(V²)</td></tr>
+        <tr><td>"Is A—B an edge?"</td><td>O(degree)</td><td class="yes">O(1)</td></tr>
+        <tr><td>Loop over neighbors</td><td class="yes">O(degree)</td><td class="no">O(V)</td></tr>
+        <tr><td>Best for</td><td>sparse (real life)</td><td>small &amp; dense</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="alert aa" style="margin-top:1.5rem;">
+    <div class="alert-ico">🛠️</div>
+    <div><b>Building the list from an edge array (every problem starts here)</b><code>graph = defaultdict(list)</code> then for each <code>(u, v)</code> in edges: <code>graph[u].append(v)</code> and — IF undirected — <code>graph[v].append(u)</code>. Forgetting the second line is the #1 graph bug in interviews.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 03: BFS ═══ -->
+<div class="sec-bar" id="bfs">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">03</div>
+  <div class="sec-info"><h2>Pattern 1 — Breadth-First Search (BFS)</h2><p>The ripple, formalized: a queue + a visited set</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Level by level, with a <span class="hl">queue</span></h2>
+      <p class="ss">Visit me → queue my neighbors → serve the queue in arrival order. First-come, first-served = levels.</p>
+      <ul class="bl c">
+        <li><strong>Spot it when:</strong> "shortest path" in an UNWEIGHTED graph, "minimum number of steps/moves", "nearest…", "spread/infection time", level-order anything.</li>
+        <li>The <strong>queue</strong> guarantees you finish distance-1 nodes before touching distance-2 nodes — that's why BFS finds shortest paths.</li>
+        <li>The <strong>visited set</strong> stops infinite loops on cycles. Mark visited WHEN YOU ENQUEUE, not when you pop — or nodes enter the queue twice.</li>
+        <li>Complexity: O(V + E) — each vertex enqueued once, each edge looked at once (twice if undirected).</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2">the BFS template — memorize it EXACTLY</span>
+<pre class="py">from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    q = deque([start])
+    while q:
+        node = q.popleft()        # FIFO!
+        print(node)               # "process"
+        for nb in graph[node]:
+            if nb not in visited:
+                visited.add(nb)   # mark HERE
+                q.append(nb)</pre></div>
+      <div class="cw"><span class="cl2 gr">shortest distance version (track levels)</span>
+<pre class="py">def bfs_dist(graph, start):
+    dist = {start: 0}
+    q = deque([start])
+    while q:
+        node = q.popleft()
+        for nb in graph[node]:
+            if nb not in dist:
+                dist[nb] = dist[node] + 1
+                q.append(nb)
+    return dist    # fewest edges to every node</pre></div>
+    </div>
+    <div>
+      <h3 class="c">🎬 Animation — BFS with the queue visible</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Same friend network. <span style="color:var(--amber)">Amber = waiting in queue</span>, <span style="color:var(--cyan)">cyan = being processed</span>, <span style="color:var(--green)">green = done</span>. Watch the queue chips below the graph.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="bfsa-svg"></svg></div>
+        <div class="chipstrip"><span class="striplabel">queue →</span><span id="bfsa-q"></span></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepG('bfsa')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoG('bfsa')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetG('bfsa')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="bfsa-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>BFS gives you</th></tr>
+        <tr><td>1971 · Find if Path Exists</td><td><span class="lc-diff lc-e">EASY</span></td><td>reachability</td></tr>
+        <tr><td>994 · Rotting Oranges</td><td><span class="lc-diff lc-m">MED</span></td><td>multi-source spread time</td></tr>
+        <tr><td>542 · 01 Matrix</td><td><span class="lc-diff lc-m">MED</span></td><td>nearest 0 for every cell</td></tr>
+        <tr><td>127 · Word Ladder</td><td><span class="lc-diff lc-h">HARD</span></td><td>fewest word transformations</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 04: DFS ═══ -->
+<div class="sec-bar" id="dfs">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">04</div>
+  <div class="sec-info"><h2>Pattern 2 — Depth-First Search (DFS)</h2><p>Go deep first, backtrack when stuck — recursion's favorite algorithm</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Dive deep, then <span class="hl" style="color:var(--purple)">backtrack</span></h2>
+      <p class="ss">Like exploring a maze: keep walking until a dead end, then walk back to the last junction</p>
+      <ul class="bl p">
+        <li><strong>Spot it when:</strong> "count islands/components", "does a cycle exist", "explore ALL paths", "flood fill", backtracking puzzles.</li>
+        <li>DFS = BFS with a <strong>stack</strong> instead of a queue — or simply recursion (the call stack IS your stack).</li>
+        <li>DFS does NOT find shortest paths — it commits to one direction and may find a long route first. Use BFS for "shortest".</li>
+        <li>Same complexity as BFS: O(V + E). Recursion depth can hit V — for huge graphs use the iterative version.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 pu">recursive DFS — 5 lines</span>
+<pre class="py">def dfs(graph, node, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(node)
+    print(node)                  # "process"
+    for nb in graph[node]:
+        if nb not in visited:
+            dfs(graph, nb, visited)
+    return visited</pre></div>
+      <div class="cw"><span class="cl2 am">counting connected components — DFS's #1 job</span>
+<pre class="py">def count_components(graph, nodes):
+    visited, count = set(), 0
+    for n in nodes:
+        if n not in visited:
+            count += 1           # new island!
+            dfs(graph, n, visited)
+    return count</pre></div>
+    </div>
+    <div>
+      <h3 class="p">🎬 Animation — watch DFS dive and backtrack</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Same network, same start — completely different order! <span style="color:var(--cyan)">Cyan = current</span>, <span style="color:var(--rose)">rose flash = backtracking</span>, <span style="color:var(--green)">green = finished</span>. Compare with the BFS order above.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="dfsa-svg"></svg></div>
+        <div class="chipstrip"><span class="striplabel">call stack →</span><span id="dfsa-q"></span></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepG('dfsa')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoG('dfsa')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetG('dfsa')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="dfsa-cap"></div>
+      </div>
+      <div class="alert ap">
+        <div class="alert-ico">⚔️</div>
+        <div><b>BFS vs DFS in one line each</b>BFS: "how FAR is everything?" (shortest steps, levels). DFS: "what is CONNECTED / is there a path with property X?" (components, cycles, exploring all routes). Both visit everything in O(V+E) — the ORDER is the difference.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 05: ISLANDS / GRID AS GRAPH ═══ -->
+<div class="sec-bar" id="islands">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">05</div>
+  <div class="sec-info"><h2>Pattern 3 — The Grid IS a Graph</h2><p>Number of Islands: the most-asked graph question, animated cell by cell</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Every cell is a node, every side is an <span class="hl" style="color:var(--green)">edge</span></h2>
+      <p class="ss">No one hands you a graph in interviews — they hand you a GRID and expect you to see the graph</p>
+      <ul class="bl g">
+        <li>A cell's neighbors are up/down/left/right: <code>(r±1, c)</code> and <code>(r, c±1)</code>. That's the adjacency list — computed on the fly.</li>
+        <li><strong>Number of Islands (LC 200):</strong> scan every cell; when you hit unvisited LAND, that's a NEW island → flood-fill (DFS) to mark the whole island visited.</li>
+        <li>Flood fill = the paint-bucket tool in MS Paint. Same algorithm, literally.</li>
+        <li>Complexity O(rows × cols): every cell visited a constant number of times.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 gr">Number of Islands — the full solution</span>
+<pre class="py">def num_islands(grid):
+    R, C = len(grid), len(grid[0])
+    def sink(r, c):              # DFS flood fill
+        if not (0 &lt;= r &lt; R and 0 &lt;= c &lt; C):
+            return               # off the map
+        if grid[r][c] != "1":
+            return               # water / visited
+        grid[r][c] = "V"         # mark visited
+        sink(r+1, c); sink(r-1, c)
+        sink(r, c+1); sink(r, c-1)
+
+    count = 0
+    for r in range(R):
+        for c in range(C):
+            if grid[r][c] == "1":
+                count += 1       # new island!
+                sink(r, c)
+    return count</pre></div>
+    </div>
+    <div>
+      <h3 class="g">🎬 Animation — count the islands</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">🟩 = land, dark = water. Watch the scanner move — and the flood fill sink each island the moment it's discovered.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="isl-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepAnim('isl')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoAnim('isl')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetAnim('isl')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="isl-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Problem</th><th>Diff</th><th>Grid-graph idea</th></tr>
+        <tr><td>733 · Flood Fill</td><td><span class="lc-diff lc-e">EASY</span></td><td>the paint bucket itself</td></tr>
+        <tr><td>200 · Number of Islands</td><td><span class="lc-diff lc-m">MED</span></td><td>count DFS launches</td></tr>
+        <tr><td>695 · Max Area of Island</td><td><span class="lc-diff lc-m">MED</span></td><td>DFS returns its size</td></tr>
+        <tr><td>417 · Pacific Atlantic</td><td><span class="lc-diff lc-m">MED</span></td><td>DFS from the oceans inward</td></tr>
+        <tr><td>130 · Surrounded Regions</td><td><span class="lc-diff lc-m">MED</span></td><td>save border-connected first</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 06: TOPOLOGICAL SORT ═══ -->
+<div class="sec-bar" id="topo">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">06</div>
+  <div class="sec-info"><h2>Pattern 4 — Topological Sort</h2><p>"What order do I take my courses?" — dependency ordering for DAGs</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Do prerequisites <span class="hl" style="color:var(--amber)">first</span></h2>
+      <p class="ss">A valid order where every arrow points forward. Only possible if there's no cycle!</p>
+      <ul class="bl a">
+        <li><strong>Spot it when:</strong> "prerequisites", "build order", "task scheduling", "can you finish all courses?"</li>
+        <li><strong>Kahn's algorithm (BFS):</strong> repeatedly take a node with <strong>indegree 0</strong> (no pending prerequisites), remove it, and decrease its neighbors' indegrees. New zeros join the queue.</li>
+        <li>If you process FEWER than V nodes → a cycle exists → no valid order (deadlock!). Cycle detection for free.</li>
+        <li>Only works on <strong>DAGs</strong> (directed acyclic graphs) — a cycle means "A needs B needs A": impossible.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">Kahn's algorithm (Course Schedule, LC 207/210)</span>
+<pre class="py">from collections import deque
+
+def topo_order(graph, nodes):
+    indeg = {n: 0 for n in nodes}
+    for n in nodes:
+        for nb in graph[n]:
+            indeg[nb] += 1
+    q = deque([n for n in nodes if indeg[n] == 0])
+    order = []
+    while q:
+        n = q.popleft()
+        order.append(n)
+        for nb in graph[n]:
+            indeg[nb] -= 1
+            if indeg[nb] == 0:   # prereqs done!
+                q.append(nb)
+    return order if len(order) == len(nodes) else None
+    # None → cycle → impossible to finish</pre></div>
+    </div>
+    <div>
+      <h3 class="a">🎬 Animation — ordering 6 courses</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Arrows mean "needed before". The number beside each course = pending prerequisites (indegree). Zeros get taken; arrows out of them decrement the rest.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="topo-svg"></svg></div>
+        <div class="chipstrip"><span class="striplabel">order →</span><span id="topo-q"></span></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepG('topo')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoG('topo')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetG('topo')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="topo-cap"></div>
+      </div>
+      <div class="alert aa">
+        <div class="alert-ico">🎓</div>
+        <div><b>The interview twist</b>LC 207 asks only "CAN you finish?" — answer: does a topological order exist (no cycle)? LC 210 wants the actual order. Same code; return a boolean vs the list.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 07: DIJKSTRA ═══ -->
+<div class="sec-bar" id="dijkstra">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">07</div>
+  <div class="sec-info"><h2>Pattern 5 — Dijkstra's Algorithm</h2><p>Shortest path when edges have WEIGHTS — BFS's big brother with a priority queue</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Always expand the <span class="hl" style="color:var(--rose)">cheapest</span> frontier</h2>
+      <p class="ss">BFS pops "oldest first". Dijkstra pops "cheapest total distance first" — that single change handles weights</p>
+      <ul class="bl r">
+        <li><strong>Spot it when:</strong> "shortest/cheapest path" + edges have different costs (time, price, distance). Unweighted? Plain BFS is enough — don't over-engineer!</li>
+        <li>Keep a <code>dist</code> map (best known cost to each node, start = 0, rest = ∞). A <strong>min-heap</strong> always serves the cheapest unfinished node.</li>
+        <li><strong>Relaxation:</strong> for each neighbor, if <code>dist[node] + weight &lt; dist[nb]</code> → found a better route → update and push.</li>
+        <li>⚠️ Dijkstra breaks on NEGATIVE weights (use Bellman-Ford there). Complexity: O((V+E) log V).</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 ro">Dijkstra with heapq (Network Delay, LC 743)</span>
+<pre class="py">import heapq
+
+def dijkstra(graph, start):
+    # graph[u] = [(v, weight), ...]
+    dist = {start: 0}
+    heap = [(0, start)]
+    while heap:
+        d, node = heapq.heappop(heap)
+        if d &gt; dist.get(node, float('inf')):
+            continue           # stale entry, skip
+        for nb, w in graph[node]:
+            nd = d + w
+            if nd &lt; dist.get(nb, float('inf')):
+                dist[nb] = nd            # relax!
+                heapq.heappush(heap, (nd, nb))
+    return dist</pre></div>
+    </div>
+    <div>
+      <h3 class="r">🎬 Animation — cheapest route A → F</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Numbers on edges = costs. Node labels show best-known distance. Watch the direct-looking route LOSE to a clever detour.</p>
+      <div class="anim-wrap">
+        <div class="anim-svg-wrap"><svg id="dij-svg"></svg></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepG('dij')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoG('dij')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetG('dij')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="dij-cap"></div>
+      </div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Situation</th><th>Right tool</th></tr>
+        <tr><td>Unweighted shortest path</td><td class="yes">BFS</td></tr>
+        <tr><td>Weighted, no negative edges</td><td class="yes">Dijkstra</td></tr>
+        <tr><td>Negative edges possible</td><td>Bellman-Ford</td></tr>
+        <tr><td>All-pairs shortest paths (small V)</td><td>Floyd-Warshall</td></tr>
+        <tr><td>Connect all nodes cheaply (MST)</td><td>Prim / Kruskal</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 08: MASTER MAP ═══ -->
+<div class="sec-bar" id="master">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">08</div>
+  <div class="sec-info"><h2>The Master Map</h2><p>Hear the phrase → know the algorithm + rapid-fire interview Q&amp;A</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">The <span class="hl">Pattern Map</span> — every graph question decoded</h2>
+  <p class="ss">Five algorithms cover practically every placement graph question. Match the trigger, apply the template.</p>
+  <div class="tw"><table>
+    <tr><th>Trigger phrase in the question</th><th>Algorithm</th><th>Data structure</th><th>Taught in</th></tr>
+    <tr><td>"shortest path / min steps" (unweighted)</td><td><strong style="color:var(--cyan)">BFS</strong></td><td>queue + visited</td><td>§03</td></tr>
+    <tr><td>"count islands / components", "all paths", "flood fill"</td><td><strong style="color:var(--purple)">DFS</strong></td><td>recursion + visited</td><td>§04–05</td></tr>
+    <tr><td>"spread / rotting / infection time", "nearest for EVERY cell"</td><td><strong style="color:var(--cyan)">Multi-source BFS</strong></td><td>queue seeded with all sources</td><td>§03</td></tr>
+    <tr><td>"prerequisites", "build/course order", "can you finish"</td><td><strong style="color:var(--amber)">Topological Sort</strong></td><td>indegree + queue</td><td>§06</td></tr>
+    <tr><td>"cheapest / fastest route" (weighted)</td><td><strong style="color:var(--rose)">Dijkstra</strong></td><td>min-heap + dist map</td><td>§07</td></tr>
+    <tr><td>"are these connected", "merge groups", "redundant edge"</td><td><strong style="color:var(--green)">Union-Find</strong></td><td>parent array</td><td>Q&amp;A ↓</td></tr>
+  </table></div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div class="card gl">
+      <h3 class="g">✅ The graph interview checklist</h3>
+      <ul class="bl g" style="margin-top:.4rem;">
+        <li><strong>1.</strong> Name the graph out loud: "nodes are ___, edges are ___"</li>
+        <li><strong>2.</strong> Directed or undirected? Weighted? Could it have cycles?</li>
+        <li><strong>3.</strong> Build the adjacency list (both directions if undirected!)</li>
+        <li><strong>4.</strong> Pick the algorithm from the trigger phrase</li>
+        <li><strong>5.</strong> Always carry a visited set — cycles bite otherwise</li>
+        <li><strong>6.</strong> State O(V + E) and the space cost unprompted</li>
+      </ul>
+    </div>
+    <div class="card rl">
+      <h3 class="r">❌ The 5 classic graph mistakes</h3>
+      <ul class="bl r" style="margin-top:.4rem;">
+        <li>Forgetting the reverse edge in undirected graphs → half the graph invisible</li>
+        <li>Marking visited on POP instead of on ENQUEUE → nodes queued twice</li>
+        <li>Using DFS for "shortest path" — it finds A path, not the SHORTEST</li>
+        <li>Ignoring disconnected graphs — loop over ALL nodes as potential starts</li>
+        <li>Recursion depth overflow on huge grids → switch to iterative DFS/BFS</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Rapid-fire Interview Q&amp;A</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>Why does BFS find the shortest path but DFS doesn't?</span><span class="qico">+</span></div><div class="qa-a">BFS explores in expanding rings: it visits ALL nodes at distance d before ANY node at distance d+1, so the first time it touches the target, it arrived by a minimum-edge route. DFS commits to one branch and may reach the target through a long detour before trying short routes.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>How do you detect a cycle in a graph?</span><span class="qico">+</span></div><div class="qa-a">Undirected: during DFS, meeting a visited node that is NOT your direct parent = cycle. Directed: track the current recursion path (grey/black coloring) — meeting a node already ON the current path = cycle. Or run Kahn's topological sort: processing fewer than V nodes proves a cycle.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>What is Union-Find and when do you reach for it?</span><span class="qico">+</span></div><div class="qa-a">A structure answering "are X and Y in the same group?" and "merge these groups" in near-O(1) (with path compression + union by rank). Perfect when edges arrive one by one and you only care about connectivity — redundant connection (LC 684), accounts merge, Kruskal's MST. No traversal needed at all.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q4</span>What exactly is multi-source BFS?</span><span class="qico">+</span></div><div class="qa-a">Start BFS with SEVERAL nodes already in the queue at distance 0 — all rotten oranges, all ocean-border cells. The ripple spreads from all sources simultaneously, giving each cell its distance to the NEAREST source in one pass. Same template; only the initial queue changes.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q5</span>Why does Dijkstra fail with negative weights?</span><span class="qico">+</span></div><div class="qa-a">Dijkstra finalizes a node the moment it pops from the heap, assuming no future route can beat the current best — true only if edges never decrease a path's cost. A negative edge later could produce a cheaper route to an already-finalized node. Bellman-Ford re-relaxes all edges V−1 times, so it tolerates negatives (and detects negative cycles).</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q6</span>Grid problems: when BFS and when DFS?</span><span class="qico">+</span></div><div class="qa-a">Counting/marking regions (islands, flood fill) → DFS, simplest to write. Any "minimum steps/time/distance" on a grid (rotting oranges, 01-matrix, shortest maze path) → BFS, because level = distance. If the question says "nearest" or "minimum", DFS is the wrong tool.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q7</span>A tree is a graph — so why do trees get separate treatment?</span><span class="qico">+</span></div><div class="qa-a">A tree is a connected acyclic graph: exactly n−1 edges, exactly one path between any two nodes. No cycles → no visited set needed; one path → no shortest-path machinery. All tree traversals (preorder/inorder/postorder) are just DFS variants; level-order is BFS.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q8</span>How would you find the shortest path in a maze with portals/keys?</span><span class="qico">+</span></div><div class="qa-a">Expand the STATE: a node isn't just a position — it's (position + keys held) or (position + portal used). BFS over this bigger state graph still works because each state transition costs 1. "BFS on states" cracks most hard maze variants (LC 864, 847).</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 09: PRACTICE SHEET ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">09</div>
+  <div class="sec-info"><h2>The 36-Problem Practice Sheet</h2><p>Basic → Medium → Hard, each tagged with its algorithm. Solve in order! ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <h3 class="g" style="margin-bottom:.8rem;">🟢 BASIC — learn to see the graph (12)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">build</span><h4>Build an Adjacency List</h4><p>From an edge array — both directions.</p><div class="ht">Hint: defaultdict(list)</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">degree</span><h4>997 · Find the Town Judge</h4><p>Trusted by all, trusts nobody.</p><div class="ht">Hint: indegree − outdegree == n−1</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">BFS/DFS</span><h4>1971 · Find if Path Exists</h4><p>Can you get from A to B?</p><div class="ht">Hint: plain BFS + visited</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">DFS</span><h4>733 · Flood Fill</h4><p>The paint bucket.</p><div class="ht">Hint: recurse 4 directions</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">BFS</span><h4>BFS Traversal Order</h4><p>Print level-by-level from node 0.</p><div class="ht">Hint: the §03 template verbatim</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">DFS</span><h4>DFS Traversal Order</h4><p>Same graph — compare the order!</p><div class="ht">Hint: the §04 template</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">components</span><h4>323 · Connected Components</h4><p>How many friend circles?</p><div class="ht">Hint: count DFS launches</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">matrix</span><h4>Adjacency Matrix ↔ List</h4><p>Convert both directions.</p><div class="ht">Hint: nested loops</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">degree</span><h4>1791 · Center of Star Graph</h4><p>One node touches every edge.</p><div class="ht">Hint: appears in first two edges</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">BFS</span><h4>Shortest Hops A → B</h4><p>Fewest edges between two nodes.</p><div class="ht">Hint: BFS distance map</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">cycle</span><h4>Detect Cycle (undirected)</h4><p>True/False for a small graph.</p><div class="ht">Hint: visited neighbor ≠ parent</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><span class="dif pat">tree check</span><h4>261 · Graph Valid Tree</h4><p>Connected + exactly n−1 edges?</p><div class="ht">Hint: both conditions, one BFS</div></div>
+  </div>
+
+  <h3 class="a" style="margin:1.8rem 0 .8rem;">🟡 MEDIUM — the placement core (14)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS grid</span><h4>200 · Number of Islands</h4><p>THE graph interview question.</p><div class="ht">Hint: §05 animation</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS grid</span><h4>695 · Max Area of Island</h4><p>Biggest island size.</p><div class="ht">Hint: DFS returns 1 + neighbors</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">multi-BFS</span><h4>994 · Rotting Oranges</h4><p>Minutes until all rot.</p><div class="ht">Hint: all rotten start at level 0</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">multi-BFS</span><h4>542 · 01 Matrix</h4><p>Distance to nearest 0 for each cell.</p><div class="ht">Hint: BFS FROM the zeros</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS</span><h4>547 · Number of Provinces</h4><p>Friend circles via adjacency matrix.</p><div class="ht">Hint: components on matrix rows</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">topo</span><h4>207 · Course Schedule</h4><p>Can you finish all courses?</p><div class="ht">Hint: Kahn's — count processed</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">topo</span><h4>210 · Course Schedule II</h4><p>Return the actual order.</p><div class="ht">Hint: same code, return list</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS+hash</span><h4>133 · Clone Graph</h4><p>Deep copy with cycles.</p><div class="ht">Hint: old→new dict as visited</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">BFS coloring</span><h4>785 · Is Graph Bipartite?</h4><p>2-color the nodes.</p><div class="ht">Hint: neighbors get opposite color</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS grid</span><h4>417 · Pacific Atlantic Water Flow</h4><p>Cells reaching both oceans.</p><div class="ht">Hint: DFS inward from each coast</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">Dijkstra</span><h4>743 · Network Delay Time</h4><p>Signal reaching every node.</p><div class="ht">Hint: max of all dist values</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">union-find</span><h4>684 · Redundant Connection</h4><p>The edge that closes a cycle.</p><div class="ht">Hint: union fails → that edge</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">DFS grid</span><h4>130 · Surrounded Regions</h4><p>Capture enclosed O's.</p><div class="ht">Hint: protect border-connected first</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><span class="dif pat">BFS states</span><h4>752 · Open the Lock</h4><p>Shortest dial sequence.</p><div class="ht">Hint: BFS over 4-digit states</div></div>
+  </div>
+
+  <h3 class="r" style="margin:1.8rem 0 .8rem;">🔴 HARD — boss battles (10)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">BFS</span><h4>127 · Word Ladder</h4><p>hit → cog, one letter at a time.</p><div class="ht">Hint: words are nodes; precompute h*t patterns</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">topo</span><h4>269 · Alien Dictionary</h4><p>Deduce the alphabet from sorted words.</p><div class="ht">Hint: letter pairs → edges → topo</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">Dijkstra+K</span><h4>787 · Cheapest Flights Within K Stops</h4><p>Budget on hops too.</p><div class="ht">Hint: state = (city, stops used)</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">binary+BFS</span><h4>778 · Swim in Rising Water</h4><p>Earliest time to cross.</p><div class="ht">Hint: binary search the water level</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">DFS bridges</span><h4>1192 · Critical Connections</h4><p>Edges whose removal disconnects.</p><div class="ht">Hint: Tarjan low-link values</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">BFS</span><h4>815 · Bus Routes</h4><p>Fewest buses, not stops.</p><div class="ht">Hint: routes are the nodes!</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">DFS order</span><h4>332 · Reconstruct Itinerary</h4><p>Use every ticket once.</p><div class="ht">Hint: Hierholzer, post-order</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">multi-BFS</span><h4>1293 · Shortest Path, Eliminate Obstacles</h4><p>You may break k walls.</p><div class="ht">Hint: state = (r, c, breaks left)</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">union-find</span><h4>803 · Bricks Falling When Hit</h4><p>Reverse time!</p><div class="ht">Hint: add bricks back, union to roof</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><span class="dif pat">heap</span><h4>1631 · Path With Minimum Effort</h4><p>Minimize the worst step.</p><div class="ht">Hint: Dijkstra on max-so-far</div></div>
+  </div>
+
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Completion promise</b>Five templates (BFS, DFS, islands, Kahn, Dijkstra) + these 36 problems = graph mastery for placements. Continue the series: <a href="arrays_learn.html" style="color:var(--cyan)">Arrays</a> · <a href="dp_complete.html" style="color:var(--cyan)">Dynamic Programming</a> · <a href="python_learn.html" style="color:var(--cyan)">Python</a> · <a href="dsa_learn.html" style="color:var(--cyan)">Full DSA Course</a>. 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Graphs — Zero to Master · For placement preparation</p>
+  <div class="links">
+    <span>🧪 Ripple Lab</span><span>🎬 6 Graph Animations</span><span>🧭 5 Algorithm Templates</span><span>📝 36 Problems (Basic/Med/Hard)</span><span>💬 Interview Q&amp;A</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+<script>
+/* ═══════════ PYTHON SYNTAX HIGHLIGHTER ═══════════ */
+const PY_KW = new Set(['def','class','return','if','elif','else','for','while','in','not','and','or','None','True','False','lambda','break','continue','import','from','try','except','finally','raise','with','as','yield','pass','del','is']);
+const PY_FN = new Set(['range','len','max','min','sum','set','float','int','str','list','dict','enumerate','print','sorted','deque','popleft','append','add','heapq','heappush','heappop','get','defaultdict','items']);
+document.querySelectorAll('pre.py').forEach(p => {
+  let t = p.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  t = t.replace(/(#.*$)|('[^'\n]*'|"[^"\n]*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\d+\.?\d*)/gm, (m, cm, st, w, num) => {
+    if (cm)  return '<span class="cm">' + cm + '</span>';
+    if (st)  return '<span class="st2">' + st + '</span>';
+    if (w){
+      if (PY_KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (PY_FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    }
+    if (num) return '<span class="nm">' + num + '</span>';
+    return m;
+  });
+  p.innerHTML = t;
+});
+
+const NS = 'http://www.w3.org/2000/svg';
+const C_CY='#00D9FF', C_PU='#A855F7', C_AM='#F59E0B', C_GR='#22C55E', C_RO='#F43F5E', C_MU='#475569', C_WH='#F1F5F9', C_SL='#94A3B8';
+function el(tag, attrs, parent, txt){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (txt !== undefined) e.textContent = txt;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* ═══════════ GRAPH DRAWING ENGINE ═══════════ */
+function drawGraph(svgId, g, onNodeClick){
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  svg.setAttribute('width', g.w); svg.setAttribute('height', g.h);
+  svg.setAttribute('viewBox', '0 0 ' + g.w + ' ' + g.h);
+  if (g.directed){
+    const defs = el('defs', {}, svg);
+    const mk = el('marker', {id: svgId+'-arrow', viewBox:'0 0 10 10', refX:9, refY:5, markerWidth:7, markerHeight:7, orient:'auto-start-reverse'}, defs);
+    el('path', {d:'M 0 0 L 10 5 L 0 10 z', fill: C_MU, id: svgId+'-arrowpath'}, mk);
+  }
+  const R = 17;
+  g.edges.forEach(([a, b, w]) => {
+    const [x1, y1] = g.nodes[a], [x2, y2] = g.nodes[b];
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+    const ux = dx / len, uy = dy / len;
+    const sx = x1 + ux * (R + 2), sy = y1 + uy * (R + 2);
+    const ex = x2 - ux * (R + (g.directed ? 7 : 2)), ey = y2 - uy * (R + (g.directed ? 7 : 2));
+    const line = el('line', {id: svgId + '-e-' + a + '-' + b, x1: sx, y1: sy, x2: ex, y2: ey, stroke: C_MU, 'stroke-width': 2}, svg);
+    if (g.directed) line.setAttribute('marker-end', 'url(#' + svgId + '-arrow)');
+    if (w !== undefined){
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      el('circle', {cx: mx, cy: my, r: 10, fill: '#070C18'}, svg);
+      el('text', {x: mx, y: my + 4, 'text-anchor': 'middle', 'font-size': 11.5, 'font-weight': 700, fill: C_AM, 'font-family': 'Fira Code,monospace'}, svg, w);
+    }
+  });
+  for (const id in g.nodes){
+    const [x, y, sub] = g.nodes[id];
+    const grp = el('g', {style: onNodeClick ? 'cursor:pointer' : ''}, svg);
+    el('circle', {id: svgId + '-n-' + id, cx: x, cy: y, r: R, fill: '#0D1526', stroke: C_SL, 'stroke-width': 2}, grp);
+    el('text', {id: svgId + '-nt-' + id, x: x, y: y + 5, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 800, fill: C_WH, 'font-family': 'Fira Code,monospace'}, grp, id);
+    if (sub) el('text', {x: x, y: y + R + 14, 'text-anchor': 'middle', 'font-size': 10, fill: C_SL, 'font-family': 'Fira Code,monospace'}, svg, sub);
+    el('text', {id: svgId + '-l-' + id, x: x, y: y - R - 6, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, fill: C_AM, 'font-family': 'Fira Code,monospace'}, svg, '');
+    if (onNodeClick) grp.addEventListener('click', () => onNodeClick(id));
+  }
+}
+function setN(svgId, id, color){
+  const c = document.getElementById(svgId + '-n-' + id);
+  const t = document.getElementById(svgId + '-nt-' + id);
+  if (!c) return;
+  c.setAttribute('stroke', color); c.setAttribute('stroke-width', 2.5);
+  c.setAttribute('fill', hexFill(color));
+  t.setAttribute('fill', color === C_MU ? C_MU : C_WH);
+}
+function hexFill(hex){
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',0.16)';
+}
+function setE(svgId, a, b, color, wdt){
+  const line = document.getElementById(svgId + '-e-' + a + '-' + b) || document.getElementById(svgId + '-e-' + b + '-' + a);
+  if (line){ line.setAttribute('stroke', color); line.setAttribute('stroke-width', wdt || 3); }
+}
+function setL(svgId, id, txt, color){
+  const t = document.getElementById(svgId + '-l-' + id);
+  if (t){ t.textContent = txt; if (color) t.setAttribute('fill', color); }
+}
+
+/* ═══════════ GRAPH STEP-ANIMATION ENGINE ═══════════ */
+const GA = {};
+function chipHtml(arr){
+  if (!arr || !arr.length) return '<span style="color:var(--muted);font-size:12px;font-style:italic;">empty</span>';
+  return arr.map(x => '<span class="mchip q">' + x + '</span>').join('');
+}
+function regG(id, cfg){ GA[id] = {cfg, steps: [], i: 0, timer: null}; resetG(id); }
+function resetG(id){
+  const a = GA[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  a.i = 0;
+  drawGraph(id + '-svg', a.cfg.graph);
+  if (a.cfg.init) a.cfg.init(id + '-svg');
+  const strip = document.getElementById(id + '-q');
+  if (strip) strip.innerHTML = chipHtml([]);
+  a.steps = a.cfg.steps();
+  document.getElementById(id + '-cap').textContent = 'Press ▶ Step or ⏩ Auto to begin';
+}
+function stepG(id){
+  const a = GA[id], svgId = id + '-svg';
+  if (a.i >= a.steps.length){ document.getElementById(id + '-cap').textContent = '✅ Done! Press ↺ Reset to replay.'; return; }
+  const s = a.steps[a.i++];
+  (s.n || []).forEach(([nid, col]) => setN(svgId, nid, col));
+  (s.e || []).forEach(([ea, eb, col]) => setE(svgId, ea, eb, col));
+  (s.l || []).forEach(([nid, txt, col]) => setL(svgId, nid, txt, col));
+  if (s.q !== undefined){
+    const strip = document.getElementById(id + '-q');
+    if (strip) strip.innerHTML = chipHtml(s.q);
+  }
+  if (s.f) s.f(svgId);
+  document.getElementById(id + '-cap').textContent = s.c;
+}
+function autoG(id){
+  const a = GA[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; return; }
+  if (a.i >= a.steps.length) resetG(id);
+  stepG(id);
+  a.timer = setInterval(() => {
+    stepG(id);
+    if (a.i >= a.steps.length){ clearInterval(a.timer); a.timer = null; }
+  }, a.cfg.ms || 2100);
+}
+
+/* ═══════════ THE SHARED FRIEND-NETWORK GRAPH ═══════════ */
+const G1 = {
+  w: 560, h: 265, directed: false,
+  nodes: {A:[60,130], B:[170,60], C:[170,205], D:[300,60], E:[300,205], F:[420,130], G:[515,130]},
+  edges: [['A','B'],['A','C'],['B','D'],['C','E'],['D','E'],['D','F'],['E','F'],['F','G']]
+};
+const G1_ADJ = {A:['B','C'], B:['A','D'], C:['A','E'], D:['B','E','F'], E:['C','D','F'], F:['D','E','G'], G:['F']};
+
+/* ═══════════ 00 · RIPPLE LAB ═══════════ */
+let rippleStart = 'A', rippleTimers = [];
+function rippleDrawChips(){
+  document.getElementById('rl-chips').innerHTML = Object.keys(G1.nodes).map(n =>
+    '<button class="opchip' + (n === rippleStart ? ' sel' : '') + '" onclick="ripplePick(\'' + n + '\')">' + n + '</button>').join('');
+}
+function ripplePick(n){ rippleStart = n; rippleReset(); }
+function rippleReset(){
+  rippleTimers.forEach(t => clearTimeout(t)); rippleTimers = [];
+  rippleDrawChips();
+  drawGraph('ripple-svg', G1);
+  document.getElementById('rl-msg').textContent = 'Rumor starts at ' + rippleStart + '. Press Spread!';
+}
+function rippleSpread(){
+  rippleTimers.forEach(t => clearTimeout(t)); rippleTimers = [];
+  drawGraph('ripple-svg', G1);
+  const levels = [], seen = new Set([rippleStart]);
+  let frontier = [rippleStart];
+  while (frontier.length){
+    levels.push(frontier);
+    const next = [];
+    frontier.forEach(n => G1_ADJ[n].forEach(nb => { if (!seen.has(nb)){ seen.add(nb); next.push(nb); } }));
+    frontier = next;
+  }
+  const cols = [C_CY, C_AM, C_PU, C_RO, C_GR, C_CY];
+  levels.forEach((lvl, i) => {
+    rippleTimers.push(setTimeout(() => {
+      lvl.forEach(n => {
+        setN('ripple-svg', n, cols[i]);
+        setL('ripple-svg', n, 'wave ' + i, cols[i]);
+      });
+      document.getElementById('rl-msg').textContent = i === 0
+        ? '🗣️ Wave 0: ' + lvl.join(', ') + ' knows the rumor.'
+        : '🌊 Wave ' + i + ' reaches: ' + lvl.join(', ') + (i === levels.length - 1 ? ' — everyone has heard it in ' + (levels.length - 1) + ' waves!' : '');
+    }, i * 950));
+  });
+}
+
+/* ═══════════ 02 · NODE EXPLORER ═══════════ */
+const REPR_NODES = Object.keys(G1_ADJ);
+function reprList(sel){
+  document.getElementById('repr-list').innerHTML = REPR_NODES.map(n => {
+    const on = n === sel;
+    return '<div style="' + (on ? 'background:rgba(0,217,255,.1);border-radius:6px;padding:0 .5rem;margin:0 -.5rem;' : '') + '">' +
+      '<span style="color:' + (on ? 'var(--cyan)' : 'var(--rose)') + '">"' + n + '"</span>: [' +
+      G1_ADJ[n].map(m => '<span style="color:' + (on ? 'var(--green)' : 'var(--slate)') + '">"' + m + '"</span>').join(', ') + ']</div>';
+  }).join('');
+}
+function reprMatrix(sel){
+  let html = '<tr><th></th>' + REPR_NODES.map(n => '<th style="text-align:center;color:' + (G1_ADJ[sel] && (sel === n) ? 'var(--cyan)' : 'var(--slate)') + '">' + n + '</th>').join('') + '</tr>';
+  REPR_NODES.forEach(r => {
+    html += '<tr><th style="color:' + (r === sel ? 'var(--cyan)' : 'var(--slate)') + '">' + r + '</th>';
+    REPR_NODES.forEach(c => {
+      const one = G1_ADJ[r].includes(c);
+      const hot = r === sel && one;
+      html += '<td style="text-align:center;padding:.35rem .6rem;font-weight:700;color:' + (hot ? 'var(--green)' : one ? 'var(--white)' : 'var(--muted)') + ';' + (r === sel ? 'background:rgba(0,217,255,.06);' : '') + '">' + (one ? 1 : 0) + '</td>';
+    });
+    html += '</tr>';
+  });
+  document.getElementById('repr-mat').innerHTML = html;
+}
+function reprSelect(id){
+  drawGraph('repr-svg', G1, reprSelect);
+  setN('repr-svg', id, C_CY);
+  G1_ADJ[id].forEach(nb => { setN('repr-svg', nb, C_GR); setE('repr-svg', id, nb, C_GR); });
+  reprList(id); reprMatrix(id);
+  document.getElementById('repr-msg').textContent = id + ' has ' + G1_ADJ[id].length + ' neighbor' + (G1_ADJ[id].length > 1 ? 's' : '') + ': ' + G1_ADJ[id].join(', ') + ' — graph["' + id + '"] returns exactly this list, and row ' + id + ' of the matrix says the same thing.';
+}
+
+/* ═══════════ 03 · BFS ANIMATION ═══════════ */
+regG('bfsa', { graph: G1, steps: () => [
+  {n:[['A',C_AM]], q:['A'], c:'Start: mark A visited and enqueue it. queue = [A]'},
+  {n:[['A',C_CY],['B',C_AM],['C',C_AM]], e:[['A','B',C_CY],['A','C',C_CY]], q:['B','C'], c:'Pop A → its unvisited neighbors B, C are marked + enqueued. (Mark on ENQUEUE!)'},
+  {n:[['A',C_GR],['B',C_CY],['D',C_AM]], e:[['B','D',C_CY]], q:['C','D'], c:'Pop B → A already visited, D is new → enqueue D. A is fully done (green).'},
+  {n:[['B',C_GR],['C',C_CY],['E',C_AM]], e:[['C','E',C_CY]], q:['D','E'], c:'Pop C → E is new → enqueue. Level 1 (B, C) finished before ANY level-2 node — that is the queue working.'},
+  {n:[['C',C_GR],['D',C_CY],['F',C_AM]], e:[['D','F',C_CY]], q:['E','F'], c:'Pop D → B, E already seen; F is new → enqueue.'},
+  {n:[['D',C_GR],['E',C_CY]], q:['F'], c:'Pop E → C, D, F all already seen → nothing new. The visited set just saved us from re-processing.'},
+  {n:[['E',C_GR],['F',C_CY],['G',C_AM]], e:[['F','G',C_CY]], q:['G'], c:'Pop F → G is new → enqueue.'},
+  {n:[['F',C_GR],['G',C_CY]], q:[], c:'Pop G → no new neighbors. Queue is empty.'},
+  {n:[['G',C_GR]], q:[], c:'✅ BFS complete. Visit order A · B C · D E · F · G — perfect level-by-level rings. O(V + E).'}
+]});
+
+/* ═══════════ 04 · DFS ANIMATION ═══════════ */
+regG('dfsa', { graph: G1, steps: () => [
+  {n:[['A',C_CY]], q:['A'], c:'Visit A. Dive into its FIRST neighbor — no waiting around.'},
+  {n:[['A',C_PU],['B',C_CY]], e:[['A','B',C_PU]], q:['A','B'], c:'A → B. A stays "open" on the call stack (purple).'},
+  {n:[['B',C_PU],['D',C_CY]], e:[['B','D',C_PU]], q:['A','B','D'], c:'B → D. Deeper!'},
+  {n:[['D',C_PU],['E',C_CY]], e:[['D','E',C_PU]], q:['A','B','D','E'], c:'D → E (its other options wait). Four levels deep already.'},
+  {n:[['E',C_PU],['C',C_CY]], e:[['E','C',C_PU]], q:['A','B','D','E','C'], c:'E → C. Compare: BFS visited C in wave 1 — DFS reaches it LAST through the back door!'},
+  {n:[['C',C_GR]], q:['A','B','D','E'], c:'C has no unvisited neighbors → DEAD END. Backtrack: C finishes (green), control returns to E.'},
+  {n:[['E',C_PU],['F',C_CY]], e:[['E','F',C_PU]], q:['A','B','D','E','F'], c:'E still had F unexplored → dive again.'},
+  {n:[['F',C_PU],['G',C_CY]], e:[['F','G',C_PU]], q:['A','B','D','E','F','G'], c:'F → G. The deepest point of the whole search.'},
+  {n:[['G',C_GR],['F',C_GR],['E',C_GR],['D',C_GR],['B',C_GR],['A',C_GR]], q:[], c:'G is a dead end → the stack unwinds: G, F, E, D, B, A all finish. Order: A B D E C F G. Same nodes as BFS — totally different order.'}
+]});
+
+/* ═══════════ 06 · TOPO SORT ANIMATION ═══════════ */
+const GTOPO = {
+  w: 590, h: 265, directed: true,
+  nodes: {P:[70,65,'Prog'], M:[70,200,'Math'], D:[240,65,'DSA'], W:[240,200,'WebDev'], A:[400,130,'Algo'], L:[525,130,'ML']},
+  edges: [['P','D'],['P','W'],['M','A'],['D','A'],['A','L'],['W','L']]
+};
+regG('topo', { graph: GTOPO, init: (svgId) => {
+    [['P',0],['M',0],['D',1],['W',1],['A',2],['L',2]].forEach(([n, d]) => setL(svgId, n, 'in:' + d, C_SL));
+  }, steps: () => [
+  {n:[['P',C_AM],['M',C_AM]], q:[], c:'Indegree = pending prerequisites. Prog and Math have in:0 → nothing blocks them → they join the ready queue.'},
+  {n:[['P',C_GR],['D',C_AM],['W',C_AM]], e:[['P','D',C_GR],['P','W',C_GR]], l:[['D','in:0',C_AM],['W','in:0',C_AM]], q:['P'], c:'Take Prog ✅. Its arrows disappear: DSA and WebDev drop to in:0 → both ready!'},
+  {n:[['M',C_GR]], e:[['M','A',C_GR]], l:[['A','in:1',C_SL]], q:['P','M'], c:'Take Math ✅. Algo drops 2 → 1 — still waiting for DSA.'},
+  {n:[['D',C_GR],['A',C_AM]], e:[['D','A',C_GR]], l:[['A','in:0',C_AM]], q:['P','M','D'], c:'Take DSA ✅ → Algo hits in:0 → unlocked.'},
+  {n:[['W',C_GR]], e:[['W','L',C_GR]], l:[['L','in:1',C_SL]], q:['P','M','D','W'], c:'Take WebDev ✅. ML drops to 1 — Algo still pending.'},
+  {n:[['A',C_GR],['L',C_AM]], e:[['A','L',C_GR]], l:[['L','in:0',C_AM]], q:['P','M','D','W','A'], c:'Take Algo ✅ → ML unlocked.'},
+  {n:[['L',C_GR]], q:['P','M','D','W','A','L'], c:'Take ML ✅. All 6 processed = valid study plan, no cycle! (If any node stayed stuck above 0 → deadlock → impossible.)'}
+]});
+
+/* ═══════════ 07 · DIJKSTRA ANIMATION ═══════════ */
+const GDIJ = {
+  w: 560, h: 265, directed: false,
+  nodes: {A:[55,130], B:[195,55], C:[195,210], D:[360,55], E:[360,210], F:[505,130]},
+  edges: [['A','B',4],['A','C',2],['C','B',1],['B','D',5],['D','F',3],['C','E',10],['E','F',2]]
+};
+regG('dij', { graph: GDIJ, init: (svgId) => {
+    setL(svgId, 'A', '0', C_CY);
+    ['B','C','D','E','F'].forEach(n => setL(svgId, n, '∞', C_MU));
+  }, steps: () => [
+  {n:[['A',C_CY]], c:'dist[A] = 0, everyone else ∞. The min-heap always serves the CHEAPEST unfinished node → A.'},
+  {n:[['B',C_AM],['C',C_AM]], e:[['A','B',C_AM],['A','C',C_AM]], l:[['B','4',C_AM],['C','2',C_AM]], c:'Relax A\'s edges: B = 0+4 = 4, C = 0+2 = 2. Cheapest waiting node is now C (2).'},
+  {n:[['A',C_GR],['C',C_CY]], l:[['B','3',C_GR],['E','12',C_AM]], e:[['C','B',C_GR]], c:'Finalize C at 2. Relax its edges: B improves 4 → 2+1 = 3 (the DETOUR beats the direct road!). E = 12.'},
+  {n:[['C',C_GR],['B',C_CY]], l:[['D','8',C_AM]], e:[['B','D',C_AM]], c:'Finalize B at 3. Relax B→D: dist[D] = 3+5 = 8.'},
+  {n:[['B',C_GR],['D',C_CY]], l:[['F','11',C_AM]], e:[['D','F',C_AM]], c:'Finalize D at 8. Relax D→F: dist[F] = 8+3 = 11.'},
+  {n:[['D',C_GR],['F',C_CY]], c:'Heap offers F (11) and E (12) → F is cheaper → F is FINAL at 11. E\'s "shortcut" via 10+2 never had a chance.'},
+  {n:[['F',C_GR]], e:[['A','C',C_GR],['C','B',C_GR],['B','D',C_GR],['D','F',C_GR]], c:'🏆 Shortest route A→C→B→D→F = 2+1+5+3 = 11. Greedy-by-total-distance, made safe by the heap.'}
+]});
+
+/* ═══════════ 05 · ISLANDS (grid engine) ═══════════ */
+const AGRID = {};
+function buildGrid(svgId, cfg){
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const cw = cfg.cw || 50, chh = cfg.ch || 44, gap = 5, rlw = 10, clh = cfg.colLabels ? 24 : 10;
+  const W = rlw + cfg.cols * (cw + gap) + 10, H = clh + cfg.rows * (chh + gap) + 10;
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  for (let r = 0; r < cfg.rows; r++) for (let c = 0; c < cfg.cols; c++){
+    el('rect', {id: svgId+'-r-'+r+'-'+c, x: rlw + c*(cw+gap), y: clh + r*(chh+gap), width: cw, height: chh, rx: 7, fill:'#070C18', stroke:'rgba(255,255,255,.14)', 'stroke-width':1.5}, svg);
+    el('text', {id: svgId+'-x-'+r+'-'+c, x: rlw + c*(cw+gap) + cw/2, y: clh + r*(chh+gap) + chh/2 + 5, 'text-anchor':'middle', 'font-size':14, 'font-weight':700, fill:'#475569', 'font-family':'Fira Code,monospace'}, svg);
+  }
+  if (cfg.prefill) cfg.prefill.forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+}
+function setCellV(svgId, r, c, v, col){
+  col = col || C_CY;
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  const txt  = document.getElementById(svgId+'-x-'+r+'-'+c);
+  if (!rect) return;
+  rect.setAttribute('stroke', col);
+  txt.setAttribute('fill', col);
+  txt.textContent = v;
+}
+function hiCell(svgId, r, c, on){
+  const rect = document.getElementById(svgId+'-r-'+r+'-'+c);
+  if (rect) rect.setAttribute('fill', on ? 'rgba(245,158,11,.16)' : '#070C18');
+}
+function regAnim(id, cfg){ AGRID[id] = {cfg, steps: [], i: 0, timer: null, lastHi: []}; resetAnim(id); }
+function resetAnim(id){
+  const a = AGRID[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; }
+  a.i = 0; a.lastHi = [];
+  buildGrid(id + '-svg', a.cfg);
+  a.steps = a.cfg.steps();
+  document.getElementById(id + '-cap').textContent = 'Press ▶ Step or ⏩ Auto to begin';
+}
+function stepAnim(id){
+  const a = AGRID[id], svgId = id + '-svg';
+  if (a.i >= a.steps.length){ document.getElementById(id + '-cap').textContent = '✅ Done! Press ↺ Reset to replay.'; return; }
+  const s = a.steps[a.i++];
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, false));
+  a.lastHi = s.h || [];
+  (s.s || []).forEach(([r,c,v,col]) => setCellV(svgId, r, c, v, col));
+  a.lastHi.forEach(([r,c]) => hiCell(svgId, r, c, true));
+  document.getElementById(id + '-cap').textContent = s.c;
+}
+function autoAnim(id){
+  const a = AGRID[id];
+  if (a.timer){ clearInterval(a.timer); a.timer = null; return; }
+  if (a.i >= a.steps.length) resetAnim(id);
+  stepAnim(id);
+  a.timer = setInterval(() => {
+    stepAnim(id);
+    if (a.i >= a.steps.length){ clearInterval(a.timer); a.timer = null; }
+  }, a.cfg.ms || 2000);
+}
+regAnim('isl', {
+  rows:3, cols:5,
+  prefill:[[0,0,'1',C_GR],[0,1,'1',C_GR],[0,2,'0',C_MU],[0,3,'0',C_MU],[0,4,'1',C_GR],
+           [1,0,'1',C_GR],[1,1,'0',C_MU],[1,2,'0',C_MU],[1,3,'1',C_GR],[1,4,'1',C_GR],
+           [2,0,'0',C_MU],[2,1,'0',C_MU],[2,2,'1',C_GR],[2,3,'0',C_MU],[2,4,'0',C_MU]],
+  steps: () => [
+    {h:[[0,0]], c:'Scanner at (0,0): LAND, never visited → Island #1 discovered! Launch the flood fill…'},
+    {s:[[0,0,'1',C_CY],[0,1,'1',C_CY],[1,0,'1',C_CY]], h:[[0,1],[1,0]], c:'Flood fill sinks the WHOLE island: (0,0) → right to (0,1), down to (1,0). All marked visited in one dive.'},
+    {h:[[0,2],[0,3]], c:'Scanner continues: (0,2) and (0,3) are water → skip.'},
+    {h:[[0,4]], c:'(0,4): LAND, unvisited → Island #2! Flood fill again…'},
+    {s:[[0,4,'1',C_PU],[1,4,'1',C_PU],[1,3,'1',C_PU]], h:[[1,4],[1,3]], c:'Sinks (0,4) → (1,4) → (1,3). It wrapped around the corner — 4-directional connectivity at work.'},
+    {h:[[1,1],[1,2]], c:'Row 1 leftovers: water or already visited → the scanner flies through.'},
+    {s:[[2,2,'1',C_AM]], h:[[2,2]], c:'(2,2): LAND → Island #3. The flood fill finds no land neighbors — a lonely one-cell island.'},
+    {c:'✅ Scan finished: 3 islands. Count = number of flood-fill LAUNCHES, not land cells. Total work O(rows × cols).'}
+  ]
+});
+
+/* ═══ INIT ═══ */
+rippleReset();
+drawGraph('repr-svg', G1, reprSelect);
+reprList(null); reprMatrix(null);
+reprSelect('D');
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

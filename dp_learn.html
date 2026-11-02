@@ -1,0 +1,2796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dynamic Programming — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(168,85,247,.25);
+  --green:#22C55E;--cyan:#00D9FF;--blue:#3B82F6;--amber:#F59E0B;
+  --purple:#A855F7;--rose:#F43F5E;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --sidebar:260px;--r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px;}
+
+/* ── TOP NAV ── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(7,12,24,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);height:58px;
+  display:flex;align-items:center;padding:0 1.25rem;gap:1rem;
+}
+.topnav-back{
+  display:flex;align-items:center;gap:.5rem;color:var(--slate);font-size:13px;
+  text-decoration:none;padding:.35rem .8rem;border-radius:8px;
+  border:1px solid var(--border);transition:all .2s;
+}
+.topnav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.topnav-title{
+  font-size:1rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topnav-lang{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.3rem .9rem;border-radius:100px;font-size:12px;font-weight:700;
+  background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);color:var(--purple);
+  margin-left:auto;
+}
+.topnav-progress{display:flex;align-items:center;gap:.6rem;font-size:12px;color:var(--slate);}
+.progress-bar-wrap{width:100px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;}
+.progress-bar-fill{height:100%;background:var(--purple);border-radius:3px;transition:width .4s ease;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:100vh;padding-top:58px;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;position:fixed;top:58px;left:0;bottom:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  overflow-y:auto;padding:1rem 0;z-index:100;
+}
+.sidebar::-webkit-scrollbar{width:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.sb-section{padding:.4rem 1rem .2rem;font-size:10px;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:.5rem;}
+.sb-item{
+  display:flex;align-items:center;gap:.6rem;padding:.55rem 1rem .55rem 1.25rem;
+  font-size:13px;color:var(--slate);cursor:pointer;transition:all .18s;
+  border-left:2px solid transparent;text-decoration:none;
+}
+.sb-item:hover{color:var(--white);background:var(--glass);}
+.sb-item.active{color:var(--purple);background:rgba(168,85,247,.07);border-left-color:var(--purple);}
+.sb-item.done .sb-dot{background:var(--purple);}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .2s;}
+.sb-item.active .sb-dot{background:var(--purple);box-shadow:0 0 8px rgba(168,85,247,.6);}
+.sb-num{font-size:10px;color:var(--muted);margin-left:auto;font-family:monospace;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;padding:2.5rem 2rem 5rem;max-width:900px;}
+.topic-page{display:none;}
+.topic-page.active{display:block;}
+
+/* ── CONTENT ── */
+.topic-header{margin-bottom:2rem;}
+.topic-tag{
+  display:inline-block;padding:.2rem .75rem;border-radius:100px;font-size:11px;
+  font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.75rem;
+  background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2);
+}
+.topic-title{font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:800;line-height:1.1;
+  letter-spacing:-.02em;margin-bottom:.5rem;}
+.topic-sub{font-size:15px;color:var(--slate);line-height:1.7;}
+
+.lesson-block{margin-bottom:2.5rem;}
+.lesson-block h3{font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:.75rem;
+  padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+.lesson-block h3 .icon{font-size:1rem;}
+.lesson-block p{font-size:14px;color:var(--slate);line-height:1.85;margin-bottom:.75rem;}
+.lesson-block p strong{color:var(--white);}
+.lesson-block ul,.lesson-block ol{padding-left:1.4rem;font-size:14px;color:var(--slate);line-height:2;}
+.lesson-block li strong{color:var(--white);}
+.lesson-block li code,.lesson-block p code{
+  font-family:'Fira Code','Courier New',monospace;font-size:12px;
+  background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;color:var(--cyan);
+}
+
+/* Real-life analogy */
+.analogy{
+  background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);
+  border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;
+  padding:1rem 1.25rem;margin:.8rem 0 1rem;
+}
+.analogy .label{font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--amber);margin-bottom:.35rem;}
+.analogy p{font-size:13.5px;color:#CBD5E1;line-height:1.75;margin:0;}
+
+/* Info boxes */
+.info-box{border-radius:var(--r);padding:1rem 1.25rem;margin:.8rem 0;display:flex;gap:.75rem;align-items:flex-start;}
+.info-box.info{background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.15);}
+.info-box.tip{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);}
+.info-box.warn{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);}
+.info-box .ib-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.info-box .ib-text{font-size:13.5px;color:var(--slate);line-height:1.75;}
+.info-box .ib-text strong{color:var(--white);}
+
+/* Code block */
+.code-block{background:#0A0F1A;border:1px solid rgba(255,255,255,.08);border-radius:var(--r);overflow:hidden;margin:.75rem 0 1.2rem;}
+.code-header{display:flex;align-items:center;padding:.55rem 1rem;background:#0D1526;border-bottom:1px solid rgba(255,255,255,.06);gap:.6rem;}
+.code-dots{display:flex;gap:.35rem;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.cd1{background:#F43F5E;}.cd2{background:#F59E0B;}.cd3{background:#22C55E;}
+.code-lang{font-size:11px;color:var(--muted);font-family:monospace;margin-left:.4rem;}
+.code-run{margin-left:auto;padding:.28rem .85rem;border-radius:7px;font-size:11px;font-weight:700;
+  background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.35);color:var(--purple);cursor:pointer;transition:all .2s;}
+.code-run:hover{background:rgba(168,85,247,.25);color:#fff;}
+.code-run:disabled{opacity:.4;cursor:not-allowed;}
+.code-body{padding:1.2rem 1.4rem;overflow-x:auto;}
+.code-body pre{margin:0;font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.9;white-space:pre;}
+.kw{color:#A855F7;}.fn{color:#00D9FF;}.str{color:#22C55E;}.num{color:#F59E0B;}
+.cmt{color:#475569;font-style:italic;}.op{color:#E2E8F0;}.type{color:#FB923C;}
+
+/* Output block */
+.output-block{background:#050A05;border:1px solid rgba(34,197,94,.15);border-radius:var(--r);padding:1rem 1.4rem;margin-top:-.5rem;margin-bottom:1.2rem;}
+.output-label{font-size:10px;color:var(--green);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;}
+.output-block pre{font-family:'Fira Code',monospace;font-size:13px;color:#22C55E;line-height:1.8;white-space:pre;}
+
+/* Step-through execution */
+.execline{display:block;border-radius:5px;padding:1px 6px;margin:0 0 0 -6px;transition:background .25s,box-shadow .25s;}
+.execline.hl{background:rgba(168,85,247,.16);box-shadow:inset 3px 0 0 var(--purple);}
+.execline.done{background:rgba(34,197,94,.06);}
+.exec-note{min-height:20px;font-size:12px;color:var(--purple);font-family:'Fira Code',monospace;margin-top:.5rem;opacity:0;transition:opacity .2s;line-height:1.7;}
+.exec-note.show{opacity:1;}
+
+/* ── VIZ LAB ── */
+.vizlab{background:#0A0F1A;border:1px solid rgba(168,85,247,.22);border-radius:var(--r);padding:1.1rem 1.25rem;margin:.9rem 0 1.3rem;}
+.vizlab-title{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem;}
+.vizlab-note{font-size:12.5px;color:var(--slate);line-height:1.7;border-left:2px solid var(--amber);padding:.45rem .8rem;background:rgba(245,158,11,.05);border-radius:0 8px 8px 0;margin-top:.8rem;min-height:20px;}
+.vizlab-note strong{color:var(--white);}
+.viz-btn{
+  padding:.45rem 1.1rem;border-radius:8px;font-size:12px;font-weight:700;
+  background:linear-gradient(135deg,var(--purple),#7C3AED);color:#fff;
+  border:none;cursor:pointer;transition:all .2s;
+}
+.viz-btn:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(168,85,247,.35);}
+.viz-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+.viz-btn.alt{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--slate);}
+.viz-btn.alt:hover{color:var(--white);border-color:rgba(255,255,255,.2);box-shadow:none;}
+.viz-controls{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.9rem;}
+.viz-input{background:#0D1526;border:1px solid var(--border);border-radius:8px;color:var(--white);
+  font-family:'Fira Code',monospace;font-size:13px;padding:.42rem .65rem;width:110px;outline:none;transition:border-color .2s;}
+.viz-input:focus{border-color:var(--purple);}
+.viz-counter{margin-left:auto;font-family:'Fira Code',monospace;font-size:12px;font-weight:700;color:var(--amber);
+  padding:.3rem .8rem;border-radius:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);}
+
+/* DP 1-D table */
+.dp-row{display:flex;gap:6px;flex-wrap:wrap;margin:.6rem 0;}
+.dp-cell{position:relative;width:52px;text-align:center;}
+.dp-box{
+  height:44px;border:1.5px solid var(--border);border-radius:9px;background:#0D1526;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:14px;font-weight:700;color:var(--muted);transition:all .3s;
+}
+.dp-box.on{border-color:var(--amber);background:rgba(245,158,11,.12);color:var(--amber);}
+.dp-box.set{border-color:var(--purple);background:rgba(168,85,247,.1);color:var(--white);}
+.dp-box.win{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);box-shadow:0 0 12px rgba(34,197,94,.35);}
+.dp-cell .dp-idx{font-size:10px;color:var(--muted);font-family:monospace;margin-top:4px;display:block;}
+
+/* DP 2-D matrix */
+.mtx-wrap{overflow-x:auto;margin:.6rem 0;}
+.mtx{border-collapse:separate;border-spacing:5px;}
+.mtx th{font-family:'Fira Code',monospace;font-size:11px;font-weight:700;color:var(--muted);
+  min-width:30px;height:22px;text-align:center;transition:color .3s;}
+.mtx th.hl{color:var(--amber);}
+.mtx td{width:46px;height:40px;border:1.5px solid var(--border);border-radius:8px;background:#0D1526;
+  text-align:center;font-family:'Fira Code',monospace;font-size:13px;font-weight:700;color:var(--muted);transition:all .3s;}
+.mtx td.set{border-color:var(--purple);background:rgba(168,85,247,.1);color:var(--white);}
+.mtx td.on{border-color:var(--amber);background:rgba(245,158,11,.14);color:var(--amber);transform:scale(1.1);}
+.mtx td.src{border-color:var(--cyan);background:rgba(0,217,255,.1);color:var(--cyan);}
+.mtx td.path{border-color:var(--green);background:rgba(34,197,94,.16);color:var(--green);box-shadow:0 0 10px rgba(34,197,94,.3);}
+
+/* Recursion tree (SVG) */
+.tree-svg circle{fill:#0D1526;stroke:rgba(255,255,255,.2);stroke-width:1.5;transition:all .3s;}
+.tree-svg text{fill:var(--white);font-family:'Fira Code',monospace;font-size:11px;font-weight:700;text-anchor:middle;dominant-baseline:central;}
+.tree-svg line{stroke:rgba(255,255,255,.15);stroke-width:1.5;transition:opacity .3s;}
+.tree-svg g.on circle{fill:rgba(168,85,247,.25);stroke:var(--purple);filter:drop-shadow(0 0 6px rgba(168,85,247,.6));}
+.tree-svg g.done circle{fill:rgba(34,197,94,.15);stroke:var(--green);}
+.tree-svg g.rep circle{fill:rgba(244,63,94,.22);stroke:var(--rose);filter:drop-shadow(0 0 6px rgba(244,63,94,.5));}
+.tree-svg g.hit circle{fill:rgba(0,217,255,.22);stroke:var(--cyan);filter:drop-shadow(0 0 7px rgba(0,217,255,.6));}
+.tree-svg g.dim{opacity:.18;}
+.tree-svg line.dim{opacity:.15;}
+
+/* Memo map chips */
+.memo-strip{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin:.6rem 0;min-height:32px;}
+.memo-strip .m-label{font-size:11px;color:var(--muted);font-weight:700;font-family:monospace;}
+.memo-chip{padding:.25rem .7rem;border-radius:7px;font-family:'Fira Code',monospace;font-size:12px;font-weight:700;
+  background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.3);color:var(--cyan);animation:popIn .25s ease;}
+@keyframes popIn{from{transform:translateY(-14px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* Houses (robber) */
+.house-row{display:flex;gap:10px;flex-wrap:wrap;margin:.7rem 0;}
+.house{width:66px;text-align:center;padding:.5rem 0 .4rem;border:1.5px solid var(--border);border-radius:10px;background:#0D1526;transition:all .3s;}
+.house .h-ico{font-size:1.35rem;display:block;}
+.house .h-val{font-family:'Fira Code',monospace;font-size:13px;font-weight:700;color:var(--amber);}
+.house .h-idx{font-size:9px;color:var(--muted);font-family:monospace;}
+.house.on{border-color:var(--amber);transform:translateY(-4px);box-shadow:0 0 12px rgba(245,158,11,.3);}
+.house.rob{border-color:var(--green);background:rgba(34,197,94,.12);box-shadow:0 0 12px rgba(34,197,94,.4);}
+.house.skip{opacity:.32;}
+
+/* Variable boxes (space optimisation) */
+.var-row{display:flex;gap:1rem;flex-wrap:wrap;margin:.7rem 0;}
+.var-box{min-width:90px;text-align:center;border:1.5px solid var(--border);border-radius:10px;background:#0D1526;padding:.55rem .8rem;transition:all .3s;}
+.var-box .v-name{font-size:10px;color:var(--muted);font-family:monospace;font-weight:700;letter-spacing:.05em;}
+.var-box .v-val{font-family:'Fira Code',monospace;font-size:17px;font-weight:800;color:var(--white);}
+.var-box.on{border-color:var(--amber);box-shadow:0 0 12px rgba(245,158,11,.3);}
+.var-box.set{border-color:var(--purple);background:rgba(168,85,247,.08);}
+
+/* Coin chips */
+.coin-strip{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.4rem 0 .7rem;}
+.coin{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:14px;font-weight:800;color:#1a1200;
+  background:linear-gradient(135deg,#FDE68A,var(--amber));border:2px solid rgba(245,158,11,.6);transition:all .3s;}
+.coin.on{transform:scale(1.15);box-shadow:0 0 14px rgba(245,158,11,.6);}
+.coin.dim{opacity:.3;}
+
+/* Complexity chips */
+.cx-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 1rem;}
+.cx-chip{
+  padding:.4rem 1rem;border-radius:9px;font-size:12px;font-weight:700;font-family:'Fira Code',monospace;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--slate);
+}
+.cx-chip b{color:var(--amber);font-family:'Fira Code',monospace;}
+
+/* Recipe cards */
+.recipe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:.8rem;margin:.8rem 0 1rem;}
+.recipe-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1rem;transition:all .25s;}
+.recipe-card:hover{transform:translateY(-3px);border-color:var(--border2);background:rgba(168,85,247,.05);}
+.recipe-card .rc-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;background:linear-gradient(135deg,var(--purple),#7C3AED);color:#fff;margin-bottom:.5rem;}
+.recipe-card h4{font-size:13px;font-weight:700;margin-bottom:.3rem;}
+.recipe-card p{font-size:11.5px;color:var(--slate);line-height:1.6;}
+.recipe-card p code{font-family:'Fira Code',monospace;font-size:10.5px;background:rgba(255,255,255,.06);padding:1px 4px;border-radius:4px;color:var(--cyan);}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin:.75rem 0;}
+.data-table th{background:rgba(168,85,247,.08);color:var(--purple);padding:.6rem 1rem;text-align:left;
+  font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid rgba(168,85,247,.2);}
+.data-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);color:var(--slate);vertical-align:top;}
+.data-table td:first-child{color:var(--white);font-family:monospace;font-size:12px;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(255,255,255,.02);}
+.data-table a{color:var(--purple);text-decoration:none;}
+.data-table a:hover{text-decoration:underline;}
+.diff-pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+.diff-pill.e{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.diff-pill.m{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.diff-pill.h{background:rgba(244,63,94,.1);color:var(--rose);border:1px solid rgba(244,63,94,.2);}
+
+/* Practice Q&A accordions */
+.qa-acc{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:.7rem;background:var(--glass);}
+.qa-head{padding:.85rem 1.05rem;display:flex;align-items:flex-start;gap:.7rem;cursor:pointer;transition:background .2s;}
+.qa-head:hover{background:rgba(255,255,255,.05);}
+.qa-num{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--purple);}
+.qa-title{font-size:13.5px;font-weight:700;color:var(--white);line-height:1.5;flex:1;}
+.qa-title small{display:block;font-size:11.5px;font-weight:400;color:var(--slate);margin-top:2px;}
+.qa-chev{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--slate);background:rgba(255,255,255,.05);transition:all .3s;}
+.qa-acc.open .qa-chev{transform:rotate(180deg);background:rgba(168,85,247,.18);color:var(--purple);}
+.qa-body{max-height:0;overflow:hidden;transition:max-height .45s ease;}
+.qa-acc.open .qa-body{max-height:2400px;}
+.qa-body-inner{padding:.2rem 1.05rem 1.05rem;border-top:1px dashed var(--border);}
+.qa-logic{font-size:12.5px;color:var(--slate);line-height:1.85;background:rgba(245,158,11,.05);border-left:2px solid var(--amber);border-radius:0 8px 8px 0;padding:.65rem .95rem;margin:.85rem 0 .65rem;}
+.qa-logic strong{color:var(--white);}
+.qa-logic code{font-family:'Fira Code',monospace;font-size:11.5px;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;color:var(--cyan);}
+
+/* Quiz */
+.quiz-block{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin:1.5rem 0;}
+.quiz-q{font-size:14px;font-weight:700;margin-bottom:.8rem;line-height:1.6;}
+.quiz-opts{display:flex;flex-direction:column;gap:.5rem;}
+.quiz-opt{
+  padding:.6rem 1rem;border-radius:8px;font-size:13px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;text-align:left;color:var(--slate);
+}
+.quiz-opt:hover{background:rgba(168,85,247,.05);border-color:rgba(168,85,247,.2);color:var(--white);}
+.quiz-opt.correct{background:rgba(34,197,94,.1);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:rgba(244,63,94,.1);border-color:var(--rose);color:var(--rose);}
+.quiz-feedback{margin-top:.75rem;font-size:13px;display:none;color:var(--slate);line-height:1.7;}
+.quiz-feedback strong{color:var(--white);}
+
+/* Nav buttons */
+.topic-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);gap:.8rem;flex-wrap:wrap;}
+.tnav-btn{
+  display:flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;
+  border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .2s;border:1px solid var(--border);background:var(--glass);color:var(--slate);
+}
+.tnav-btn:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.tnav-btn.next{background:linear-gradient(135deg,var(--purple),#7C3AED);color:#fff;border:none;font-weight:700;}
+.tnav-btn.next:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(168,85,247,.35);}
+
+/* Welcome */
+.welcome-screen{padding:2rem 0;}
+.welcome-screen h1{font-size:2rem;font-weight:800;margin-bottom:.4rem;text-align:center;}
+.welcome-screen>p{color:var(--slate);font-size:14px;max-width:600px;margin:0 auto 2rem;line-height:1.75;text-align:center;}
+.start-btn{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 2.5rem;
+  border-radius:12px;background:linear-gradient(135deg,var(--purple),#7C3AED);
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;border:none;
+  box-shadow:0 4px 24px rgba(168,85,247,.3);transition:all .25s;
+}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(168,85,247,.45);}
+.welcome-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;max-width:760px;margin:0 auto 2rem;}
+.welcome-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.2rem;cursor:pointer;transition:all .25s;
+}
+.welcome-card:hover{transform:translateY(-3px);border-color:var(--border2);background:rgba(168,85,247,.05);}
+.welcome-card .wc-icon{font-size:1.5rem;margin-bottom:.5rem;}
+.welcome-card h4{font-size:13.5px;font-weight:700;margin-bottom:.25rem;}
+.welcome-card p{font-size:11.5px;color:var(--slate);line-height:1.55;}
+.wc-lvl{display:inline-block;margin-top:.5rem;font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 8px;border-radius:100px;background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.25);}
+
+/* Mobile */
+.mob-menu-btn{display:none;background:none;border:none;color:var(--white);font-size:1.4rem;cursor:pointer;padding:.2rem .5rem;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:1.5rem 1rem 4rem;}
+  .mob-menu-btn{display:block;}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;}
+  .sidebar-overlay.show{display:block;}
+  .topnav-progress{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV ══ -->
+<div class="topnav">
+  <button class="mob-menu-btn" id="mobMenuBtn">☰</button>
+  <a href="dsa_learn.html" class="topnav-back">← DSA Course</a>
+  <span class="topnav-title">CoddingBuddY</span>
+  <span class="topnav-lang">🧠 DP Mastery</span>
+  <a href="compiler.html" style="margin-left:auto;padding:5px 14px;border-radius:7px;background:rgba(0,217,255,.1);border:1px solid rgba(0,217,255,.25);color:var(--cyan);font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap">⚡ Compiler</a>
+  <div class="topnav-progress">
+    <span id="progressText">0 / 13</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-section">Getting Started</div>
+    <a class="sb-item active" data-topic="welcome" onclick="showTopic('welcome')">
+      <span class="sb-dot"></span> Welcome to DP
+    </a>
+
+    <div class="sb-section">Level 1 · Foundations</div>
+    <a class="sb-item" data-topic="recursion" onclick="showTopic('recursion')">
+      <span class="sb-dot"></span> The Problem: Recursion
+      <span class="sb-num">01</span>
+    </a>
+    <a class="sb-item" data-topic="memo" onclick="showTopic('memo')">
+      <span class="sb-dot"></span> Memoization (Top-Down)
+      <span class="sb-num">02</span>
+    </a>
+    <a class="sb-item" data-topic="tab" onclick="showTopic('tab')">
+      <span class="sb-dot"></span> Tabulation (Bottom-Up)
+      <span class="sb-num">03</span>
+    </a>
+    <a class="sb-item" data-topic="recipe" onclick="showTopic('recipe')">
+      <span class="sb-dot"></span> The 4-Step DP Recipe
+      <span class="sb-num">04</span>
+    </a>
+
+    <div class="sb-section">Level 2 · 1-D Patterns</div>
+    <a class="sb-item" data-topic="stairs" onclick="showTopic('stairs')">
+      <span class="sb-dot"></span> Climbing Stairs
+      <span class="sb-num">05</span>
+    </a>
+    <a class="sb-item" data-topic="robber" onclick="showTopic('robber')">
+      <span class="sb-dot"></span> House Robber
+      <span class="sb-num">06</span>
+    </a>
+    <a class="sb-item" data-topic="coins" onclick="showTopic('coins')">
+      <span class="sb-dot"></span> Coin Change
+      <span class="sb-num">07</span>
+    </a>
+
+    <div class="sb-section">Level 3 · 2-D Patterns</div>
+    <a class="sb-item" data-topic="grid" onclick="showTopic('grid')">
+      <span class="sb-dot"></span> Grid DP — Unique Paths
+      <span class="sb-num">08</span>
+    </a>
+    <a class="sb-item" data-topic="knapsack" onclick="showTopic('knapsack')">
+      <span class="sb-dot"></span> 0/1 Knapsack
+      <span class="sb-num">09</span>
+    </a>
+    <a class="sb-item" data-topic="strings" onclick="showTopic('strings')">
+      <span class="sb-dot"></span> String DP — LCS
+      <span class="sb-num">10</span>
+    </a>
+
+    <div class="sb-section">Level 4 · Advanced</div>
+    <a class="sb-item" data-topic="lis" onclick="showTopic('lis')">
+      <span class="sb-dot"></span> LIS
+      <span class="sb-num">11</span>
+    </a>
+    <a class="sb-item" data-topic="patterns" onclick="showTopic('patterns')">
+      <span class="sb-dot"></span> The Pattern Map
+      <span class="sb-num">12</span>
+    </a>
+    <a class="sb-item" data-topic="roadmap" onclick="showTopic('roadmap')">
+      <span class="sb-dot"></span> Interview Roadmap
+      <span class="sb-num">13</span>
+    </a>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- ════════ WELCOME ════════ -->
+    <div class="topic-page active" id="page-welcome">
+      <div class="welcome-screen">
+        <h1>Dynamic Programming 🧠<br/><span style="background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Zero to Advanced</span></h1>
+        <p>DP is the topic that decides placements — and the topic students fear most. Not here. You will <strong style="color:var(--white)">watch</strong> every table fill cell by cell, <strong style="color:var(--white)">see</strong> why recursion explodes, and learn <strong style="color:var(--white)">one recipe</strong> that solves every DP problem. No magic, no memorising — just seeing.</p>
+
+        <div class="welcome-grid">
+          <div class="welcome-card" onclick="showTopic('recursion')">
+            <div class="wc-icon">💥</div><h4>Foundations</h4>
+            <p>Why recursion repeats work, memoization, tabulation, and the universal 4-step recipe.</p>
+            <span class="wc-lvl">Level 1 · Zero</span>
+          </div>
+          <div class="welcome-card" onclick="showTopic('stairs')">
+            <div class="wc-icon">📏</div><h4>1-D Patterns</h4>
+            <p>Climbing Stairs, House Robber (take-or-skip), Coin Change — one row of cells solves each.</p>
+            <span class="wc-lvl">Level 2 · Beginner</span>
+          </div>
+          <div class="welcome-card" onclick="showTopic('grid')">
+            <div class="wc-icon">🗺️</div><h4>2-D Patterns</h4>
+            <p>Grid paths, 0/1 Knapsack, LCS &amp; Edit Distance — when one row isn't enough, use a table.</p>
+            <span class="wc-lvl">Level 3 · Intermediate</span>
+          </div>
+          <div class="welcome-card" onclick="showTopic('lis')">
+            <div class="wc-icon">🏆</div><h4>Advanced + Interview</h4>
+            <p>LIS, the full pattern-recognition map, and a 30-problem ladder to interview readiness.</p>
+            <span class="wc-lvl">Level 4 · Advanced</span>
+          </div>
+        </div>
+
+        <div class="info-box info" style="max-width:640px;margin:0 auto 1.5rem;">
+          <span class="ib-icon">🎒</span>
+          <div class="ib-text"><strong>Prerequisites:</strong> loops, arrays, and functions (any language). Recursion helps but is <em>re-taught here from zero</em> — Topic 01 starts with a single recursive call and shows exactly what goes wrong. If you finished Arrays in the DSA course, you're ready.</div>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="start-btn" onclick="showTopic('recursion')">🚀 Start Level 1</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ 01 · THE PROBLEM: RECURSION ════════ -->
+    <div class="topic-page" id="page-recursion">
+      <div class="topic-header">
+        <div class="topic-tag">Level 1 · Topic 01</div>
+        <h1 class="topic-title">The Problem: Recursion Repeats Work 💥</h1>
+        <p class="topic-sub">You can't love the cure until you've seen the disease. Watch plain recursion solve the <strong>same subproblem again and again</strong> — then you'll know exactly why DP exists.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🌍</span> Start From Zero — What Is Recursion?</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>You're standing in a queue and want to know your position. You ask the person ahead: "what's your position?" They ask the person ahead of <em>them</em>… until the front person says "I'm 1st!" The answers flow back: 1 → 2 → 3 → <strong>you're 4th</strong>. A function asking a smaller version of itself — that's recursion.</p>
+        </div>
+        <p>The classic example: <strong>Fibonacci numbers</strong> — each number is the sum of the previous two: 0, 1, 1, 2, 3, 5, 8, 13, 21…</p>
+        <div class="code-block" id="execFibNaive">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">FibNaive.java</span>
+            <button class="code-run" onclick="runExec('execFibNaive',['A method that calls ITSELF — that is all recursion is','Base case: fib(0)=0, fib(1)=1 — the person at the front of the queue. Without this, recursion never stops!','To know fib(n), ask two smaller questions: fib(n−1) and fib(n−2)… and THEY each ask two more. The calls DOUBLE every level ⚠️'],this)">▶ Run</button>
+          </div>
+          <div class="code-body"><pre><span class="execline"><span class="kw">int</span> <span class="fn">fib</span>(<span class="kw">int</span> n) {</span><span class="execline">    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;              <span class="cmt">// base case — the stopper</span></span><span class="execline">    <span class="kw">return</span> <span class="fn">fib</span>(n-<span class="num">1</span>) + <span class="fn">fib</span>(n-<span class="num">2</span>);       <span class="cmt">// TWO more calls… each!</span></span><span class="execline">}</span></pre>
+          <div class="exec-note" id="execFibNaive-note"></div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> SEE the Disease — the Call Tree of fib(5)</h3>
+        <p>This is the single most important picture in DP. Press ▶ and count how many times <code>f(2)</code> gets computed. <span style="color:var(--rose);font-weight:700">Red flashes = wasted repeat work.</span></p>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Recursion Tree Lab — fib(5), no memory</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runNaiveTree(this)">▶ Watch the Calls</button>
+            <span class="viz-counter" id="naiveCounter">calls: 0</span>
+          </div>
+          <svg class="tree-svg" id="naiveTree" viewBox="0 0 720 310" style="width:100%;max-width:720px;">
+            <line id="Et1" x1="360" y1="28" x2="200" y2="92"/><line id="Et2" x1="360" y1="28" x2="520" y2="92"/>
+            <line id="Et3" x1="200" y1="92" x2="110" y2="156"/><line id="Et4" x1="200" y1="92" x2="290" y2="156"/>
+            <line id="Et5" x1="520" y1="92" x2="450" y2="156"/><line id="Et6" x1="520" y1="92" x2="590" y2="156"/>
+            <line id="Et7" x1="110" y1="156" x2="60" y2="220"/><line id="Et8" x1="110" y1="156" x2="160" y2="220"/>
+            <line id="Et9" x1="290" y1="156" x2="250" y2="220"/><line id="Et10" x1="290" y1="156" x2="330" y2="220"/>
+            <line id="Et11" x1="450" y1="156" x2="415" y2="220"/><line id="Et12" x1="450" y1="156" x2="490" y2="220"/>
+            <line id="Et13" x1="60" y1="220" x2="30" y2="282"/><line id="Et14" x1="60" y1="220" x2="95" y2="282"/>
+            <g id="t0"><circle cx="360" cy="28" r="19"/><text x="360" y="28">f(5)</text></g>
+            <g id="t1"><circle cx="200" cy="92" r="19"/><text x="200" y="92">f(4)</text></g>
+            <g id="t2"><circle cx="520" cy="92" r="19"/><text x="520" y="92">f(3)</text></g>
+            <g id="t3"><circle cx="110" cy="156" r="19"/><text x="110" y="156">f(3)</text></g>
+            <g id="t4"><circle cx="290" cy="156" r="19"/><text x="290" y="156">f(2)</text></g>
+            <g id="t5"><circle cx="450" cy="156" r="19"/><text x="450" y="156">f(2)</text></g>
+            <g id="t6"><circle cx="590" cy="156" r="19"/><text x="590" y="156">f(1)</text></g>
+            <g id="t7"><circle cx="60" cy="220" r="19"/><text x="60" y="220">f(2)</text></g>
+            <g id="t8"><circle cx="160" cy="220" r="19"/><text x="160" y="220">f(1)</text></g>
+            <g id="t9"><circle cx="250" cy="220" r="19"/><text x="250" y="220">f(1)</text></g>
+            <g id="t10"><circle cx="330" cy="220" r="19"/><text x="330" y="220">f(0)</text></g>
+            <g id="t11"><circle cx="415" cy="220" r="19"/><text x="415" y="220">f(1)</text></g>
+            <g id="t12"><circle cx="490" cy="220" r="19"/><text x="490" y="220">f(0)</text></g>
+            <g id="t13"><circle cx="30" cy="282" r="19"/><text x="30" y="282">f(1)</text></g>
+            <g id="t14"><circle cx="95" cy="282" r="19"/><text x="95" y="282">f(0)</text></g>
+          </svg>
+          <div class="vizlab-note" id="naiveNote">Press ▶ — every circle is one function call. <strong style="color:var(--rose)">Red</strong> means "this exact question was already answered before". Count the waste.</div>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">📈</span>
+          <div class="ib-text"><strong>The explosion in numbers:</strong> calls roughly <strong>double</strong> each time n grows by 1 — that's <strong>O(2ⁿ)</strong>. Same code, bigger n:</div>
+        </div>
+        <table class="data-table">
+          <tr><th>fib(n)</th><th>Function calls</th><th>Time (≈1 ns/call)</th></tr>
+          <tr><td>fib(5)</td><td>15</td><td>instant</td></tr>
+          <tr><td>fib(10)</td><td>177</td><td>instant</td></tr>
+          <tr><td>fib(30)</td><td>2,692,537</td><td>~3 ms</td></tr>
+          <tr><td>fib(50)</td><td>40,730,022,147</td><td>~40 seconds 😱</td></tr>
+          <tr><td>fib(80)</td><td>≈ 4.5 × 10¹⁶</td><td>~1.5 <strong>years</strong> 💀</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎯</span> The Two Magic Words</h3>
+        <p>A problem is a <strong>DP problem</strong> when the call tree above has both properties:</p>
+        <ul>
+          <li><strong>Overlapping subproblems</strong> — the same smaller question appears many times (you saw f(2) three times, f(1) five times).</li>
+          <li><strong>Optimal substructure</strong> — the answer to the big question is built <em>only</em> from answers to smaller ones (f(5) = f(4) + f(3), nothing else needed).</li>
+        </ul>
+        <div class="info-box tip">
+          <span class="ib-icon">💡</span>
+          <div class="ib-text"><strong>DP in one sentence:</strong> recursion + <em>never answering the same question twice</em>. The next two topics show the two ways to add that memory: <strong>memoization</strong> (top-down) and <strong>tabulation</strong> (bottom-up).</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">In the fib(5) tree you just watched, f(2) was computed 3 times. In fib(6), how many times would f(2) be computed?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Still 3 — it's the same subproblem</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">5 times — the repeats themselves grow like Fibonacci!</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">6 times — once per level</button>
+          </div>
+          <div class="quiz-feedback"><strong>5 times.</strong> fib(6) = fib(5) + fib(4). fib(5) already computes f(2) three times, fib(4) computes it twice → 3 + 2 = 5. The waste itself follows the Fibonacci pattern — that's why the total explodes as O(2ⁿ).</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">Which pair of properties makes a problem solvable by DP?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Sorted input + binary search</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Overlapping subproblems + optimal substructure</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Recursion + a large n</button>
+          </div>
+          <div class="quiz-feedback"><strong>Overlapping subproblems + optimal substructure.</strong> No overlap → plain divide &amp; conquer (like merge sort) is enough, caching buys nothing. No optimal substructure → small answers can't be combined into big ones, so no table can help.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('welcome')">← Overview</button>
+        <button class="tnav-btn next" onclick="showTopic('memo')">Next: Memoization →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 02 · MEMOIZATION ════════ -->
+    <div class="topic-page" id="page-memo">
+      <div class="topic-header">
+        <div class="topic-tag">Level 1 · Topic 02</div>
+        <h1 class="topic-title">Memoization — Top-Down DP 📝</h1>
+        <p class="topic-sub">Same recursion, plus a notebook. Before computing anything, check the notebook. After computing, write it down. That one habit turns O(2ⁿ) into O(n).</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🌍</span> The Idea</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Your friend's phone number: the <strong>first</strong> time, you ask them and <strong>save it in Contacts</strong>. Every time after that, you just open Contacts — you never ask again. Memoization = Contacts for function results. "Memo" comes from <em>memorandum</em> — a note.</p>
+        </div>
+        <p>Only two lines change from the naive version — the <strong>check</strong> and the <strong>save</strong>:</p>
+        <div class="code-block" id="execFibMemo">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">FibMemo.java</span>
+            <button class="code-run" onclick="runExec('execFibMemo',['The notebook: memo[i] stores the answer to fib(i). -1 means &quot;not answered yet&quot;','Same signature as before — recursion is unchanged','Base case unchanged','THE CHECK 📖 — answered before? Return instantly. This kills every repeat subtree','Compute once…','THE SAVE ✍️ — write the answer in the notebook before returning','Now every fib(i) is computed exactly ONCE → O(n)'],this)">▶ Run</button>
+          </div>
+          <div class="code-body"><pre><span class="execline"><span class="kw">long</span>[] memo;   <span class="cmt">// filled with -1 at start</span></span><span class="execline"><span class="kw">long</span> <span class="fn">fib</span>(<span class="kw">int</span> n) {</span><span class="execline">    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> n;</span><span class="execline">    <span class="kw">if</span> (memo[n] != -<span class="num">1</span>) <span class="kw">return</span> memo[n];   <span class="cmt">// 📖 CHECK the notebook</span></span><span class="execline">    <span class="kw">long</span> ans = <span class="fn">fib</span>(n-<span class="num">1</span>) + <span class="fn">fib</span>(n-<span class="num">2</span>);</span><span class="execline">    memo[n] = ans;                        <span class="cmt">// ✍️ SAVE before returning</span></span><span class="execline">    <span class="kw">return</span> ans;</span><span class="execline">}</span></pre>
+          <div class="exec-note" id="execFibMemo-note"></div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> SEE the Cure — Same Tree, With a Notebook</h3>
+        <p>Same fib(5) tree as Topic 01. This time watch for <span style="color:var(--cyan);font-weight:700">⚡ cyan flashes</span> — cache hits. Their entire subtrees <strong>fade out: never executed at all</strong>.</p>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Memoization Lab — fib(5) with memo[]</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runMemoTree(this)">▶ Watch With Memo</button>
+            <span class="viz-counter" id="memoCounter">calls: 0</span>
+          </div>
+          <svg class="tree-svg" id="memoTree" viewBox="0 0 720 310" style="width:100%;max-width:720px;">
+            <line id="Em1" x1="360" y1="28" x2="200" y2="92"/><line id="Em2" x1="360" y1="28" x2="520" y2="92"/>
+            <line id="Em3" x1="200" y1="92" x2="110" y2="156"/><line id="Em4" x1="200" y1="92" x2="290" y2="156"/>
+            <line id="Em5" x1="520" y1="92" x2="450" y2="156"/><line id="Em6" x1="520" y1="92" x2="590" y2="156"/>
+            <line id="Em7" x1="110" y1="156" x2="60" y2="220"/><line id="Em8" x1="110" y1="156" x2="160" y2="220"/>
+            <line id="Em9" x1="290" y1="156" x2="250" y2="220"/><line id="Em10" x1="290" y1="156" x2="330" y2="220"/>
+            <line id="Em11" x1="450" y1="156" x2="415" y2="220"/><line id="Em12" x1="450" y1="156" x2="490" y2="220"/>
+            <line id="Em13" x1="60" y1="220" x2="30" y2="282"/><line id="Em14" x1="60" y1="220" x2="95" y2="282"/>
+            <g id="m0"><circle cx="360" cy="28" r="19"/><text x="360" y="28">f(5)</text></g>
+            <g id="m1"><circle cx="200" cy="92" r="19"/><text x="200" y="92">f(4)</text></g>
+            <g id="m2"><circle cx="520" cy="92" r="19"/><text x="520" y="92">f(3)</text></g>
+            <g id="m3"><circle cx="110" cy="156" r="19"/><text x="110" y="156">f(3)</text></g>
+            <g id="m4"><circle cx="290" cy="156" r="19"/><text x="290" y="156">f(2)</text></g>
+            <g id="m5"><circle cx="450" cy="156" r="19"/><text x="450" y="156">f(2)</text></g>
+            <g id="m6"><circle cx="590" cy="156" r="19"/><text x="590" y="156">f(1)</text></g>
+            <g id="m7"><circle cx="60" cy="220" r="19"/><text x="60" y="220">f(2)</text></g>
+            <g id="m8"><circle cx="160" cy="220" r="19"/><text x="160" y="220">f(1)</text></g>
+            <g id="m9"><circle cx="250" cy="220" r="19"/><text x="250" y="220">f(1)</text></g>
+            <g id="m10"><circle cx="330" cy="220" r="19"/><text x="330" y="220">f(0)</text></g>
+            <g id="m11"><circle cx="415" cy="220" r="19"/><text x="415" y="220">f(1)</text></g>
+            <g id="m12"><circle cx="490" cy="220" r="19"/><text x="490" y="220">f(0)</text></g>
+            <g id="m13"><circle cx="30" cy="282" r="19"/><text x="30" y="282">f(1)</text></g>
+            <g id="m14"><circle cx="95" cy="282" r="19"/><text x="95" y="282">f(0)</text></g>
+          </svg>
+          <div class="memo-strip" id="memoStrip"><span class="m-label">memo{ }:</span></div>
+          <div class="vizlab-note" id="memoNote">Press ▶ — when a call finds its answer already in <code>memo[]</code>, it flashes <strong style="color:var(--cyan)">⚡ cyan</strong> and its whole subtree fades — those calls simply never happen.</div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Naive: <b>O(2ⁿ)</b> time</span>
+          <span class="cx-chip">Memoized: <b>O(n)</b> time</span>
+          <span class="cx-chip">Extra space: <b>O(n)</b> for memo + recursion stack</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⚙️</span> The Memoization Template (Works For Every Problem)</h3>
+        <ol>
+          <li><strong>Write the plain recursion first</strong> — don't think about DP at all.</li>
+          <li><strong>Identify what changes</strong> between calls (here: just <code>n</code>) → that's your memo key.</li>
+          <li><strong>Add the check</strong> at the top, <strong>the save</strong> before every return. Done.</li>
+        </ol>
+        <div class="info-box tip">
+          <span class="ib-icon">🥇</span>
+          <div class="ib-text"><strong>Why interviewers love memoization:</strong> it proves you understand the recursion. In an interview, always say the naive recursion out loud first, then add the memo — that's a complete, correct answer even if you never write the bottom-up version.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">With memoization, fib(50) makes how many <em>real computations</em> (not cache hits)?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">About 40 billion — the memo only helps a bit</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">About 2,500 — n²</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">About 50 — each value 0…50 is computed exactly once</button>
+          </div>
+          <div class="quiz-feedback"><strong>About 50.</strong> The memo guarantees each distinct subproblem is computed once. There are only 51 distinct subproblems (fib(0)…fib(50)) → O(n). From 40 seconds to microseconds by adding two lines.</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">What plays the role of the "memo key"?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Everything that changes between recursive calls — the function's changing parameters</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">The return value of the function</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">The depth of the recursion</button>
+          </div>
+          <div class="quiz-feedback"><strong>The changing parameters.</strong> fib(n) changes only <code>n</code> → 1-D memo. A grid walker changes <code>(row, col)</code> → 2-D memo. Two-string problems change <code>(i, j)</code> → 2-D memo. The parameters ARE the state — remember this, it's Step 1 of the Recipe in Topic 04.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('recursion')">← The Problem</button>
+        <button class="tnav-btn next" onclick="showTopic('tab')">Next: Tabulation →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 03 · TABULATION ════════ -->
+    <div class="topic-page" id="page-tab">
+      <div class="topic-header">
+        <div class="topic-tag">Level 1 · Topic 03</div>
+        <h1 class="topic-title">Tabulation — Bottom-Up DP 📊</h1>
+        <p class="topic-sub">Memoization starts from the big question and recurses <em>down</em>. Tabulation flips it: start from the <strong>smallest answers</strong> and build <em>up</em> — no recursion at all, just a loop and a table.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🌍</span> The Idea</h3>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>You can't build the 5th floor of a building first. You pour the foundation (base cases), build floor 1 on it, floor 2 on floor 1… by the time you reach floor 5, everything below is already solid. Tabulation fills the table in an order where <strong>everything you need is already filled</strong>.</p>
+        </div>
+        <div class="code-block" id="execFibTab">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">FibTab.java</span>
+            <button class="code-run" onclick="runExec('execFibTab',['One array = the whole table. dp[i] will hold fib(i)','Foundation first: the two smallest answers are known without any computation','Loop from small to large — the OPPOSITE direction of recursion','Each cell needs only two already-filled cells. Look left, add, done. No function calls, no stack','The final cell holds the answer'],this)">▶ Run</button>
+          </div>
+          <div class="code-body"><pre><span class="execline"><span class="kw">long</span>[] dp = <span class="kw">new</span> <span class="type">long</span>[n+<span class="num">1</span>];</span><span class="execline">dp[<span class="num">0</span>] = <span class="num">0</span>; dp[<span class="num">1</span>] = <span class="num">1</span>;                <span class="cmt">// base cases = foundation</span></span><span class="execline"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt;= n; i++)</span><span class="execline">    dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>];     <span class="cmt">// everything needed is already filled</span></span><span class="execline"><span class="kw">return</span> dp[n];</span></pre>
+          <div class="exec-note" id="execFibTab-note"></div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Fill the Table Yourself — Pick Any n</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Tabulation Lab — dp[i] = dp[i−1] + dp[i−2]</div>
+          <div class="viz-controls">
+            <label style="font-size:12px;color:var(--slate);">n =</label>
+            <input class="viz-input" id="tabN" type="number" min="2" max="12" value="8" style="width:70px;"/>
+            <button class="viz-btn" onclick="runTabLab(this)">▶ Fill the Table</button>
+          </div>
+          <div class="dp-row" id="tabViz"></div>
+          <div class="vizlab-note" id="tabNote">Choose n (2–12) and press ▶. The two <strong style="color:var(--amber)">amber</strong> cells are being read; their sum lands in the next cell. Notice: we <strong>never look right, never look back</strong> — pure forward motion.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🪶</span> Space Optimization — Throw Away the Table</h3>
+        <p>Look at the transition: <code>dp[i] = dp[i-1] + dp[i-2]</code>. Each step only reads the <strong>last two cells</strong> — so why store all n? Keep just two variables and slide them along:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">FibO1Space.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">long</span> prev2 = <span class="num">0</span>, prev1 = <span class="num">1</span>;          <span class="cmt">// dp[i-2], dp[i-1]</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt;= n; i++) {
+    <span class="kw">long</span> cur = prev1 + prev2;       <span class="cmt">// dp[i]</span>
+    prev2 = prev1;                  <span class="cmt">// slide the window →</span>
+    prev1 = cur;
+}
+<span class="kw">return</span> prev1;                       <span class="cmt">// O(n) time, O(1) space!</span></pre></div>
+        </div>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Rolling Variables Lab — watch the window slide (n = 8)</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runRollLab(this)">▶ Slide the Window</button>
+          </div>
+          <div class="var-row">
+            <div class="var-box" id="rollP2"><div class="v-name">prev2</div><div class="v-val">0</div></div>
+            <div class="var-box" id="rollP1"><div class="v-name">prev1</div><div class="v-val">1</div></div>
+            <div class="var-box" id="rollCur"><div class="v-name">cur</div><div class="v-val">—</div></div>
+          </div>
+          <div class="vizlab-note" id="rollNote">Three boxes replace the whole array. After computing <code>cur</code>, the values <strong>shift left</strong> — prev2 dies, prev1 becomes prev2, cur becomes prev1.</div>
+        </div>
+        <div class="info-box tip">
+          <span class="ib-icon">🎓</span>
+          <div class="ib-text"><strong>Interview gold:</strong> "Can you optimize the space?" is the #1 follow-up question after any DP solution. The answer is always the same idea — <em>if the transition only reads the previous k cells (or the previous row), keep only those</em>.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⚖️</span> Memoization vs Tabulation — Which One When?</h3>
+        <table class="data-table">
+          <tr><th></th><th>Memoization (top-down)</th><th>Tabulation (bottom-up)</th></tr>
+          <tr><td>Style</td><td>Recursion + cache</td><td>Loops + array</td></tr>
+          <tr><td>Order</td><td>Big → small (natural thinking)</td><td>Small → big (must plan the order)</td></tr>
+          <tr><td>Computes</td><td>Only subproblems actually needed</td><td>Every subproblem, needed or not</td></tr>
+          <tr><td>Stack overflow risk</td><td>Yes, for deep recursion (n &gt; ~10⁵)</td><td>No recursion → no risk</td></tr>
+          <tr><td>Space optimization</td><td>Hard (cache is random-access)</td><td>Easy (rolling variables/rows)</td></tr>
+          <tr><td>Best for</td><td>First solve, tricky states, interviews under pressure</td><td>Final solution, tight limits, contests</td></tr>
+        </table>
+        <div class="info-box info">
+          <span class="ib-icon">🧭</span>
+          <div class="ib-text"><strong>Practical rule:</strong> <em>think</em> top-down (write the recursion, add memo), then if needed <em>convert</em> to bottom-up (base cases become the first cells, the recursive calls become "look left in the table"). Both give the same complexity.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">In tabulation, why must dp[0] and dp[1] be filled <em>before</em> the loop?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Java requires arrays to be initialized</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">The first loop iteration reads dp[1] and dp[0] — they must already hold real answers</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">To make the array length correct</button>
+          </div>
+          <div class="quiz-feedback"><strong>Because dp[2] = dp[1] + dp[0].</strong> Bottom-up has one golden law: <em>when you compute a cell, everything it reads must already be final</em>. Base cases are the cells that depend on nothing — the foundation of the building.</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">Your DP transition is dp[i] = max(dp[i-1], dp[i-2] + val[i]). What's the minimum space needed?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">O(n) — DP always needs the full table</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">O(1) — it only ever reads the previous two cells</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">O(log n)</button>
+          </div>
+          <div class="quiz-feedback"><strong>O(1).</strong> Only dp[i-1] and dp[i-2] are read → two rolling variables suffice. (This exact transition is House Robber — Topic 06!)</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('memo')">← Memoization</button>
+        <button class="tnav-btn next" onclick="showTopic('recipe')">Next: The 4-Step Recipe →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 04 · THE 4-STEP RECIPE ════════ -->
+    <div class="topic-page" id="page-recipe">
+      <div class="topic-header">
+        <div class="topic-tag">Level 1 · Topic 04</div>
+        <h1 class="topic-title">The 4-Step DP Recipe 🧾</h1>
+        <p class="topic-sub">Every DP problem — easy or hard, 1-D or 2-D, LeetCode or FAANG interview — is solved by filling the <strong>same four blanks</strong>. Learn the blanks once, reuse them forever.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧾</span> The Recipe</h3>
+        <div class="recipe-grid">
+          <div class="recipe-card">
+            <div class="rc-num">1</div>
+            <h4>STATE — what does dp[i] mean?</h4>
+            <p>One plain-English sentence. <code>dp[i] = ways to reach step i</code>. If you can't say it in words, you don't have a state yet. The changing parameters of your recursion ARE the state.</p>
+          </div>
+          <div class="recipe-card">
+            <div class="rc-num">2</div>
+            <h4>BASE — smallest answers you know for free</h4>
+            <p>The cases needing zero computation: <code>dp[0] = 1</code>, an empty string, capacity 0, amount 0. The foundation of the building.</p>
+          </div>
+          <div class="recipe-card">
+            <div class="rc-num">3</div>
+            <h4>TRANSITION — big from small</h4>
+            <p>Ask: "what was my <strong>LAST move</strong>?" List every possibility, combine: <code>dp[i] = dp[i-1] + dp[i-2]</code> (sum for counting, min/max for optimizing).</p>
+          </div>
+          <div class="recipe-card">
+            <div class="rc-num">4</div>
+            <h4>ANSWER — where does it sit?</h4>
+            <p>Usually <code>dp[n]</code> — but not always! For LIS it's <code>max(all dp[i])</code>. Decide consciously.</p>
+          </div>
+        </div>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>It's a cooking recipe: ① decide the dish (state) ② gather raw ingredients (base) ③ the cooking rule (transition) ④ which plate to serve on (answer). Change the dish, the recipe <em>structure</em> stays identical.</p>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">⚙️</span> The Recipe In Action — Climbing Stairs</h3>
+        <p>You climb 1 or 2 steps at a time. How many distinct ways to reach step n? Watch each recipe step map to one line:</p>
+        <div class="code-block" id="execRecipe">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">recipe_applied.pseudo</span>
+            <button class="code-run" onclick="runExec('execRecipe',['STEP ① STATE — one sentence, written as a comment. ALWAYS write this comment in real code too','STEP ② BASE — 1 way to stand at the bottom, 1 way to reach step 1','STEP ③ TRANSITION — last move was a 1-step (from i−1) or a 2-step (from i−2). Two disjoint groups → ADD them','STEP ④ ANSWER — it sits in dp[n]'],this)">▶ Run</button>
+          </div>
+          <div class="code-body"><pre><span class="execline"><span class="cmt"># ① dp[i] = number of distinct ways to reach step i</span></span><span class="execline">dp[<span class="num">0</span>] = <span class="num">1</span>; dp[<span class="num">1</span>] = <span class="num">1</span>                  <span class="cmt"># ② base</span></span><span class="execline"><span class="kw">for</span> i <span class="kw">in</span> <span class="num">2</span>..n: dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>]   <span class="cmt"># ③ transition</span></span><span class="execline"><span class="kw">return</span> dp[n]                          <span class="cmt"># ④ answer</span></span></pre>
+          <div class="exec-note" id="execRecipe-note"></div></div>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">🔑</span>
+          <div class="ib-text"><strong>The magic question for Step ③:</strong> "What was my <strong>last move / last choice</strong>?" It splits the problem into a handful of cases, each ending in a smaller subproblem. Last stair-move: 1-step or 2-step. Last coin used: one of the coins. Last house: robbed or skipped. Master this one question and transitions write themselves.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📡</span> How to RECOGNIZE a DP Problem in 10 Seconds</h3>
+        <table class="data-table">
+          <tr><th>Signal in the problem statement</th><th>Meaning</th><th>Example</th></tr>
+          <tr><td>"count the number of ways…"</td><td>Counting DP — transitions ADD</td><td>Climbing Stairs, Unique Paths</td></tr>
+          <tr><td>"minimum / maximum cost, profit, length…"</td><td>Optimization DP — transitions take MIN/MAX</td><td>Coin Change, House Robber</td></tr>
+          <tr><td>"is it possible to…" (yes/no)</td><td>Feasibility DP — transitions OR together</td><td>Subset Sum, Word Break</td></tr>
+          <tr><td>"longest / shortest subsequence, substring…"</td><td>String/sequence DP — usually 2-D</td><td>LCS, LIS, Edit Distance</td></tr>
+          <tr><td>Choices at every step + greedy fails</td><td>Decision DP (take/skip)</td><td>Knapsack</td></tr>
+          <tr><td>n ≤ 1000–5000 in constraints</td><td>O(n²) intended — often a 2-D table</td><td>most contest DP</td></tr>
+        </table>
+        <div class="info-box info">
+          <span class="ib-icon">🚫</span>
+          <div class="ib-text"><strong>When DP is the WRONG tool:</strong> if subproblems don't overlap (merge sort), if a greedy choice is provably safe (activity selection, coins 1/2/5 ₹ change with canonical denominations), or if you need the actual arrangement of ALL solutions (plain backtracking). DP stores <em>answers</em>, not <em>every path</em>.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Train Your Recognition — Spot the State</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">🎯 "A frog jumps 1, 2, or 3 steps. Count the ways to reach step n." — What is the state and transition?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">dp[i] = ways to reach step i; dp[i] = dp[i−1] + dp[i−2] + dp[i−3]</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">dp[i] = biggest jump so far; dp[i] = max(dp[i−1], 3)</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">dp[i][j] = ways using j jumps — needs 2-D</button>
+          </div>
+          <div class="quiz-feedback"><strong>Last move was a 1, 2, or 3-jump</strong> → three disjoint groups → add all three. Same recipe as stairs, one extra term. Base: dp[0]=1. You just solved LeetCode 1137-style "Tribonacci" by recipe alone.</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">🎯 "Given prices of a rod of length 1…n, cut a rod of length n for maximum revenue." — State?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">dp[i] = best price of piece i</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">dp[i] = max revenue from a rod of length i; try every first-cut c: dp[i] = max(price[c] + dp[i−c])</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Sort prices descending and cut greedily</button>
+          </div>
+          <div class="quiz-feedback"><strong>dp[i] = max revenue for length i.</strong> Last choice = the length of one cut piece <code>c</code> → remaining rod is a smaller subproblem <code>dp[i−c]</code>. Greedy fails here (a length-10 piece might beat two 5s or vice versa) — that failure is your signal to use DP.</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">🎯 "Find the maximum element of an array." — DP needed?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Yes — dp[i] = max of first i elements</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">No — one loop, one variable; there are no overlapping subproblems to cache</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Yes — needs memoization for large arrays</button>
+          </div>
+          <div class="quiz-feedback"><strong>No DP needed.</strong> Technically dp[i]=max(dp[i−1],a[i]) <em>is</em> a recurrence, but each subproblem is used once — nothing overlaps, nothing is recomputed. A running max does the job. DP is for when caching actually saves work.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('tab')">← Tabulation</button>
+        <button class="tnav-btn next" onclick="showTopic('stairs')">Next: Level 2 — Climbing Stairs →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 05 · CLIMBING STAIRS ════════ -->
+    <div class="topic-page" id="page-stairs">
+      <div class="topic-header">
+        <div class="topic-tag">Level 2 · Topic 05 · 1-D Counting</div>
+        <h1 class="topic-title">Climbing Stairs — Your First Real DP 🪜</h1>
+        <p class="topic-sub">LeetCode 70 — the "hello world" of DP and a real interview question at Amazon &amp; Google. One row of cells, the full recipe, zero shortcuts.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem</h3>
+        <p><strong>You climb a staircase of n steps. Each move is +1 or +2 steps. How many distinct ways can you reach the top?</strong></p>
+        <p>n = 3 → three ways: (1+1+1), (1+2), (2+1). Notice (1+2) and (2+1) count separately — <strong>order matters</strong> here.</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>You're at step 5. How did you get here? Only two possibilities exist: you were at step 4 and hopped +1, or at step 3 and jumped +2. So <em>ways-to-5 = ways-to-4 + ways-to-3</em>. You never need to know the full journey — only the last move.</p>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[i]</code> = number of distinct ways to reach step i</td></tr>
+          <tr><td>② Base</td><td><code>dp[0] = 1</code> (stand still — one way), <code>dp[1] = 1</code></td></tr>
+          <tr><td>③ Transition</td><td>last move +1 or +2 → <code>dp[i] = dp[i-1] + dp[i-2]</code></td></tr>
+          <tr><td>④ Answer</td><td><code>dp[n]</code></td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch the Ways Grow</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Stairs Lab — ways to reach each step</div>
+          <div class="viz-controls">
+            <label style="font-size:12px;color:var(--slate);">steps n =</label>
+            <input class="viz-input" id="stairsN" type="number" min="2" max="12" value="6" style="width:70px;"/>
+            <button class="viz-btn" onclick="runStairsLab(this)">▶ Count the Ways</button>
+          </div>
+          <div class="dp-row" id="stairsViz"></div>
+          <div class="vizlab-note" id="stairsNote">It's Fibonacci wearing a costume 🎭 — same transition, different <em>meaning</em>. The meaning (Step ①) is what makes it a solution.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">ClimbStairs.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">climbStairs</span>(<span class="kw">int</span> n) {
+    <span class="cmt">// dp[i] = ways to reach step i</span>
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;
+    <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[n+<span class="num">1</span>];
+    dp[<span class="num">0</span>] = <span class="num">1</span>; dp[<span class="num">1</span>] = <span class="num">1</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt;= n; i++)
+        dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>];
+    <span class="kw">return</span> dp[n];
+}</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(n)</b></span>
+          <span class="cx-chip">Space: <b>O(n)</b> → <b>O(1)</b> with rolling variables</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔀</span> The Same Skeleton, New Skin — Min Cost Variant</h3>
+        <p>LeetCode 746: each step has a <code>cost[i]</code>; pay when you step on it. Reach the top as cheaply as possible. Only two blanks change: the state becomes a <strong>min-cost</strong>, and the transition switches from <code>+</code> to <code>Math.min</code>:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">MinCostClimb.java</span>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// dp[i] = cheapest total cost to REACH step i (before paying cost[i])</span>
+<span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[n+<span class="num">1</span>];
+dp[<span class="num">0</span>] = <span class="num">0</span>; dp[<span class="num">1</span>] = <span class="num">0</span>;                 <span class="cmt">// may start at step 0 or 1 free</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt;= n; i++)
+    dp[i] = Math.<span class="fn">min</span>(dp[i-<span class="num">1</span>] + cost[i-<span class="num">1</span>],   <span class="cmt">// came from i-1, paid its cost</span>
+                     dp[i-<span class="num">2</span>] + cost[i-<span class="num">2</span>]);  <span class="cmt">// came from i-2, paid its cost</span>
+<span class="kw">return</span> dp[n];</pre></div>
+        </div>
+        <div class="info-box tip">
+          <span class="ib-icon">🧩</span>
+          <div class="ib-text"><strong>This is how DP mastery actually works:</strong> you don't learn 500 problems — you learn ~10 skeletons and practice re-skinning them. Counting → add. Cheapest → min. Best → max. The recipe is the skeleton.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Frog with 3 jumps<small>The frog can hop +1, +2 or +3 steps. Count ways to reach step n = 5.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> Step ③ magic question — "last move?" → it was +1, +2 or +3 → three disjoint groups → <code>dp[i] = dp[i-1] + dp[i-2] + dp[i-3]</code>. Extra base needed now: <code>dp[2] = 2</code> (1+1, 2). This is the Tribonacci sequence.</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">FrogJump3.java</span></div>
+              <div class="code-body"><pre><span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[n+<span class="num">1</span>];
+dp[<span class="num">0</span>]=<span class="num">1</span>; dp[<span class="num">1</span>]=<span class="num">1</span>; dp[<span class="num">2</span>]=<span class="num">2</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">3</span>; i&lt;=n; i++)
+    dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>] + dp[i-<span class="num">3</span>];
+System.out.<span class="fn">println</span>(dp[<span class="num">5</span>]);</pre></div>
+            </div>
+            <div class="output-block"><div class="output-label">Output</div><pre>13</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Dry-run Min Cost<small>cost = [10, 15, 20]. What is the cheapest way to the top, by hand?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> fill the table on paper — the same motion you watched in the lab. <code>dp[0]=0, dp[1]=0</code> (free starts). <code>dp[2]=min(0+15, 0+10)=10</code>. <code>dp[3]=min(10+20, 0+15)=15</code>. Answer <strong>15</strong>: start on step 1 (pay 15), jump +2 to the top. Dry-running tables by hand is the #1 skill that makes DP "click".</div>
+            <div class="output-block"><div class="output-label">Table</div><pre>i:     0   1   2   3(top)
+dp:    0   0  10  15   ← answer</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">3</span>
+            <div class="qa-title">Broken step<small>Stairs with n steps, moves +1/+2, but step k is broken (can't stand on it). Count the ways.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> a constraint on a state = <strong>force that cell's value</strong>. Ways to stand on a broken step is 0 — so after computing, overwrite: <code>if (i == k) dp[i] = 0;</code>. The zero then correctly flows into every later cell. You don't change the recipe — you edit one cell of the table.</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">BrokenStep.java</span></div>
+              <div class="code-body"><pre><span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">2</span>; i&lt;=n; i++) {
+    dp[i] = dp[i-<span class="num">1</span>] + dp[i-<span class="num">2</span>];
+    <span class="kw">if</span> (i == k) dp[i] = <span class="num">0</span>;   <span class="cmt">// nobody can BE here</span>
+}</pre></div>
+            </div>
+            <div class="output-block"><div class="output-label">Check: n=4, k=2</div><pre>dp: 1 1 0 1 1 → only (1,3? no…) paths avoiding step 2 → 1 way: 1+...
+Actually: dp[3]=dp[2]+dp[1]=0+1=1, dp[4]=dp[3]+dp[2]=1+0=1 ✔</pre></div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="stairs-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 70</td><td><a href="https://leetcode.com/problems/climbing-stairs/" target="_blank">Climbing Stairs</a></td><td><span class="diff-pill e">Easy</span></td><td>exactly the lab above</td></tr>
+          <tr><td>LC 509</td><td><a href="https://leetcode.com/problems/fibonacci-number/" target="_blank">Fibonacci Number</a></td><td><span class="diff-pill e">Easy</span></td><td>the raw skeleton</td></tr>
+          <tr><td>LC 1137</td><td><a href="https://leetcode.com/problems/n-th-tribonacci-number/" target="_blank">N-th Tribonacci</a></td><td><span class="diff-pill e">Easy</span></td><td>three terms instead of two</td></tr>
+          <tr><td>LC 746</td><td><a href="https://leetcode.com/problems/min-cost-climbing-stairs/" target="_blank">Min Cost Climbing Stairs</a></td><td><span class="diff-pill e">Easy</span></td><td>+ becomes min(…)</td></tr>
+          <tr><td>GFG</td><td><a href="https://www.geeksforgeeks.org/problems/count-ways-to-reach-the-nth-stair-1587115620/1" target="_blank">Count Ways to N-th Stair</a></td><td><span class="diff-pill e">Easy</span></td><td>add modulo 10⁹+7</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">Why is dp[0] = 1 and not 0? "Zero steps" sounds like zero ways…</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">It's an arbitrary convention with no meaning</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">There is exactly ONE way to be at the start: do nothing. And the math needs it: dp[2] = dp[1] + dp[0] must equal 2</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Because arrays in Java start at index 0</button>
+          </div>
+          <div class="quiz-feedback"><strong>One way — the empty way.</strong> Sanity-check base cases by testing the first real cell: dp[2] should be 2 (1+1, 2). dp[1]+dp[0] = 1+1 = 2 ✔. If dp[0] were 0 you'd get 1 ✘. <em>Always verify bases against a tiny hand-computed case.</em></div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('recipe')">← The Recipe</button>
+        <button class="tnav-btn next" onclick="showTopic('robber')">Next: House Robber →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 06 · HOUSE ROBBER ════════ -->
+    <div class="topic-page" id="page-robber">
+      <div class="topic-header">
+        <div class="topic-tag">Level 2 · Topic 06 · 1-D Decision</div>
+        <h1 class="topic-title">House Robber — Take or Skip 🏠</h1>
+        <p class="topic-sub">LeetCode 198. The most important <strong>decision pattern</strong> in all of DP: at every element, either <em>take it</em> (with a restriction) or <em>skip it</em> — and let max decide.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem</h3>
+        <p><strong>Houses in a row hold money: [2, 7, 9, 3, 1]. Rob any houses you like, but never two adjacent ones (alarm!). Maximize the loot.</strong></p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Standing at house i, you have exactly two futures: <strong>rob it</strong> — pocket its cash but your previous stop can be at most house i−2; or <strong>skip it</strong> — keep whatever was best up to house i−1. A professional doesn't re-plan the whole street — just compares those two numbers.</p>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[i]</code> = max loot from houses 0…i</td></tr>
+          <tr><td>② Base</td><td><code>dp[0] = val[0]</code>, <code>dp[1] = max(val[0], val[1])</code></td></tr>
+          <tr><td>③ Transition</td><td>rob i or skip i → <code>dp[i] = max(dp[i-2] + val[i], dp[i-1])</code></td></tr>
+          <tr><td>④ Answer</td><td><code>dp[n-1]</code></td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch the Robbery</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Robber Lab — max(rob it, skip it) at every house</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runRobberLab(this)">▶ Plan the Heist</button>
+          </div>
+          <div class="house-row" id="robHouses">
+            <div class="house"><span class="h-ico">🏠</span><span class="h-val">$2</span><span class="h-idx">[0]</span></div>
+            <div class="house"><span class="h-ico">🏠</span><span class="h-val">$7</span><span class="h-idx">[1]</span></div>
+            <div class="house"><span class="h-ico">🏠</span><span class="h-val">$9</span><span class="h-idx">[2]</span></div>
+            <div class="house"><span class="h-ico">🏠</span><span class="h-val">$3</span><span class="h-idx">[3]</span></div>
+            <div class="house"><span class="h-ico">🏠</span><span class="h-val">$1</span><span class="h-idx">[4]</span></div>
+          </div>
+          <div class="dp-row" id="robViz">
+            <div class="dp-cell"><div class="dp-box">?</div><span class="dp-idx">dp[0]</span></div>
+            <div class="dp-cell"><div class="dp-box">?</div><span class="dp-idx">dp[1]</span></div>
+            <div class="dp-cell"><div class="dp-box">?</div><span class="dp-idx">dp[2]</span></div>
+            <div class="dp-cell"><div class="dp-box">?</div><span class="dp-idx">dp[3]</span></div>
+            <div class="dp-cell"><div class="dp-box">?</div><span class="dp-idx">dp[4]</span></div>
+          </div>
+          <div class="vizlab-note" id="robNote">Press ▶ — at each house the note shows the <strong>two futures</strong> being compared. At the end the actually-robbed houses glow <strong style="color:var(--green)">green</strong>.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">HouseRobber.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">rob</span>(<span class="kw">int</span>[] val) {
+    <span class="kw">int</span> n = val.length;
+    <span class="kw">if</span> (n == <span class="num">1</span>) <span class="kw">return</span> val[<span class="num">0</span>];
+    <span class="cmt">// dp[i] = max loot considering houses 0..i</span>
+    <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[n];
+    dp[<span class="num">0</span>] = val[<span class="num">0</span>];
+    dp[<span class="num">1</span>] = Math.<span class="fn">max</span>(val[<span class="num">0</span>], val[<span class="num">1</span>]);
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">2</span>; i &lt; n; i++)
+        dp[i] = Math.<span class="fn">max</span>(dp[i-<span class="num">2</span>] + val[i],  <span class="cmt">// ROB house i</span>
+                         dp[i-<span class="num">1</span>]);          <span class="cmt">// SKIP house i</span>
+    <span class="kw">return</span> dp[n-<span class="num">1</span>];
+}</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(n)</b></span>
+          <span class="cx-chip">Space: <b>O(1)</b> possible (reads only i−1, i−2)</span>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">⚠️</span>
+          <div class="ib-text"><strong>Common beginner mistake:</strong> thinking "rob alternate houses — 0,2,4 or 1,3". Wrong! For [2, 1, 1, 9] the best is houses 0 and 3 (=11), skipping TWO in the middle. Greedy patterns fail; only comparing both futures at every step is safe. That's why this needs DP.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔀</span> Famous Variants — Same Take/Skip Bone</h3>
+        <ul>
+          <li><strong>House Robber II</strong> (LC 213) — houses in a <em>circle</em>: house 0 and house n−1 are adjacent. Trick: run the robber twice — once on houses <code>0…n−2</code>, once on <code>1…n−1</code> — take the max. A circle is just two lines!</li>
+          <li><strong>Delete and Earn</strong> (LC 740) — take a number, its neighbors (value±1) vanish. Bucket the values → it literally <em>becomes</em> House Robber on the buckets.</li>
+          <li><strong>Stickler Thief</strong> (GFG) — the same problem under an Indian-placement name.</li>
+        </ul>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Dry-run challenge<small>val = [5, 1, 2, 10, 6, 2]. Fill dp[] by hand, then check.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> two columns on paper: "rob = dp[i−2]+val[i]" and "skip = dp[i−1]", circle the winner. dp[0]=5, dp[1]=max(5,1)=5, dp[2]=max(5+2, 5)=7, dp[3]=max(5+10, 7)=15, dp[4]=max(7+6, 15)=15, dp[5]=max(15+2, 15)=17. Robbed: houses 0, 3, 5 → 5+10+2 = 17 ✔</div>
+            <div class="output-block"><div class="output-label">Table</div><pre>val:  5   1   2  10   6   2
+dp :  5   5   7  15  15  17  ← answer 17</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">House Robber II — the circle<small>val = [2, 3, 2] arranged in a circle. Why is the answer 3, not 4?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> houses 0 and 2 look non-adjacent, but the circle makes them neighbors → can't take both 2s. Break the circle into two straight-line problems: rob houses <code>[2,3]</code> (skip last) → 3; rob houses <code>[3,2]</code> (skip first) → 3. Answer max(3,3) = <strong>3</strong>. Reducing a new shape (circle) to a solved shape (line) is a core competitive-programming move.</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">RobberII.java</span></div>
+              <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">rob2</span>(<span class="kw">int</span>[] v) {
+    <span class="kw">int</span> n = v.length;
+    <span class="kw">if</span> (n == <span class="num">1</span>) <span class="kw">return</span> v[<span class="num">0</span>];
+    <span class="kw">return</span> Math.<span class="fn">max</span>(<span class="fn">robLine</span>(v, <span class="num">0</span>, n-<span class="num">2</span>),   <span class="cmt">// without last</span>
+                    <span class="fn">robLine</span>(v, <span class="num">1</span>, n-<span class="num">1</span>));  <span class="cmt">// without first</span>
+}</pre></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="robber-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 198</td><td><a href="https://leetcode.com/problems/house-robber/" target="_blank">House Robber</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 213</td><td><a href="https://leetcode.com/problems/house-robber-ii/" target="_blank">House Robber II</a></td><td><span class="diff-pill m">Medium</span></td><td>circle → two lines</td></tr>
+          <tr><td>LC 740</td><td><a href="https://leetcode.com/problems/delete-and-earn/" target="_blank">Delete and Earn</a></td><td><span class="diff-pill m">Medium</span></td><td>bucket, then rob</td></tr>
+          <tr><td>LC 53</td><td><a href="https://leetcode.com/problems/maximum-subarray/" target="_blank">Maximum Subarray</a></td><td><span class="diff-pill m">Medium</span></td><td>take/extend decision (Kadane = DP!)</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">In dp[i] = max(dp[i−2] + val[i], dp[i−1]) — why dp[i−2] and not dp[i−1] in the "rob" branch?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Typo tradition — either works</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Robbing house i forbids house i−1 — the best compatible past ends at i−2</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Because dp[i−1] hasn't been computed yet</button>
+          </div>
+          <div class="quiz-feedback"><strong>The alarm rule lives inside the index.</strong> Constraints in DP become <em>which cells you're allowed to read</em>. "No two adjacent" → the take-branch must reach back two cells. This is how DP encodes rules: not with if-statements everywhere, but in the shape of the transition.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('stairs')">← Climbing Stairs</button>
+        <button class="tnav-btn next" onclick="showTopic('coins')">Next: Coin Change →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 07 · COIN CHANGE ════════ -->
+    <div class="topic-page" id="page-coins">
+      <div class="topic-header">
+        <div class="topic-tag">Level 2 · Topic 07 · 1-D Optimization</div>
+        <h1 class="topic-title">Coin Change — Min Coins 🪙</h1>
+        <p class="topic-sub">LeetCode 322 — the most-asked DP question in interviews, and the problem that proves <strong>greedy thinking can betray you</strong>.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem — and Why Greedy Fails</h3>
+        <p><strong>Coins = [1, 2, 5] (unlimited supply of each). Make amount 11 with the fewest coins.</strong></p>
+        <p>Your instinct says: "grab the biggest coin first" — 5, 5, 1 → 3 coins. Correct here! But instinct is a trap:</p>
+        <div class="info-box warn">
+          <span class="ib-icon">🪤</span>
+          <div class="ib-text"><strong>Greedy failure demo:</strong> coins = [1, 3, 4], amount = 6. Greedy: 4 + 1 + 1 = <strong>3 coins</strong>. Optimal: 3 + 3 = <strong>2 coins</strong>. Grabbing the big coin ruined the future. Whenever a locally-best choice can hurt later, greedy dies and DP takes over.</div>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[a]</code> = fewest coins to make amount a</td></tr>
+          <tr><td>② Base</td><td><code>dp[0] = 0</code> — amount zero needs zero coins</td></tr>
+          <tr><td>③ Transition</td><td>last coin used was some c → <code>dp[a] = 1 + min(dp[a-c])</code> over all coins c ≤ a</td></tr>
+          <tr><td>④ Answer</td><td><code>dp[amount]</code>, or −1 if still ∞ (unreachable)</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch Every Amount Get Its Best Answer</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Coin Lab — coins [1, 2, 5], amount 11</div>
+          <div class="coin-strip" id="coinStrip">
+            <span style="font-size:11px;color:var(--muted);font-weight:700;">trying:</span>
+            <div class="coin">1</div><div class="coin">2</div><div class="coin">5</div>
+          </div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runCoinLab(this)">▶ Fill dp[0…11]</button>
+          </div>
+          <div class="dp-row" id="coinViz"></div>
+          <div class="vizlab-note" id="coinNote">Press ▶ — for each amount, every coin is tried: <em>"if my last coin was c, I need 1 + dp[amount − c]"</em>. The smallest option wins the cell.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">CoinChange.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">coinChange</span>(<span class="kw">int</span>[] coins, <span class="kw">int</span> amount) {
+    <span class="cmt">// dp[a] = fewest coins to make amount a</span>
+    <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[amount+<span class="num">1</span>];
+    Arrays.<span class="fn">fill</span>(dp, amount+<span class="num">1</span>);      <span class="cmt">// "infinity" (safe: can't overflow)</span>
+    dp[<span class="num">0</span>] = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> a = <span class="num">1</span>; a &lt;= amount; a++)
+        <span class="kw">for</span> (<span class="kw">int</span> c : coins)
+            <span class="kw">if</span> (c &lt;= a)
+                dp[a] = Math.<span class="fn">min</span>(dp[a], <span class="num">1</span> + dp[a-c]);
+    <span class="kw">return</span> dp[amount] &gt; amount ? -<span class="num">1</span> : dp[amount];
+}</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(amount × coins)</b></span>
+          <span class="cx-chip">Space: <b>O(amount)</b></span>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">♾️</span>
+          <div class="ib-text"><strong>Why fill with amount+1, not Integer.MAX_VALUE?</strong> Because <code>1 + Integer.MAX_VALUE</code> overflows to a huge negative number and silently wins every min()! Using <code>amount+1</code> as infinity is a classic defensive trick — any real answer uses ≤ amount coins, so amount+1 still means "impossible".</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔀</span> Sister Problem — COUNT the Ways (Coin Change II)</h3>
+        <p>LC 518 asks: how many <em>combinations</em> make the amount? One recipe blank changes (min → sum)… and one subtle thing: <strong>loop order</strong>.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">CoinChange2.java</span>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// dp[a] = number of COMBINATIONS to make amount a</span>
+dp[<span class="num">0</span>] = <span class="num">1</span>;
+<span class="kw">for</span> (<span class="kw">int</span> c : coins)              <span class="cmt">// ← coins OUTER loop!</span>
+    <span class="kw">for</span> (<span class="kw">int</span> a = c; a &lt;= amount; a++)
+        dp[a] += dp[a-c];</pre></div>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">🔄</span>
+          <div class="ib-text"><strong>The famous loop-order rule:</strong> coins <em>outside</em> → each coin type considered once in a fixed order → counts <strong>combinations</strong> (2+5 and 5+2 counted once). Coins <em>inside</em> (like the min-coins code above) → any order → counts <strong>permutations</strong> (LC 377 Combination Sum IV). For min-coins the order doesn't matter — min(x,x) = x — but for counting it changes the answer completely!</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">The greedy-killer, by hand<small>coins = [1, 3, 4], amount = 6 — fill dp[] and beat greedy.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> dp[1]=1, dp[2]=2, dp[3]=1 (coin 3!), dp[4]=1 (coin 4!), dp[5]=min(1+dp[4], 1+dp[2], 1+dp[1]) = 2, dp[6]=min(1+dp[5], 1+dp[3], 1+dp[2]) = <strong>1+dp[3] = 2</strong> → coins 3+3. Greedy's 4+1+1=3 loses. The table quietly considered every history — that's the power greedy lacks.</div>
+            <div class="output-block"><div class="output-label">Table</div><pre>a :  0  1  2  3  4  5  6
+dp:  0  1  2  1  1  2  2  ← 3+3 wins</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Perfect Squares is Coin Change in disguise<small>LC 279: fewest perfect squares (1,4,9,16…) summing to n. Map it.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> "fewest things from a fixed set that sum to n" — that IS min-coin-change. The "coins" are 1, 4, 9, 16, … up to n. Zero new ideas: <code>dp[a] = 1 + min(dp[a - sq])</code> over squares sq ≤ a. Recognizing renamed problems is 50% of interview DP.</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">PerfectSquares.java</span></div>
+              <div class="code-body"><pre><span class="kw">for</span> (<span class="kw">int</span> a = <span class="num">1</span>; a &lt;= n; a++)
+    <span class="kw">for</span> (<span class="kw">int</span> s = <span class="num">1</span>; s*s &lt;= a; s++)
+        dp[a] = Math.<span class="fn">min</span>(dp[a], <span class="num">1</span> + dp[a - s*s]);</pre></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="coins-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 322</td><td><a href="https://leetcode.com/problems/coin-change/" target="_blank">Coin Change</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 518</td><td><a href="https://leetcode.com/problems/coin-change-ii/" target="_blank">Coin Change II</a></td><td><span class="diff-pill m">Medium</span></td><td>count, coins outer</td></tr>
+          <tr><td>LC 279</td><td><a href="https://leetcode.com/problems/perfect-squares/" target="_blank">Perfect Squares</a></td><td><span class="diff-pill m">Medium</span></td><td>coins = squares</td></tr>
+          <tr><td>LC 377</td><td><a href="https://leetcode.com/problems/combination-sum-iv/" target="_blank">Combination Sum IV</a></td><td><span class="diff-pill m">Medium</span></td><td>count, coins inner</td></tr>
+          <tr><td>LC 139</td><td><a href="https://leetcode.com/problems/word-break/" target="_blank">Word Break</a></td><td><span class="diff-pill m">Medium</span></td><td>"coins" = dictionary words</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">This pattern is called the <em>unbounded</em> knapsack. What makes it "unbounded"?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">The amount can be infinitely large</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Each coin can be reused unlimited times — unlike 0/1 knapsack where each item is used at most once</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">The dp array has no fixed size</button>
+          </div>
+          <div class="quiz-feedback"><strong>Unlimited reuse.</strong> That's why dp[a−c] may already include coin c again. In Topic 09 you'll meet <strong>0/1 knapsack</strong> where items can't repeat — and see how one loop direction flips "reusable" into "use-once".</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('robber')">← House Robber</button>
+        <button class="tnav-btn next" onclick="showTopic('grid')">Next: Level 3 — Grid DP →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 08 · GRID DP ════════ -->
+    <div class="topic-page" id="page-grid">
+      <div class="topic-header">
+        <div class="topic-tag">Level 3 · Topic 08 · 2-D Grid</div>
+        <h1 class="topic-title">Grid DP — Unique Paths 🗺️</h1>
+        <p class="topic-sub">Your first 2-D table. When the state needs TWO numbers to describe — a row <em>and</em> a column — dp[i] grows a second dimension: dp[i][j].</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem</h3>
+        <p><strong>A robot 🤖 starts at the top-left of a 3×4 grid and wants the bottom-right. It can only move → right or ↓ down. How many distinct paths exist?</strong> (LeetCode 62)</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>City blocks: from your home (top-left) to college (bottom-right), streets only go right or down. To arrive at any crossing, you came <strong>from the left</strong> or <strong>from above</strong> — there is no third door. So paths-to-here = paths-from-left + paths-from-above.</p>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[r][c]</code> = number of paths from start to cell (r, c)</td></tr>
+          <tr><td>② Base</td><td>first row = 1, first column = 1 (only one straight way along an edge)</td></tr>
+          <tr><td>③ Transition</td><td>arrived from above or from left → <code>dp[r][c] = dp[r-1][c] + dp[r][c-1]</code></td></tr>
+          <tr><td>④ Answer</td><td><code>dp[rows-1][cols-1]</code> — the bottom-right cell</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch the Paths Flow Through the Grid</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Grid Lab — 3 × 4, dp[r][c] = top + left</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runGridLab(this)">▶ Fill the Grid</button>
+          </div>
+          <div class="mtx-wrap">
+            <table class="mtx" id="gridMtx">
+              <tr><th></th><th>c0</th><th>c1</th><th>c2</th><th>c3</th></tr>
+              <tr><th>r0</th><td id="g0_0">🤖</td><td id="g0_1">?</td><td id="g0_2">?</td><td id="g0_3">?</td></tr>
+              <tr><th>r1</th><td id="g1_0">?</td><td id="g1_1">?</td><td id="g1_2">?</td><td id="g1_3">?</td></tr>
+              <tr><th>r2</th><td id="g2_0">?</td><td id="g2_1">?</td><td id="g2_2">?</td><td id="g2_3">?</td></tr>
+            </table>
+          </div>
+          <div class="vizlab-note" id="gridNote">Press ▶ — the <strong style="color:var(--cyan)">cyan</strong> cells (top &amp; left neighbours) are being read; their sum lands in the <strong style="color:var(--amber)">amber</strong> cell. The answer flows to the bottom-right like water.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">UniquePaths.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">uniquePaths</span>(<span class="kw">int</span> m, <span class="kw">int</span> n) {
+    <span class="cmt">// dp[r][c] = paths from (0,0) to (r,c)</span>
+    <span class="kw">int</span>[][] dp = <span class="kw">new</span> <span class="type">int</span>[m][n];
+    <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; m; r++) dp[r][<span class="num">0</span>] = <span class="num">1</span>;   <span class="cmt">// left edge</span>
+    <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; n; c++) dp[<span class="num">0</span>][c] = <span class="num">1</span>;   <span class="cmt">// top edge</span>
+    <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">1</span>; r &lt; m; r++)
+        <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">1</span>; c &lt; n; c++)
+            dp[r][c] = dp[r-<span class="num">1</span>][c] + dp[r][c-<span class="num">1</span>];
+    <span class="kw">return</span> dp[m-<span class="num">1</span>][n-<span class="num">1</span>];
+}</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(m·n)</b></span>
+          <span class="cx-chip">Space: <b>O(m·n)</b> → <b>O(n)</b> keeping one rolling row</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔀</span> The Grid Family — 3 Skins, 1 Skeleton</h3>
+        <table class="data-table">
+          <tr><th>Problem</th><th>Transition becomes</th><th>What changed</th></tr>
+          <tr><td>Unique Paths (LC 62)</td><td>top + left</td><td>counting → add</td></tr>
+          <tr><td>Min Path Sum (LC 64)</td><td>grid[r][c] + min(top, left)</td><td>cheapest → min, cells now have costs</td></tr>
+          <tr><td>Unique Paths II (LC 63)</td><td>obstacle cell? dp = 0 : top + left</td><td>constraint → force cell to 0 (like the broken stair!)</td></tr>
+        </table>
+        <div class="info-box tip">
+          <span class="ib-icon">🧗</span>
+          <div class="ib-text"><strong>See the pattern?</strong> Broken stair (Topic 05) forced a 1-D cell to 0; an obstacle forces a 2-D cell to 0. Min Cost Stairs turned + into min; so does Min Path Sum. You are not learning new problems — you are re-applying moves you already own, one dimension up.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Min Path Sum, by hand<small>grid = [[1,3,1],[1,5,1],[4,2,1]] — cheapest path top-left → bottom-right?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> same fill motion, min instead of add, and each cell adds its own cost. Row 0: 1, 4, 5. Col 0: 1, 2, 6. dp[1][1] = 5 + min(4, 2) = 7. dp[1][2] = 1 + min(5, 7) = 6. dp[2][1] = 2 + min(7, 6)? No — left is dp[2][0]=6, top is dp[1][1]=7 → 2 + 6 = 8. dp[2][2] = 1 + min(6, 8) = <strong>7</strong>. Path: 1→3→1→1→1.</div>
+            <div class="output-block"><div class="output-label">dp table</div><pre>1  4  5
+2  7  6
+6  8  7  ← answer 7</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Obstacle at the start?<small>In Unique Paths II, grid[0][0] itself is an obstacle. What's the answer, and which line of code handles it?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> if the start is blocked, no path exists at all → answer 0. The clean solution sets <code>dp[0][0] = (grid[0][0] == 1) ? 0 : 1</code>, and every other cell derives from it — the 0 automatically floods the whole table. No special-case if-forest needed: <strong>let the base case carry the truth</strong>.</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">UniquePathsII.java</span></div>
+              <div class="code-body"><pre>dp[<span class="num">0</span>][<span class="num">0</span>] = grid[<span class="num">0</span>][<span class="num">0</span>] == <span class="num">1</span> ? <span class="num">0</span> : <span class="num">1</span>;
+<span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; m; r++)
+    <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; n; c++) {
+        <span class="kw">if</span> (grid[r][c] == <span class="num">1</span>) { dp[r][c] = <span class="num">0</span>; <span class="kw">continue</span>; }
+        <span class="kw">if</span> (r &gt; <span class="num">0</span>) dp[r][c] += dp[r-<span class="num">1</span>][c];
+        <span class="kw">if</span> (c &gt; <span class="num">0</span>) dp[r][c] += dp[r][c-<span class="num">1</span>];
+    }</pre></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="grid-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 62</td><td><a href="https://leetcode.com/problems/unique-paths/" target="_blank">Unique Paths</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 64</td><td><a href="https://leetcode.com/problems/minimum-path-sum/" target="_blank">Minimum Path Sum</a></td><td><span class="diff-pill m">Medium</span></td><td>+ → min, add cell cost</td></tr>
+          <tr><td>LC 63</td><td><a href="https://leetcode.com/problems/unique-paths-ii/" target="_blank">Unique Paths II</a></td><td><span class="diff-pill m">Medium</span></td><td>obstacles → cell = 0</td></tr>
+          <tr><td>LC 120</td><td><a href="https://leetcode.com/problems/triangle/" target="_blank">Triangle</a></td><td><span class="diff-pill m">Medium</span></td><td>grid becomes a triangle</td></tr>
+          <tr><td>LC 931</td><td><a href="https://leetcode.com/problems/minimum-falling-path-sum/" target="_blank">Min Falling Path Sum</a></td><td><span class="diff-pill m">Medium</span></td><td>3 parents: ↖ ↑ ↗</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">Why is the whole first row of the Unique Paths table equal to 1?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Convention — tables start with 1</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">A cell in the top row is reachable only by walking straight right — exactly one path</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Because dp[0][0] = 1 and 1 is copied everywhere</button>
+          </div>
+          <div class="quiz-feedback"><strong>Only one way along an edge.</strong> A top-row cell has no "above" — the transition collapses to a single parent. Base cases in 2-D DP are usually a whole row/column, not a single cell. Same building-foundation logic, one dimension bigger.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('coins')">← Coin Change</button>
+        <button class="tnav-btn next" onclick="showTopic('knapsack')">Next: 0/1 Knapsack →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 09 · 0/1 KNAPSACK ════════ -->
+    <div class="topic-page" id="page-knapsack">
+      <div class="topic-header">
+        <div class="topic-tag">Level 3 · Topic 09 · 2-D Decision</div>
+        <h1 class="topic-title">0/1 Knapsack — The King of DP 🎒</h1>
+        <p class="topic-sub">The most famous DP problem on Earth. Take-or-skip (House Robber) meets a capacity limit — and at least 20 LeetCode problems are secretly this one.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem</h3>
+        <p><strong>A bag holds 4 kg. Items: 💍 (1 kg, ₹15), 💻 (3 kg, ₹50), 📷 (4 kg, ₹60). Each item exists ONCE — take it or leave it (that's the "0/1"). Maximize value.</strong></p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Packing for a flight with a strict baggage limit. For every item you hold it up and ask: "worth its weight?" — but you can't answer per-item (greedy fails!). The 📷 alone (₹60) loses to 💍+💻 (₹65). Only trying both futures per item is safe.</p>
+        </div>
+        <p>Why 2-D now? The state needs two facts: <strong>which items I've considered</strong> AND <strong>how much capacity remains</strong>. Two changing values → two dimensions. (Remember the memo-key rule from Topic 02!)</p>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[i][w]</code> = best value using the first i items with capacity w</td></tr>
+          <tr><td>② Base</td><td>row 0 = 0 (no items → no value), column 0 = 0 (no capacity)</td></tr>
+          <tr><td>③ Transition</td><td>skip item i: <code>dp[i-1][w]</code> &nbsp;·&nbsp; take it (if wt ≤ w): <code>val + dp[i-1][w-wt]</code> → max of both</td></tr>
+          <tr><td>④ Answer</td><td><code>dp[n][W]</code></td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch Take vs Skip Fight for Every Cell</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 Knapsack Lab — rows = items, columns = capacity 0…4</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runKnapLab(this)">▶ Pack the Bag</button>
+          </div>
+          <div class="mtx-wrap">
+            <table class="mtx" id="knapMtx">
+              <tr><th style="min-width:120px;text-align:right;">item ↓ / cap →</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+              <tr><th style="text-align:right;">(no items)</th><td id="k0_0">?</td><td id="k0_1">?</td><td id="k0_2">?</td><td id="k0_3">?</td><td id="k0_4">?</td></tr>
+              <tr><th style="text-align:right;">💍 1kg ₹15</th><td id="k1_0">?</td><td id="k1_1">?</td><td id="k1_2">?</td><td id="k1_3">?</td><td id="k1_4">?</td></tr>
+              <tr><th style="text-align:right;">💻 3kg ₹50</th><td id="k2_0">?</td><td id="k2_1">?</td><td id="k2_2">?</td><td id="k2_3">?</td><td id="k2_4">?</td></tr>
+              <tr><th style="text-align:right;">📷 4kg ₹60</th><td id="k3_0">?</td><td id="k3_1">?</td><td id="k3_2">?</td><td id="k3_3">?</td><td id="k3_4">?</td></tr>
+            </table>
+          </div>
+          <div class="vizlab-note" id="knapNote">Press ▶ — for each cell: <strong style="color:var(--cyan)">cyan</strong> = the cell(s) being read (skip = directly above; take = above-left by the item's weight). The note narrates the fight.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">Knapsack01.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">int</span>[][] dp = <span class="kw">new</span> <span class="type">int</span>[n+<span class="num">1</span>][W+<span class="num">1</span>];   <span class="cmt">// row 0 &amp; col 0 stay 0 = base</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> w = <span class="num">0</span>; w &lt;= W; w++) {
+        dp[i][w] = dp[i-<span class="num">1</span>][w];                    <span class="cmt">// SKIP item i</span>
+        <span class="kw">if</span> (wt[i-<span class="num">1</span>] &lt;= w)                         <span class="cmt">// fits?</span>
+            dp[i][w] = Math.<span class="fn">max</span>(dp[i][w],
+                val[i-<span class="num">1</span>] + dp[i-<span class="num">1</span>][w - wt[i-<span class="num">1</span>]]); <span class="cmt">// TAKE item i</span>
+    }
+}
+<span class="kw">return</span> dp[n][W];</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(n·W)</b></span>
+          <span class="cx-chip">Space: <b>O(n·W)</b> → <b>O(W)</b> with 1 row</span>
+        </div>
+        <div class="info-box warn">
+          <span class="ib-icon">🔁</span>
+          <div class="ib-text"><strong>The 1-D trick and its trap:</strong> since each row reads only the row above, one array suffices — but you must loop capacity <strong>backwards</strong> (<code>for w = W…wt</code>). Loop forward and item i can be "taken twice" — you'd read a cell already updated in <em>this</em> row and silently turn 0/1 knapsack into unbounded coin change! Loop direction is the ONLY difference between the two patterns.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎭</span> Knapsack in Disguise — Learn to Unmask It</h3>
+        <table class="data-table">
+          <tr><th>Problem</th><th>The disguise</th><th>The unmasking</th></tr>
+          <tr><td>Subset Sum (GFG)</td><td>"can some subset sum to S?"</td><td>values = weights; dp holds true/false; max → OR</td></tr>
+          <tr><td>Partition Equal Subset (LC 416)</td><td>"split array into two equal halves?"</td><td>subset-sum with S = total/2</td></tr>
+          <tr><td>Target Sum (LC 494)</td><td>"assign +/− signs to reach target"</td><td>algebra → count subsets with sum (total+target)/2</td></tr>
+          <tr><td>Last Stone Weight II (LC 1049)</td><td>"smash stones, minimize what's left"</td><td>split into two near-equal halves = subset-sum</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Subset Sum, by recipe<small>arr = [3, 34, 4, 12, 5, 2], sum = 9 — possible? Fill the recipe blanks.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> ① <code>dp[i][s]</code> = can the first i numbers make sum s? ② <code>dp[i][0] = true</code> (empty subset makes 0). ③ skip OR take: <code>dp[i][s] = dp[i-1][s] || dp[i-1][s-arr[i-1]]</code>. ④ <code>dp[n][9]</code>. Answer: <strong>true</strong> — 4+5 = 9. Note the transition is the knapsack transition with max replaced by <code>||</code> — feasibility DP from the recognition table!</div>
+            <div class="code-block">
+              <div class="code-header"><div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div><span class="code-lang">SubsetSum.java</span></div>
+              <div class="code-body"><pre><span class="kw">boolean</span>[][] dp = <span class="kw">new</span> <span class="type">boolean</span>[n+<span class="num">1</span>][S+<span class="num">1</span>];
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt;= n; i++) dp[i][<span class="num">0</span>] = <span class="kw">true</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= n; i++)
+    <span class="kw">for</span> (<span class="kw">int</span> s = <span class="num">1</span>; s &lt;= S; s++) {
+        dp[i][s] = dp[i-<span class="num">1</span>][s];                       <span class="cmt">// skip</span>
+        <span class="kw">if</span> (arr[i-<span class="num">1</span>] &lt;= s)
+            dp[i][s] |= dp[i-<span class="num">1</span>][s - arr[i-<span class="num">1</span>]];       <span class="cmt">// take</span>
+    }</pre></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Trace the 1-D trap<small>wt=[2], val=[10], W=4. Show what the FORWARD 1-D loop wrongly computes.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> forward loop: dp[2] = max(dp[2], 10 + dp[0]) = 10 ✔ … then dp[4] = max(dp[4], 10 + dp[2]) = <strong>20</strong> ✘ — the single 2-kg item was "taken twice" because dp[2] was already updated <em>this round</em>. Backwards (w = 4 → 2): dp[4] reads the OLD dp[2] = 0 → dp[4] = 10 ✔. One loop direction = the entire difference between 0/1 and unbounded.</div>
+            <div class="output-block"><div class="output-label">Forward (wrong) vs Backward (right)</div><pre>forward : dp = [0, 0, 10, 10, 20] ✘ item cloned!
+backward: dp = [0, 0, 10, 10, 10] ✔</pre></div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="knapsack-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>GFG</td><td><a href="https://www.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1" target="_blank">0/1 Knapsack</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 416</td><td><a href="https://leetcode.com/problems/partition-equal-subset-sum/" target="_blank">Partition Equal Subset Sum</a></td><td><span class="diff-pill m">Medium</span></td><td>subset-sum, S = total/2</td></tr>
+          <tr><td>LC 494</td><td><a href="https://leetcode.com/problems/target-sum/" target="_blank">Target Sum</a></td><td><span class="diff-pill m">Medium</span></td><td>count subsets</td></tr>
+          <tr><td>LC 1049</td><td><a href="https://leetcode.com/problems/last-stone-weight-ii/" target="_blank">Last Stone Weight II</a></td><td><span class="diff-pill m">Medium</span></td><td>minimize the split gap</td></tr>
+          <tr><td>LC 474</td><td><a href="https://leetcode.com/problems/ones-and-zeroes/" target="_blank">Ones and Zeroes</a></td><td><span class="diff-pill m">Medium</span></td><td>TWO capacities → 3-D</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">House Robber vs 0/1 Knapsack — what's the real relationship?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Unrelated problems that happen to use max()</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Both are take/skip decision DP — robber's "constraint" is adjacency (1-D), knapsack's is capacity (needs a 2nd dimension)</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Knapsack is just robber with bigger numbers</button>
+          </div>
+          <div class="quiz-feedback"><strong>Same decision, different constraint.</strong> The constraint decides the dimensions: "can't touch neighbour" is expressible by index distance (1-D suffices); "total weight ≤ W" needs W tracked in the state (2-D). When you meet a new take/skip problem, ask: <em>what must I remember to know if taking is legal?</em> — that's your extra dimension.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('grid')">← Grid DP</button>
+        <button class="tnav-btn next" onclick="showTopic('strings')">Next: String DP →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 10 · STRING DP — LCS ════════ -->
+    <div class="topic-page" id="page-strings">
+      <div class="topic-header">
+        <div class="topic-tag">Level 3 · Topic 10 · 2-D Strings</div>
+        <h1 class="topic-title">String DP — LCS &amp; Edit Distance 🔤</h1>
+        <p class="topic-sub">Two strings → two pointers → a 2-D table where <strong>rows spell one string, columns spell the other</strong>. Master LCS and half of string DP falls with it.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> Longest Common Subsequence</h3>
+        <p><strong>Find the longest sequence of characters appearing (in order, not necessarily adjacent) inside both "ACE" and "ABCDE".</strong> Answer: "ACE" itself, length 3. (LeetCode 1143)</p>
+        <div class="analogy">
+          <div class="label">Real-Life Analogy</div>
+          <p>Two friends tell the same story with different extra details. The <em>common storyline</em> — events both mention, in the same order — is the LCS. Diff tools, Git merge, and DNA matching all run on this exact algorithm.</p>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[i][j]</code> = LCS length of first i chars of s1 and first j chars of s2</td></tr>
+          <tr><td>② Base</td><td>row 0 and column 0 = 0 (empty string shares nothing)</td></tr>
+          <tr><td>③ Transition</td><td>chars match → <code>1 + dp[i-1][j-1]</code> (diagonal ↖). Differ → <code>max(dp[i-1][j], dp[i][j-1])</code> (drop one char from either side)</td></tr>
+          <tr><td>④ Answer</td><td><code>dp[m][n]</code> — bottom-right</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch Characters Meet</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 LCS Lab — "ACE" (rows) vs "ABCDE" (columns)</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runLcsLab(this)">▶ Compare the Strings</button>
+          </div>
+          <div class="mtx-wrap">
+            <table class="mtx" id="lcsMtx">
+              <tr><th></th><th>""</th><th id="lch1">A</th><th id="lch2">B</th><th id="lch3">C</th><th id="lch4">D</th><th id="lch5">E</th></tr>
+              <tr><th>""</th><td id="l0_0">0</td><td id="l0_1">0</td><td id="l0_2">0</td><td id="l0_3">0</td><td id="l0_4">0</td><td id="l0_5">0</td></tr>
+              <tr><th id="lrh1">A</th><td id="l1_0">0</td><td id="l1_1">?</td><td id="l1_2">?</td><td id="l1_3">?</td><td id="l1_4">?</td><td id="l1_5">?</td></tr>
+              <tr><th id="lrh2">C</th><td id="l2_0">0</td><td id="l2_1">?</td><td id="l2_2">?</td><td id="l2_3">?</td><td id="l2_4">?</td><td id="l2_5">?</td></tr>
+              <tr><th id="lrh3">E</th><td id="l3_0">0</td><td id="l3_1">?</td><td id="l3_2">?</td><td id="l3_3">?</td><td id="l3_4">?</td><td id="l3_5">?</td></tr>
+            </table>
+          </div>
+          <div class="vizlab-note" id="lcsNote">Press ▶ — <strong style="color:var(--green)">green flash</strong> = characters MATCH (take diagonal + 1). Plain fill = mismatch (max of top / left). The row &amp; column characters light up as they're compared.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">LCS.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">int</span>[][] dp = <span class="kw">new</span> <span class="type">int</span>[m+<span class="num">1</span>][n+<span class="num">1</span>];
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt;= m; i++)
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">1</span>; j &lt;= n; j++)
+        <span class="kw">if</span> (s1.<span class="fn">charAt</span>(i-<span class="num">1</span>) == s2.<span class="fn">charAt</span>(j-<span class="num">1</span>))
+            dp[i][j] = <span class="num">1</span> + dp[i-<span class="num">1</span>][j-<span class="num">1</span>];        <span class="cmt">// match → diagonal ↖ + 1</span>
+        <span class="kw">else</span>
+            dp[i][j] = Math.<span class="fn">max</span>(dp[i-<span class="num">1</span>][j],       <span class="cmt">// drop s1's char</span>
+                                dp[i][j-<span class="num">1</span>]);      <span class="cmt">// drop s2's char</span>
+<span class="kw">return</span> dp[m][n];</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(m·n)</b></span>
+          <span class="cx-chip">Space: <b>O(m·n)</b> → <b>O(n)</b> rolling row</span>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">✏️</span> Edit Distance — LCS's Powerful Sibling</h3>
+        <p>LC 72: minimum operations (insert / delete / replace one char) to convert word1 → word2. Same table shape, three parents instead of two:</p>
+        <div class="code-block" id="execEdit">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">EditDistance.java</span>
+            <button class="code-run" onclick="runExec('execEdit',['Base is DIFFERENT from LCS: converting i chars to empty needs i deletes — so row 0 and col 0 count up 0,1,2,3…','Chars equal → this position costs nothing, inherit the diagonal','Chars differ → three possible last operations, each costs 1:','replace (diagonal), delete from word1 (top), insert into word1 (left) — take the cheapest and add 1'],this)">▶ Run</button>
+          </div>
+          <div class="code-body"><pre><span class="execline"><span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>; i&lt;=m; i++) dp[i][<span class="num">0</span>]=i;  <span class="kw">for</span> (<span class="kw">int</span> j=<span class="num">0</span>; j&lt;=n; j++) dp[<span class="num">0</span>][j]=j;</span><span class="execline"><span class="kw">if</span> (c1 == c2) dp[i][j] = dp[i-<span class="num">1</span>][j-<span class="num">1</span>];      <span class="cmt">// free ride</span></span><span class="execline"><span class="kw">else</span> dp[i][j] = <span class="num">1</span> + Math.<span class="fn">min</span>(dp[i-<span class="num">1</span>][j-<span class="num">1</span>],  <span class="cmt">// replace</span></span><span class="execline">        Math.<span class="fn">min</span>(dp[i-<span class="num">1</span>][j], dp[i][j-<span class="num">1</span>]));      <span class="cmt">// delete / insert</span></span></pre>
+          <div class="exec-note" id="execEdit-note"></div></div>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">🧬</span>
+          <div class="ib-text"><strong>The two-string family:</strong> LCS, Edit Distance, Longest Palindromic Subsequence (= LCS of s and reverse(s)!), Distinct Subsequences, Shortest Common Supersequence — all use the same (i, j) table. Learn the table once, re-derive each transition with the recipe.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Tiny LCS by hand<small>s1 = "AB", s2 = "BA" — why is the LCS length 1 and not 2?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> subsequences must keep <em>order</em>. "AB" needs A before B; "BA" has them reversed — you can pick A (common) or B (common) but never both in order. The table: dp[1][1] (A vs B) = 0 → mismatch; dp[1][2] (A vs A) = 1 match; dp[2][1] (B vs B) = 1 match; dp[2][2] (B vs A) mismatch → max(1, 1) = <strong>1</strong>.</div>
+            <div class="output-block"><div class="output-label">dp table</div><pre>      ""  B  A
+  ""   0  0  0
+  A    0  0  1
+  B    0  1  1  ← answer 1</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Edit distance: "cat" → "cut"<small>Predict the answer before tracing, then verify with the base row trick.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> intuition says 1 (replace 'a'→'u') — trust but verify. c=c free ride; a≠u → 1 + min(diagonal 0, top 1, left 1) = 1; t=t free ride carries the 1 down the diagonal to dp[3][3] = <strong>1</strong> ✔. Notice how "free ride" cells just copy the diagonal — matches cost nothing in edit distance, exactly like matches PAY +1 in LCS. The two problems are mirror images.</div>
+            <div class="output-block"><div class="output-label">dp table</div><pre>      ""  c  u  t
+  ""   0  1  2  3
+  c    1  0  1  2
+  a    2  1  1  2
+  t    3  2  2  1  ← answer 1</pre></div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="strings-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 1143</td><td><a href="https://leetcode.com/problems/longest-common-subsequence/" target="_blank">Longest Common Subsequence</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 516</td><td><a href="https://leetcode.com/problems/longest-palindromic-subsequence/" target="_blank">Longest Palindromic Subsequence</a></td><td><span class="diff-pill m">Medium</span></td><td>LCS(s, reverse(s))</td></tr>
+          <tr><td>LC 72</td><td><a href="https://leetcode.com/problems/edit-distance/" target="_blank">Edit Distance</a></td><td><span class="diff-pill h">Hard</span></td><td>3 parents, base counts up</td></tr>
+          <tr><td>LC 583</td><td><a href="https://leetcode.com/problems/delete-operation-for-two-strings/" target="_blank">Delete Operation for Two Strings</a></td><td><span class="diff-pill m">Medium</span></td><td>m + n − 2·LCS</td></tr>
+          <tr><td>LC 5</td><td><a href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">Longest Palindromic Substring</a></td><td><span class="diff-pill m">Medium</span></td><td>subSTRING → interval table</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">In the LCS mismatch case, why max(dp[i−1][j], dp[i][j−1]) and never dp[i−1][j−1]?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">The diagonal is only legal after a match — using it here would crash</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">The diagonal is never needed: dp[i−1][j−1] ≤ both other options, so max already covers it</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Random convention from the textbook</button>
+          </div>
+          <div class="quiz-feedback"><strong>It's dominated.</strong> dp[i−1][j−1] can never exceed dp[i−1][j] (adding a char can't shrink an LCS) — so including it changes nothing. Understanding <em>why</em> a term is absent beats memorising the formula: interviewers probe exactly these "why not?" spots.</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('knapsack')">← 0/1 Knapsack</button>
+        <button class="tnav-btn next" onclick="showTopic('lis')">Next: Level 4 — LIS →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 11 · LIS ════════ -->
+    <div class="topic-page" id="page-lis">
+      <div class="topic-header">
+        <div class="topic-tag">Level 4 · Topic 11 · Sequence DP</div>
+        <h1 class="topic-title">Longest Increasing Subsequence 📈</h1>
+        <p class="topic-sub">LC 300 — the problem that teaches DP's subtlest lesson: sometimes the answer is <strong>not</strong> in the last cell, and the state must end <em>exactly at i</em> to work.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📋</span> The Problem</h3>
+        <p><strong>nums = [10, 9, 2, 5, 3, 7, 101, 18]. Find the length of the longest strictly-increasing subsequence.</strong> Answer: 4 → [2, 3, 7, 18] (or [2, 5, 7, 101]).</p>
+        <div class="info-box warn">
+          <span class="ib-icon">🧨</span>
+          <div class="ib-text"><strong>The naive state fails!</strong> Try "dp[i] = LIS of the first i elements" — you can't write a transition, because knowing the <em>length</em> doesn't tell you what the subsequence <em>ends with</em>, and extending depends on that last value. The fix that unlocks everything: <strong>dp[i] = LIS that ends exactly at index i</strong>. Now extension is checkable: nums[i] can follow nums[j] iff nums[j] &lt; nums[i].</div>
+        </div>
+        <table class="data-table">
+          <tr><th>Recipe blank</th><th>Filled in</th></tr>
+          <tr><td>① State</td><td><code>dp[i]</code> = length of the LIS <strong>ending exactly at</strong> index i</td></tr>
+          <tr><td>② Base</td><td>every element alone is an LIS of length 1 → all dp[i] start at 1</td></tr>
+          <tr><td>③ Transition</td><td>for every j &lt; i with nums[j] &lt; nums[i]: <code>dp[i] = max(dp[i], dp[j] + 1)</code></td></tr>
+          <tr><td>④ Answer</td><td><strong>max of the whole array</strong> — the LIS may end anywhere!</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🔬</span> Watch Each Element Look Back</h3>
+        <div class="vizlab">
+          <div class="vizlab-title">🔬 LIS Lab — dp[i] = best chain ending at i</div>
+          <div class="viz-controls">
+            <button class="viz-btn" onclick="runLisLab(this)">▶ Build the Chains</button>
+          </div>
+          <div class="arr-row" id="lisVals" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          <div class="dp-row" id="lisViz"></div>
+          <div class="vizlab-note" id="lisNote">Press ▶ — each element scans everything to its left (<strong style="color:var(--cyan)">cyan</strong> = smaller, chainable; faded = too big). It hops onto the longest chain it can legally extend. At the end the winning chain glows <strong style="color:var(--green)">green</strong>.</div>
+        </div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot cd1"></span><span class="code-dot cd2"></span><span class="code-dot cd3"></span></div>
+            <span class="code-lang">LIS.java</span>
+          </div>
+          <div class="code-body"><pre><span class="kw">public int</span> <span class="fn">lengthOfLIS</span>(<span class="kw">int</span>[] nums) {
+    <span class="kw">int</span> n = nums.length, best = <span class="num">1</span>;
+    <span class="kw">int</span>[] dp = <span class="kw">new</span> <span class="type">int</span>[n];
+    Arrays.<span class="fn">fill</span>(dp, <span class="num">1</span>);                    <span class="cmt">// ② alone = length 1</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">1</span>; i &lt; n; i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; i; j++)        <span class="cmt">// look at every earlier end</span>
+            <span class="kw">if</span> (nums[j] &lt; nums[i])         <span class="cmt">// legal to extend?</span>
+                dp[i] = Math.<span class="fn">max</span>(dp[i], dp[j] + <span class="num">1</span>);
+        best = Math.<span class="fn">max</span>(best, dp[i]);      <span class="cmt">// ④ answer can end ANYWHERE</span>
+    }
+    <span class="kw">return</span> best;
+}</pre></div>
+        </div>
+        <div class="cx-row">
+          <span class="cx-chip">Time: <b>O(n²)</b></span>
+          <span class="cx-chip">Space: <b>O(n)</b></span>
+          <span class="cx-chip">Pro upgrade: <b>O(n log n)</b> with binary search (patience sorting)</span>
+        </div>
+        <div class="info-box info">
+          <span class="ib-icon">🃏</span>
+          <div class="ib-text"><strong>The O(n log n) idea in one line:</strong> keep a list of "smallest possible tail for each chain length"; each new number binary-searches its slot. Learn it <em>after</em> the O(n²) version is automatic — interviews accept O(n²) with the optimization mentioned.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">💪</span> Practice Questions</h3>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">1</span>
+            <div class="qa-title">Dry-run<small>nums = [3, 10, 2, 11] — fill dp[] and give the LIS.</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> dp[0]=1. i=1: 3&lt;10 → dp[1]=dp[0]+1=2. i=2: 3,10 both &gt; 2? No — 3&gt;2 ✘, 10&gt;2 ✘ → nothing chainable → dp[2]=1. i=3: 3&lt;11 → 2; 10&lt;11 → dp[1]+1=<strong>3</strong>; 2&lt;11 → dp[2]+1=2 → dp[3]=3. Answer max = 3 → [3, 10, 11]. Note how 2 "restarted" a fresh chain — that's why dp must mean <em>ending at i</em>.</div>
+            <div class="output-block"><div class="output-label">Table</div><pre>nums: 3  10  2  11
+dp  : 1   2  1   3  ← answer 3</pre></div>
+          </div></div>
+        </div>
+        <div class="qa-acc">
+          <div class="qa-head" onclick="toggleQA(this)">
+            <span class="qa-num">2</span>
+            <div class="qa-title">Russian Doll Envelopes = LIS in 2-D<small>LC 354: envelope fits inside another if both width AND height are smaller. Longest nesting chain?</small></div>
+            <span class="qa-chev">▼</span>
+          </div>
+          <div class="qa-body"><div class="qa-body-inner">
+            <div class="qa-logic"><strong>🧠 How to think:</strong> sort envelopes by width ascending — now "nests inside" along width is automatic, and the problem collapses to <strong>LIS on the heights</strong>. (Subtle trap: sort equal widths by height <em>descending</em> so two same-width envelopes can't chain.) Sorting to reduce a 2-D comparison to a 1-D LIS is a classic advanced move — the same trick solves "maximum height by stacking cuboids" (LC 1691).</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="lesson-block" id="lis-industry">
+        <h3><span class="icon">🏆</span> Solve These Next</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Difficulty</th><th>Skeleton change</th></tr>
+          <tr><td>LC 300</td><td><a href="https://leetcode.com/problems/longest-increasing-subsequence/" target="_blank">Longest Increasing Subsequence</a></td><td><span class="diff-pill m">Medium</span></td><td>the lab above</td></tr>
+          <tr><td>LC 673</td><td><a href="https://leetcode.com/problems/number-of-longest-increasing-subsequence/" target="_blank">Number of LIS</a></td><td><span class="diff-pill m">Medium</span></td><td>carry a count[] beside dp[]</td></tr>
+          <tr><td>LC 354</td><td><a href="https://leetcode.com/problems/russian-doll-envelopes/" target="_blank">Russian Doll Envelopes</a></td><td><span class="diff-pill h">Hard</span></td><td>sort, then LIS</td></tr>
+          <tr><td>LC 1048</td><td><a href="https://leetcode.com/problems/longest-string-chain/" target="_blank">Longest String Chain</a></td><td><span class="diff-pill m">Medium</span></td><td>LIS over words</td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Quick Check</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">Why is the LIS answer max(dp[]) instead of dp[n−1]?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Tradition — both work</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">dp[n−1] only counts chains ending at the LAST element — the true LIS might end earlier (in the lab it ends at 101 or 18, not necessarily the final index)</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">max() is needed to break ties</button>
+          </div>
+          <div class="quiz-feedback"><strong>The LIS can end anywhere.</strong> In [2, 5, 7, 1], dp = [1, 2, 3, 1] — the answer 3 lives at index 2, and dp[n−1] = 1 would be badly wrong. Recipe Step ④ ("where does the answer sit?") exists precisely for states defined as "…ending exactly at i".</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('strings')">← String DP</button>
+        <button class="tnav-btn next" onclick="showTopic('patterns')">Next: The Pattern Map →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 12 · PATTERN MAP ════════ -->
+    <div class="topic-page" id="page-patterns">
+      <div class="topic-header">
+        <div class="topic-tag">Level 4 · Topic 12 · Recognition</div>
+        <h1 class="topic-title">The DP Pattern Map 🗂️</h1>
+        <p class="topic-sub">Interviewers don't invent new DP — they re-skin ~10 patterns. This is the full map: what each pattern smells like, its state shape, and where you've already met it.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🗺️</span> The 10 Patterns</h3>
+        <table class="data-table">
+          <tr><th>Pattern</th><th>Smells like…</th><th>State shape</th><th>Classic problems</th></tr>
+          <tr><td>1. Fibonacci-style ✅</td><td>"reach step n", counting simple moves</td><td>dp[i]</td><td>Climbing Stairs, Tribonacci</td></tr>
+          <tr><td>2. Take / Skip ✅</td><td>choose elements with an adjacency rule</td><td>dp[i]</td><td>House Robber, Delete &amp; Earn</td></tr>
+          <tr><td>3. Unbounded knapsack ✅</td><td>unlimited reuse, hit a target amount</td><td>dp[amount]</td><td>Coin Change I/II, Word Break</td></tr>
+          <tr><td>4. Grid paths ✅</td><td>2-D board, move right/down</td><td>dp[r][c]</td><td>Unique Paths, Min Path Sum</td></tr>
+          <tr><td>5. 0/1 Knapsack ✅</td><td>use-once items + capacity/target</td><td>dp[i][w]</td><td>Knapsack, Partition Equal Subset, Target Sum</td></tr>
+          <tr><td>6. Two strings ✅</td><td>compare/convert two sequences</td><td>dp[i][j]</td><td>LCS, Edit Distance</td></tr>
+          <tr><td>7. LIS family ✅</td><td>"longest chain" ending at each index</td><td>dp[i] ending at i</td><td>LIS, Russian Dolls, String Chain</td></tr>
+          <tr><td>8. Interval DP 🆕</td><td>"burst/merge/remove from a range", answer for [l…r]</td><td>dp[l][r]</td><td>Matrix Chain Mult., Burst Balloons (LC 312), Palindrome Partitioning</td></tr>
+          <tr><td>9. State machine 🆕</td><td>limited "modes" you switch between (holding / not holding)</td><td>dp[i][mode]</td><td>Best Time to Buy &amp; Sell Stock II–IV, with Cooldown (LC 309)</td></tr>
+          <tr><td>10. Bitmask DP 🆕</td><td>n ≤ 20, "visit every…", subsets as states</td><td>dp[mask]</td><td>Travelling Salesman, LC 698 Partition to K Subsets</td></tr>
+        </table>
+        <div class="info-box tip">
+          <span class="ib-icon">✅</span>
+          <div class="ib-text"><strong>You already own patterns 1–7</strong> from this course. Patterns 8–10 are contest/senior-level: learn them AFTER the roadmap's first 20 problems feel easy. For campus placements and most product-company interviews, patterns 1–7 cover ~90% of asked DP.</div>
+        </div>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🕵️</span> The 3 New Ones, in 60 Seconds Each</h3>
+        <ul>
+          <li><strong>Interval DP:</strong> state = a <em>range</em> [l, r]; transition = "try every last-action point k inside the range" → <code>dp[l][r] = best over k of dp[l][k] ⊕ dp[k][r]</code>. Fill by increasing range length. Smell: "merge stones", "burst balloons", "cut the stick".</li>
+          <li><strong>State machine DP:</strong> draw the modes as circles (holding stock / free / cooldown), arrows = allowed moves with profits. Then <code>dp[i][mode]</code> = best money on day i in that mode. Smell: rules about what you may do <em>next</em>.</li>
+          <li><strong>Bitmask DP:</strong> when "which subset is used" matters and n ≤ ~20, the subset itself becomes the index: mask 10110₂ means elements 1, 2, 4 taken. <code>dp[mask]</code> loops over set bits. Smell: tiny n + "assign all workers/visit all cities".</li>
+        </ul>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Pattern-Spotting Drills — Name That DP</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">🕵️ "Given a string and a dictionary, can the string be split entirely into dictionary words?" (Word Break, LC 139)</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Two strings — 2-D (i, j) table</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Unbounded knapsack / 1-D feasibility — dp[i] = "can the first i chars be segmented", words are reusable "coins"</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Bitmask — subsets of the dictionary</button>
+          </div>
+          <div class="quiz-feedback"><strong>Unbounded feasibility.</strong> dp[i] = OR over every word w that ends at position i: dp[i − len(w)]. Words are reusable → unbounded; answer yes/no → feasibility (OR). One string ≠ two-string pattern — the dictionary is the coin set, not a second string.</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">🕵️ "Burst balloons one by one; popping balloon i earns left·i·right. Maximize total." (LC 312)</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Take/skip on each balloon</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">LIS — longest profitable chain</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Interval DP — dp[l][r] = best for that range, try each balloon as the LAST one popped</button>
+          </div>
+          <div class="quiz-feedback"><strong>Interval DP.</strong> The killer insight: think of the <em>last</em> balloon popped in [l, r] — its neighbours are then the fixed walls l and r, and the two sides become independent subranges. "Last action inside a range" = the interval signature. (Take/skip fails because popping changes neighbours — decisions aren't independent.)</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">🕵️ "Buy/sell stock any number of times, but after selling you must skip one day (cooldown)." (LC 309)</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">State machine — modes: holding / just-sold / free; dp[day][mode]</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Grid DP — days × prices table</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Greedy — buy every valley, sell every peak</button>
+          </div>
+          <div class="quiz-feedback"><strong>State machine.</strong> The cooldown is a rule about what you may do <em>next</em> → encode "what am I allowed to do" as a mode. Three circles, five arrows, done. (Greedy valley-peak works WITHOUT cooldown — the added rule is exactly what breaks it.)</div>
+        </div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('lis')">← LIS</button>
+        <button class="tnav-btn next" onclick="showTopic('roadmap')">Next: Interview Roadmap →</button>
+      </div>
+    </div>
+
+    <!-- ════════ 13 · ROADMAP ════════ -->
+    <div class="topic-page" id="page-roadmap">
+      <div class="topic-header">
+        <div class="topic-tag">Level 4 · Topic 13 · Preparation Plan</div>
+        <h1 class="topic-title">The 30-Problem Interview Roadmap 🏁</h1>
+        <p class="topic-sub">Everything above, compressed into a 4-week ladder. Solve in order — each problem reuses the previous one's idea plus one new twist. Tick them off.</p>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">📅</span> Week 1 — Foundations (re-solve even if they look easy)</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+          <tr><td>1</td><td><a href="https://leetcode.com/problems/fibonacci-number/" target="_blank">LC 509 Fibonacci</a></td><td>Fib-style</td><td><span class="diff-pill e">Easy</span></td></tr>
+          <tr><td>2</td><td><a href="https://leetcode.com/problems/climbing-stairs/" target="_blank">LC 70 Climbing Stairs</a></td><td>Fib-style</td><td><span class="diff-pill e">Easy</span></td></tr>
+          <tr><td>3</td><td><a href="https://leetcode.com/problems/n-th-tribonacci-number/" target="_blank">LC 1137 Tribonacci</a></td><td>Fib-style</td><td><span class="diff-pill e">Easy</span></td></tr>
+          <tr><td>4</td><td><a href="https://leetcode.com/problems/min-cost-climbing-stairs/" target="_blank">LC 746 Min Cost Climbing</a></td><td>Fib + min</td><td><span class="diff-pill e">Easy</span></td></tr>
+          <tr><td>5</td><td><a href="https://leetcode.com/problems/house-robber/" target="_blank">LC 198 House Robber</a></td><td>Take/skip</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>6</td><td><a href="https://leetcode.com/problems/house-robber-ii/" target="_blank">LC 213 House Robber II</a></td><td>Take/skip + circle</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>7</td><td><a href="https://leetcode.com/problems/maximum-subarray/" target="_blank">LC 53 Maximum Subarray</a></td><td>Kadane</td><td><span class="diff-pill m">Medium</span></td></tr>
+        </table>
+
+        <h3 style="margin-top:2rem;"><span class="icon">📅</span> Week 2 — Amount &amp; Grid</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+          <tr><td>8</td><td><a href="https://leetcode.com/problems/coin-change/" target="_blank">LC 322 Coin Change</a></td><td>Unbounded</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>9</td><td><a href="https://leetcode.com/problems/coin-change-ii/" target="_blank">LC 518 Coin Change II</a></td><td>Unbounded count</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>10</td><td><a href="https://leetcode.com/problems/perfect-squares/" target="_blank">LC 279 Perfect Squares</a></td><td>Unbounded</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>11</td><td><a href="https://leetcode.com/problems/word-break/" target="_blank">LC 139 Word Break</a></td><td>Unbounded feasibility</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>12</td><td><a href="https://leetcode.com/problems/unique-paths/" target="_blank">LC 62 Unique Paths</a></td><td>Grid</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>13</td><td><a href="https://leetcode.com/problems/unique-paths-ii/" target="_blank">LC 63 Unique Paths II</a></td><td>Grid + obstacle</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>14</td><td><a href="https://leetcode.com/problems/minimum-path-sum/" target="_blank">LC 64 Min Path Sum</a></td><td>Grid + min</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>15</td><td><a href="https://leetcode.com/problems/triangle/" target="_blank">LC 120 Triangle</a></td><td>Grid variant</td><td><span class="diff-pill m">Medium</span></td></tr>
+        </table>
+
+        <h3 style="margin-top:2rem;"><span class="icon">📅</span> Week 3 — Knapsack &amp; Strings</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+          <tr><td>16</td><td><a href="https://www.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1" target="_blank">GFG 0/1 Knapsack</a></td><td>0/1 knapsack</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>17</td><td><a href="https://leetcode.com/problems/partition-equal-subset-sum/" target="_blank">LC 416 Partition Equal Subset</a></td><td>Subset sum</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>18</td><td><a href="https://leetcode.com/problems/target-sum/" target="_blank">LC 494 Target Sum</a></td><td>Subset count</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>19</td><td><a href="https://leetcode.com/problems/longest-common-subsequence/" target="_blank">LC 1143 LCS</a></td><td>Two strings</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>20</td><td><a href="https://leetcode.com/problems/longest-palindromic-subsequence/" target="_blank">LC 516 Longest Palin. Subseq.</a></td><td>LCS trick</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>21</td><td><a href="https://leetcode.com/problems/edit-distance/" target="_blank">LC 72 Edit Distance</a></td><td>Two strings</td><td><span class="diff-pill h">Hard</span></td></tr>
+          <tr><td>22</td><td><a href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">LC 5 Longest Palin. Substring</a></td><td>Interval-ish</td><td><span class="diff-pill m">Medium</span></td></tr>
+        </table>
+
+        <h3 style="margin-top:2rem;"><span class="icon">📅</span> Week 4 — LIS, Stocks &amp; Boss Fights</h3>
+        <table class="data-table">
+          <tr><th>#</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+          <tr><td>23</td><td><a href="https://leetcode.com/problems/longest-increasing-subsequence/" target="_blank">LC 300 LIS</a></td><td>LIS</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>24</td><td><a href="https://leetcode.com/problems/longest-string-chain/" target="_blank">LC 1048 Longest String Chain</a></td><td>LIS on words</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>25</td><td><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/" target="_blank">LC 122 Stock II</a></td><td>State machine</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>26</td><td><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/" target="_blank">LC 309 Stock + Cooldown</a></td><td>State machine</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>27</td><td><a href="https://leetcode.com/problems/decode-ways/" target="_blank">LC 91 Decode Ways</a></td><td>Fib-style + rules</td><td><span class="diff-pill m">Medium</span></td></tr>
+          <tr><td>28</td><td><a href="https://leetcode.com/problems/palindrome-partitioning-ii/" target="_blank">LC 132 Palindrome Partition II</a></td><td>Partition</td><td><span class="diff-pill h">Hard</span></td></tr>
+          <tr><td>29</td><td><a href="https://leetcode.com/problems/burst-balloons/" target="_blank">LC 312 Burst Balloons</a></td><td>Interval</td><td><span class="diff-pill h">Hard</span></td></tr>
+          <tr><td>30</td><td><a href="https://leetcode.com/problems/russian-doll-envelopes/" target="_blank">LC 354 Russian Dolls</a></td><td>Sort + LIS</td><td><span class="diff-pill h">Hard</span></td></tr>
+        </table>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🎤</span> How to ANSWER a DP Question in an Interview</h3>
+        <ol>
+          <li><strong>Restate + tiny example</strong> — "so for n = 3 the answer is 3, because…". Catches misunderstandings in 30 seconds.</li>
+          <li><strong>Say the brute force out loud</strong> — "naive recursion tries all choices, O(2ⁿ)". This is not wasted time; it IS the derivation.</li>
+          <li><strong>Spot the overlap</strong> — "the same (i, w) state repeats → I'll cache it". Name the state in plain English (Recipe ①).</li>
+          <li><strong>Code memoization first</strong> — it's fastest to get right under pressure.</li>
+          <li><strong>Offer upgrades</strong> — "I can convert to bottom-up and cut space to O(n)". Even just saying it scores.</li>
+          <li><strong>Dry-run a small case</strong> on the table before saying "done".</li>
+        </ol>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🚫</span> The 6 Classic DP Mistakes (Check Before Every Submit)</h3>
+        <ul>
+          <li><strong>Base case off-by-one</strong> — verify dp's first <em>real</em> cell against a hand computation (remember dp[0]=1 in stairs!).</li>
+          <li><strong>Wrong fill order</strong> — every cell you read must already be final. In 2-D: are you sure the row above is complete?</li>
+          <li><strong>1-D knapsack looping forward</strong> — items get cloned. 0/1 → loop capacity backwards.</li>
+          <li><strong>Integer overflow</strong> — counting problems explode; use <code>long</code> or the required modulo (10⁹+7) from the start.</li>
+          <li><strong>Answer in the wrong cell</strong> — "ending at i" states need max over all cells (LIS!).</li>
+          <li><strong>State too small</strong> — if the transition needs information the state doesn't carry (LIS's "what does it end with?"), add it — a dimension or a redefinition.</li>
+        </ul>
+      </div>
+
+      <div class="lesson-block">
+        <h3><span class="icon">🧠</span> Final Boss Quiz</h3>
+        <div class="quiz-block">
+          <div class="quiz-q">You meet a brand-new DP problem in an interview. What is the correct FIRST move?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Search your memory for which LeetCode problem it copies</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Solve a tiny case by hand, write the brute-force recursion, then apply the 4-step recipe</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">Immediately draw a 2-D table — most DP is 2-D</button>
+          </div>
+          <div class="quiz-feedback"><strong>Derive, don't recall.</strong> Patterns speed you up, but the recipe is what works on problems you've never seen: tiny example → brute force → name the state → base → transition ("last move?") → answer location. That process <em>is</em> DP mastery — everything else in this course was practice for it. 🎓</div>
+        </div>
+        <div class="quiz-block">
+          <div class="quiz-q">n ≤ 18 and the problem says "visit every city exactly once, minimize cost". Which pattern?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" onclick="quiz(this,false)">Grid DP — cities on a map</button>
+            <button class="quiz-opt" data-ok="1" onclick="quiz(this,true)">Bitmask DP — n ≤ 20 + "every X exactly once" is the TSP signature</button>
+            <button class="quiz-opt" onclick="quiz(this,false)">LIS — longest route</button>
+          </div>
+          <div class="quiz-feedback"><strong>Bitmask.</strong> The constraint n ≤ 18 is the loudest hint in competitive programming: 2¹⁸ = 262,144 subsets is fine, and "visited set" must live in the state → dp[mask][lastCity]. Constraints aren't decoration — they whisper the intended solution.</div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="ib-icon">🎉</span>
+        <div class="ib-text"><strong>Course complete!</strong> You've gone from "what is recursion?" to naming interval and bitmask DP on sight. Re-run any lab whenever a table feels foggy — seeing beats remembering. Next stop: the <a href="dsa_learn.html" style="color:var(--purple);">full DSA course</a> or straight into the Week 1 ladder above.</div>
+      </div>
+
+      <div class="topic-nav">
+        <button class="tnav-btn" onclick="showTopic('patterns')">← Pattern Map</button>
+        <button class="tnav-btn next" onclick="showTopic('welcome')">🎉 Back to Overview</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<style>
+.dp-box.src{border-color:var(--cyan)!important;background:rgba(0,217,255,.1)!important;color:var(--cyan)!important;}
+</style>
+<script>
+/* ═══ TOPIC NAVIGATION ═══ */
+const TOTAL = 13;
+const visitedTopics = new Set();
+
+function showTopic(id) {
+  document.querySelectorAll('.topic-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+  const sbItem = document.querySelector(`.sb-item[data-topic="${id}"]`);
+  if (sbItem) sbItem.classList.add('active');
+  if (id !== 'welcome') {
+    visitedTopics.add(id);
+    updateProgress();
+    if (sbItem) sbItem.classList.add('done');
+  }
+  if (history.replaceState) history.replaceState(null, '', '#' + id);
+  window.scrollTo(0, 0);
+  closeSidebar();
+}
+function updateProgress() {
+  const count = visitedTopics.size;
+  document.getElementById('progressText').textContent = count + ' / ' + TOTAL;
+  document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+}
+
+/* mobile sidebar */
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+document.getElementById('mobMenuBtn').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', closeSidebar);
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
+/* ═══ SHARED HELPERS ═══ */
+function setNote(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function quiz(btn, ok) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  if (ok) btn.classList.add('correct');
+  else {
+    btn.classList.add('wrong');
+    const right = btn.parentElement.querySelector('[data-ok]');
+    if (right) right.classList.add('correct');
+  }
+  btn.closest('.quiz-block').querySelector('.quiz-feedback').style.display = 'block';
+}
+function toggleQA(head) {
+  head.parentElement.classList.toggle('open');
+}
+/* line-by-line code execution highlighter */
+function runExec(id, notes, btn) {
+  const lines = [...document.querySelectorAll('#' + id + ' .execline')];
+  const note = document.getElementById(id + '-note');
+  if (btn) btn.disabled = true;
+  lines.forEach(l => l.classList.remove('hl', 'done'));
+  if (note) { note.classList.remove('show'); note.innerHTML = ''; }
+  let i = 0;
+  const step = () => {
+    if (i > 0) { lines[i-1].classList.remove('hl'); lines[i-1].classList.add('done'); }
+    if (i >= lines.length) { if (btn) btn.disabled = false; return; }
+    lines[i].classList.add('hl');
+    if (note && notes[i] !== undefined) { note.innerHTML = notes[i]; note.classList.add('show'); }
+    i++;
+    setTimeout(step, 1900);
+  };
+  step();
+}
+/* build a row of ?-cells: dp[0..n] */
+function buildRow(containerId, n, label) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  for (let i = 0; i <= n; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'dp-cell';
+    cell.innerHTML = '<div class="dp-box">?</div><span class="dp-idx">' + label + '[' + i + ']</span>';
+    c.appendChild(cell);
+  }
+  return c.querySelectorAll('.dp-box');
+}
+
+/* ═══ 01 · NAIVE RECURSION TREE ═══ */
+const naiveOrder = [
+  ['t0',5],['t1',4],['t3',3],['t7',2],['t13',1],['t14',0],['t8',1],
+  ['t4',2],['t9',1],['t10',0],['t2',3],['t5',2],['t11',1],['t12',0],['t6',1]
+];
+let naiveBusy = false;
+function runNaiveTree(btn) {
+  if (naiveBusy) return;
+  naiveBusy = true; btn.disabled = true;
+  document.querySelectorAll('#naiveTree g').forEach(g => g.className.baseVal = '');
+  const seen = {};
+  let i = 0;
+  const step = () => {
+    if (i > 0) {
+      const [pid] = naiveOrder[i-1];
+      const pg = document.getElementById(pid);
+      if (!pg.classList.contains('rep')) { pg.classList.remove('on'); pg.classList.add('done'); }
+    }
+    if (i >= naiveOrder.length) {
+      setNote('naiveNote', '🏁 <strong>15 calls</strong> for a 5-line answer — and <strong style="color:var(--rose)">9 of them were repeats</strong>. f(2) computed 3×, f(1) 5×. Grow n and this doubles every step: O(2ⁿ). The fix: give recursion a MEMORY →');
+      document.getElementById('naiveCounter').textContent = 'calls: 15 (9 wasted!)';
+      naiveBusy = false; btn.disabled = false;
+      return;
+    }
+    const [id, arg] = naiveOrder[i];
+    const g = document.getElementById(id);
+    seen[arg] = (seen[arg] || 0) + 1;
+    if (seen[arg] > 1) {
+      g.classList.add('rep');
+      setNote('naiveNote', '⚠️ <strong style="color:var(--rose)">f(' + arg + ') AGAIN</strong> — computing the exact same thing for the ' + (seen[arg] === 2 ? '2nd' : seen[arg] + 'th') + ' time. Plain recursion has no memory of the first time!');
+    } else {
+      g.classList.add('on');
+      setNote('naiveNote', '📞 call #' + (i+1) + ': computing <strong>f(' + arg + ')</strong>' + (arg <= 1 ? ' — base case, returns ' + arg : ' → needs f(' + (arg-1) + ') and f(' + (arg-2) + ')'));
+    }
+    document.getElementById('naiveCounter').textContent = 'calls: ' + (i + 1);
+    i++;
+    setTimeout(step, 800);
+  };
+  step();
+}
+
+/* ═══ 02 · MEMOIZED TREE ═══ */
+const memoSteps = [
+  {n:'m0', t:'call', a:5},
+  {n:'m1', t:'call', a:4},
+  {n:'m3', t:'call', a:3},
+  {n:'m7', t:'call', a:2},
+  {n:'m13', t:'call', a:1, base:true},
+  {n:'m14', t:'call', a:0, base:true},
+  {memo:'f(2)=1', doneN:'m7', note:'f(2) computed → ✍️ saved: <strong>memo[2] = 1</strong>'},
+  {n:'m8', t:'call', a:1, base:true},
+  {memo:'f(3)=2', doneN:'m3', note:'f(3) = f(2) + f(1) = 2 → ✍️ saved: <strong>memo[3] = 2</strong>'},
+  {n:'m4', t:'hit', a:2, dims:['m9','m10','Em9','Em10']},
+  {memo:'f(4)=3', doneN:'m1', note:'f(4) = f(3) + f(2) = 3 → ✍️ saved: <strong>memo[4] = 3</strong>'},
+  {n:'m2', t:'hit', a:3, dims:['m5','m6','m11','m12','Em5','Em6','Em11','Em12']},
+  {memo:'f(5)=5', doneN:'m0', note:'🎉 f(5) = f(4) + f(3) = <strong>5</strong> — with only 9 calls instead of 15. For fib(50): ~50 calls instead of 40 billion!'}
+];
+let memoBusy = false;
+function runMemoTree(btn) {
+  if (memoBusy) return;
+  memoBusy = true; btn.disabled = true;
+  document.querySelectorAll('#memoTree g').forEach(g => g.className.baseVal = '');
+  document.querySelectorAll('#memoTree line').forEach(l => l.classList.remove('dim'));
+  const strip = document.getElementById('memoStrip');
+  strip.innerHTML = '<span class="m-label">memo{ }:</span>';
+  let i = 0, calls = 0;
+  const step = () => {
+    if (i >= memoSteps.length) {
+      document.getElementById('memoCounter').textContent = 'calls: 9 (vs 15 naive)';
+      memoBusy = false; btn.disabled = false;
+      return;
+    }
+    const s = memoSteps[i];
+    if (s.n) {
+      calls++;
+      const g = document.getElementById(s.n);
+      if (s.t === 'hit') {
+        g.classList.add('hit');
+        (s.dims || []).forEach(d => document.getElementById(d).classList.add('dim'));
+        setNote('memoNote', '⚡ <strong style="color:var(--cyan)">CACHE HIT!</strong> f(' + s.a + ') found in memo[] — returned instantly. Its entire subtree <strong>never runs</strong> (faded out).');
+      } else {
+        g.classList.add('on');
+        setNote('memoNote', '📞 call #' + calls + ': computing <strong>f(' + s.a + ')</strong>' + (s.base ? ' — base case, returns ' + s.a : ''));
+        if (s.base) setTimeout(() => { g.classList.remove('on'); g.classList.add('done'); }, 700);
+      }
+      document.getElementById('memoCounter').textContent = 'calls: ' + calls;
+    } else {
+      const chip = document.createElement('span');
+      chip.className = 'memo-chip';
+      chip.textContent = s.memo;
+      strip.appendChild(chip);
+      if (s.doneN) { const dg = document.getElementById(s.doneN); dg.classList.remove('on'); dg.classList.add('done'); }
+      setNote('memoNote', s.note);
+    }
+    i++;
+    setTimeout(step, 1000);
+  };
+  step();
+}
+
+/* ═══ 03 · TABULATION LAB ═══ */
+let tabBusy = false;
+function runTabLab(btn) {
+  if (tabBusy) return;
+  let n = parseInt(document.getElementById('tabN').value, 10);
+  if (isNaN(n)) n = 8;
+  n = Math.max(2, Math.min(12, n));
+  document.getElementById('tabN').value = n;
+  tabBusy = true; btn.disabled = true;
+  const boxes = buildRow('tabViz', n, 'dp');
+  const dp = [0, 1];
+  boxes[0].textContent = '0'; boxes[0].classList.add('set');
+  boxes[1].textContent = '1'; boxes[1].classList.add('set');
+  setNote('tabNote', 'Foundation poured: dp[0]=0, dp[1]=1. Every next cell = sum of the two before it.');
+  let i = 2;
+  const step = () => {
+    if (i > n) {
+      boxes.forEach(b => b.classList.remove('on'));
+      boxes[n].classList.add('win');
+      setNote('tabNote', '🎉 fib(' + n + ') = <strong>' + dp[n] + '</strong> in exactly ' + (n-1) + ' additions. Each cell computed <strong>once</strong> — O(n) time, and no recursion stack to overflow.');
+      tabBusy = false; btn.disabled = false;
+      return;
+    }
+    boxes[i-1].classList.add('on'); boxes[i-2].classList.add('on');
+    dp[i] = dp[i-1] + dp[i-2];
+    setNote('tabNote', 'dp[' + i + '] = dp[' + (i-1) + '] + dp[' + (i-2) + '] = ' + dp[i-1] + ' + ' + dp[i-2] + ' = <strong>' + dp[i] + '</strong>');
+    setTimeout(() => {
+      boxes[i-1].classList.remove('on'); boxes[i-2].classList.remove('on');
+      boxes[i].textContent = dp[i]; boxes[i].classList.add('set');
+      i++;
+      setTimeout(step, 420);
+    }, 850);
+  };
+  setTimeout(step, 900);
+}
+
+/* ═══ 03 · ROLLING VARIABLES LAB ═══ */
+let rollBusy = false;
+function runRollLab(btn) {
+  if (rollBusy) return;
+  rollBusy = true; btn.disabled = true;
+  const p2 = document.getElementById('rollP2'), p1 = document.getElementById('rollP1'), cu = document.getElementById('rollCur');
+  const setV = (el, v) => el.querySelector('.v-val').textContent = v;
+  let a = 0, b = 1, i = 2;
+  setV(p2, 0); setV(p1, 1); setV(cu, '—');
+  [p2, p1, cu].forEach(x => x.classList.remove('on', 'set'));
+  setNote('rollNote', 'Start: prev2 = 0, prev1 = 1 (that\'s dp[0] and dp[1]). Computing up to n = 8…');
+  const step = () => {
+    if (i > 8) {
+      p1.classList.add('set');
+      setNote('rollNote', '🎉 fib(8) = <strong>' + b + '</strong> — computed with THREE variables instead of an array of 9. O(n) time, <strong>O(1) space</strong>.');
+      rollBusy = false; btn.disabled = false;
+      return;
+    }
+    p2.classList.add('on'); p1.classList.add('on');
+    const c = a + b;
+    setV(cu, c);
+    setNote('rollNote', 'i = ' + i + ': cur = prev1 + prev2 = ' + b + ' + ' + a + ' = <strong>' + c + '</strong> … now slide the window →');
+    setTimeout(() => {
+      a = b; b = c;
+      setV(p2, a); setV(p1, b); setV(cu, '—');
+      p2.classList.remove('on'); p1.classList.remove('on');
+      i++;
+      setTimeout(step, 550);
+    }, 1000);
+  };
+  setTimeout(step, 800);
+}
+
+/* ═══ 05 · STAIRS LAB ═══ */
+let stairsBusy = false;
+function runStairsLab(btn) {
+  if (stairsBusy) return;
+  let n = parseInt(document.getElementById('stairsN').value, 10);
+  if (isNaN(n)) n = 6;
+  n = Math.max(2, Math.min(12, n));
+  document.getElementById('stairsN').value = n;
+  stairsBusy = true; btn.disabled = true;
+  const boxes = buildRow('stairsViz', n, 'dp');
+  const dp = [1, 1];
+  boxes[0].textContent = '1'; boxes[0].classList.add('set');
+  boxes[1].textContent = '1'; boxes[1].classList.add('set');
+  setNote('stairsNote', 'Base: dp[0]=1 (stand still), dp[1]=1 (one hop). Now: ways(i) = ways(i−1) + ways(i−2).');
+  let i = 2;
+  const step = () => {
+    if (i > n) {
+      boxes.forEach(b => b.classList.remove('on'));
+      boxes[n].classList.add('win');
+      setNote('stairsNote', '🎉 <strong>' + dp[n] + ' ways</strong> to climb ' + n + ' steps. Fibonacci in a costume — but the <em>meaning</em> (state definition) is what made it a solution.');
+      stairsBusy = false; btn.disabled = false;
+      return;
+    }
+    boxes[i-1].classList.add('on'); boxes[i-2].classList.add('on');
+    dp[i] = dp[i-1] + dp[i-2];
+    setNote('stairsNote', 'Step ' + i + ': last move +1 (from ' + (i-1) + ', ' + dp[i-1] + ' ways) or +2 (from ' + (i-2) + ', ' + dp[i-2] + ' ways) → <strong>' + dp[i] + ' ways</strong>');
+    setTimeout(() => {
+      boxes[i-1].classList.remove('on'); boxes[i-2].classList.remove('on');
+      boxes[i].textContent = dp[i]; boxes[i].classList.add('set');
+      i++;
+      setTimeout(step, 420);
+    }, 950);
+  };
+  setTimeout(step, 900);
+}
+
+/* ═══ 06 · HOUSE ROBBER LAB ═══ */
+const robVals = [2, 7, 9, 3, 1];
+let robBusy = false;
+function runRobberLab(btn) {
+  if (robBusy) return;
+  robBusy = true; btn.disabled = true;
+  const houses = document.querySelectorAll('#robHouses .house');
+  const boxes = document.querySelectorAll('#robViz .dp-box');
+  houses.forEach(h => h.classList.remove('on', 'rob', 'skip'));
+  boxes.forEach(b => { b.className = 'dp-box'; b.textContent = '?'; });
+  const dp = [];
+  const steps = [];
+  dp[0] = robVals[0];
+  steps.push({ i: 0, note: 'dp[0] = $2 — only one house exists, rob it.' });
+  dp[1] = Math.max(robVals[0], robVals[1]);
+  steps.push({ i: 1, note: 'dp[1] = max($2, $7) = <strong>$7</strong> — adjacent houses, pick the richer one.' });
+  for (let i = 2; i < robVals.length; i++) {
+    const take = dp[i-2] + robVals[i], skip = dp[i-1];
+    dp[i] = Math.max(take, skip);
+    steps.push({ i, note: 'House [' + i + ']: <strong>ROB</strong> = dp[' + (i-2) + '] + $' + robVals[i] + ' = $' + take + ' &nbsp;vs&nbsp; <strong>SKIP</strong> = dp[' + (i-1) + '] = $' + skip + ' → <strong style="color:var(--green)">' + (take >= skip ? 'rob wins: $' + take : 'skip wins: $' + skip) + '</strong>' });
+  }
+  let s = 0;
+  const step = () => {
+    if (s > 0) { houses[steps[s-1].i].classList.remove('on'); boxes[steps[s-1].i].classList.remove('on'); }
+    if (s >= steps.length) {
+      /* backtrack which houses were robbed */
+      const robbed = [];
+      let i = robVals.length - 1;
+      while (i >= 0) {
+        if (i === 0) { robbed.push(0); break; }
+        if (i === 1) { robbed.push(robVals[1] > robVals[0] ? 1 : 0); break; }
+        if (dp[i] === dp[i-1]) { i--; }             /* skipped house i */
+        else { robbed.push(i); i -= 2; }             /* robbed house i */
+      }
+      houses.forEach((h, idx) => h.classList.add(robbed.includes(idx) ? 'rob' : 'skip'));
+      boxes[robVals.length - 1].classList.add('win');
+      setNote('robNote', '🎉 Max loot = <strong>$' + dp[robVals.length-1] + '</strong> — houses ' + robbed.sort().map(x => '[' + x + ']').join(' ') + ' ($2 + $9 + $1). Note: NOT simple alternating — the table found the best legal combination by comparing both futures at every step.');
+      robBusy = false; btn.disabled = false;
+      return;
+    }
+    const st = steps[s];
+    houses[st.i].classList.add('on');
+    boxes[st.i].classList.add('on');
+    setNote('robNote', st.note);
+    setTimeout(() => {
+      boxes[st.i].textContent = '$' + dp[st.i];
+      boxes[st.i].classList.add('set');
+      s++;
+      setTimeout(step, 500);
+    }, 1500);
+  };
+  step();
+}
+
+/* ═══ 07 · COIN CHANGE LAB ═══ */
+const coinSet = [1, 2, 5];
+let coinBusy = false;
+function runCoinLab(btn) {
+  if (coinBusy) return;
+  coinBusy = true; btn.disabled = true;
+  const AMT = 11;
+  const boxes = buildRow('coinViz', AMT, 'dp');
+  const coins = document.querySelectorAll('#coinStrip .coin');
+  const dp = [0];
+  boxes[0].textContent = '0'; boxes[0].classList.add('set');
+  setNote('coinNote', 'Base: dp[0] = 0 — amount zero needs zero coins. Filling every amount up to 11…');
+  let a = 1;
+  const step = () => {
+    if (a > AMT) {
+      boxes.forEach(b => b.classList.remove('on'));
+      coins.forEach(c => c.classList.remove('on', 'dim'));
+      boxes[AMT].classList.add('win');
+      setNote('coinNote', '🎉 dp[11] = <strong>3 coins</strong> (5 + 5 + 1). Every amount got its guaranteed-best answer by standing on smaller guaranteed-best answers. Greedy got lucky here — the table is NEVER lucky, it\'s exhaustive.');
+      coinBusy = false; btn.disabled = false;
+      return;
+    }
+    boxes[a].classList.add('on');
+    let best = Infinity;
+    const parts = [];
+    coinSet.forEach((c, ci) => {
+      if (c <= a) {
+        const cand = 1 + dp[a - c];
+        parts.push('coin ' + c + '→1+dp[' + (a-c) + ']=' + cand);
+        if (cand < best) best = cand;
+        coins[ci].classList.remove('dim');
+      } else {
+        coins[ci].classList.add('dim');
+      }
+    });
+    dp[a] = best;
+    setNote('coinNote', 'dp[' + a + ']: ' + parts.join(' · ') + ' → min = <strong>' + best + '</strong>');
+    setTimeout(() => {
+      boxes[a].classList.remove('on');
+      boxes[a].textContent = dp[a];
+      boxes[a].classList.add('set');
+      a++;
+      setTimeout(step, 380);
+    }, 1250);
+  };
+  setTimeout(step, 900);
+}
+
+/* ═══ 08 · GRID LAB ═══ */
+let gridBusy = false;
+function runGridLab(btn) {
+  if (gridBusy) return;
+  gridBusy = true; btn.disabled = true;
+  const R = 3, C = 4;
+  const cell = (r, c) => document.getElementById('g' + r + '_' + c);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { const td = cell(r, c); td.className = ''; td.textContent = r === 0 && c === 0 ? '🤖' : '?'; }
+  const dp = Array.from({ length: R }, () => Array(C).fill(0));
+  const steps = [];
+  for (let c = 0; c < C; c++) { dp[0][c] = 1; steps.push({ r: 0, c, base: true }); }
+  for (let r = 1; r < R; r++) { dp[r][0] = 1; steps.push({ r, c: 0, base: true }); }
+  for (let r = 1; r < R; r++) for (let c = 1; c < C; c++) { dp[r][c] = dp[r-1][c] + dp[r][c-1]; steps.push({ r, c }); }
+  let s = 0;
+  const step = () => {
+    if (s >= steps.length) {
+      cell(R-1, C-1).classList.add('path');
+      setNote('gridNote', '🎉 <strong>10 unique paths</strong> to the bottom-right. Every cell = top + left, filled row by row so everything needed is already final. Formula fans: this equals C(5,2) = 10 — DP quietly computed a binomial coefficient!');
+      gridBusy = false; btn.disabled = false;
+      return;
+    }
+    const st = steps[s];
+    const td = cell(st.r, st.c);
+    document.querySelectorAll('#gridMtx td').forEach(t => t.classList.remove('on', 'src'));
+    td.classList.add('on');
+    if (st.base) {
+      setNote('gridNote', 'Edge cell (' + st.r + ',' + st.c + '): only one straight way along the border → <strong>1</strong>');
+    } else {
+      cell(st.r - 1, st.c).classList.add('src');
+      cell(st.r, st.c - 1).classList.add('src');
+      setNote('gridNote', 'dp[' + st.r + '][' + st.c + '] = top (' + dp[st.r-1][st.c] + ') + left (' + dp[st.r][st.c-1] + ') = <strong>' + dp[st.r][st.c] + '</strong>');
+    }
+    setTimeout(() => {
+      td.textContent = dp[st.r][st.c];
+      td.classList.remove('on');
+      td.classList.add('set');
+      s++;
+      setTimeout(step, st.base ? 150 : 420);
+    }, st.base ? 420 : 1150);
+  };
+  step();
+}
+
+/* ═══ 09 · KNAPSACK LAB ═══ */
+const kWt = [1, 3, 4], kVal = [15, 50, 60], kNames = ['💍', '💻', '📷'];
+let knapBusy = false;
+function runKnapLab(btn) {
+  if (knapBusy) return;
+  knapBusy = true; btn.disabled = true;
+  const N = 3, W = 4;
+  const cell = (i, w) => document.getElementById('k' + i + '_' + w);
+  for (let i = 0; i <= N; i++) for (let w = 0; w <= W; w++) { const td = cell(i, w); td.className = ''; td.textContent = '?'; }
+  const dp = Array.from({ length: N + 1 }, () => Array(W + 1).fill(0));
+  const steps = [];
+  for (let w = 0; w <= W; w++) steps.push({ i: 0, w, base: true });
+  for (let i = 1; i <= N; i++) {
+    for (let w = 0; w <= W; w++) {
+      const skip = dp[i-1][w];
+      let take = -1;
+      if (kWt[i-1] <= w) take = kVal[i-1] + dp[i-1][w - kWt[i-1]];
+      dp[i][w] = Math.max(skip, take);
+      steps.push({ i, w, skip, take });
+    }
+  }
+  let s = 0;
+  const step = () => {
+    if (s >= steps.length) {
+      cell(N, W).classList.add('path');
+      setNote('knapNote', '🎉 Best value = <strong>₹65</strong> — take 💍 (1kg ₹15) + 💻 (3kg ₹50), exactly 4kg. The greedy pick 📷 (₹60, best single value) is beaten. Every cell compared both futures, so ₹65 is <em>proven</em> optimal.');
+      knapBusy = false; btn.disabled = false;
+      return;
+    }
+    const st = steps[s];
+    const td = cell(st.i, st.w);
+    document.querySelectorAll('#knapMtx td').forEach(t => t.classList.remove('on', 'src'));
+    td.classList.add('on');
+    if (st.base) {
+      setNote('knapNote', 'Row 0: with <strong>no items</strong>, every capacity is worth ₹0 — the base row.');
+    } else {
+      cell(st.i - 1, st.w).classList.add('src');
+      if (st.take >= 0) {
+        cell(st.i - 1, st.w - kWt[st.i-1]).classList.add('src');
+        setNote('knapNote', kNames[st.i-1] + ' at cap ' + st.w + ': <strong>SKIP</strong> = ' + st.skip + ' vs <strong>TAKE</strong> = ' + kVal[st.i-1] + ' + dp[above][' + (st.w - kWt[st.i-1]) + '] = ' + st.take + ' → <strong style="color:var(--green)">' + dp[st.i][st.w] + '</strong>');
+      } else {
+        setNote('knapNote', kNames[st.i-1] + ' weighs ' + kWt[st.i-1] + 'kg — doesn\'t fit in cap ' + st.w + ' → forced to <strong>SKIP</strong>: ' + st.skip);
+      }
+    }
+    setTimeout(() => {
+      td.textContent = dp[st.i][st.w];
+      td.classList.remove('on');
+      td.classList.add('set');
+      s++;
+      setTimeout(step, st.base ? 120 : 340);
+    }, st.base ? 340 : 1250);
+  };
+  step();
+}
+
+/* ═══ 10 · LCS LAB ═══ */
+let lcsBusy = false;
+function runLcsLab(btn) {
+  if (lcsBusy) return;
+  lcsBusy = true; btn.disabled = true;
+  const s1 = 'ACE', s2 = 'ABCDE';
+  const M = s1.length, N = s2.length;
+  const cell = (i, j) => document.getElementById('l' + i + '_' + j);
+  for (let i = 1; i <= M; i++) for (let j = 1; j <= N; j++) { const td = cell(i, j); td.className = ''; td.textContent = '?'; }
+  document.querySelectorAll('#lcsMtx th').forEach(t => t.classList.remove('hl'));
+  const dp = Array.from({ length: M + 1 }, () => Array(N + 1).fill(0));
+  const steps = [];
+  for (let i = 1; i <= M; i++)
+    for (let j = 1; j <= N; j++) {
+      const match = s1[i-1] === s2[j-1];
+      dp[i][j] = match ? 1 + dp[i-1][j-1] : Math.max(dp[i-1][j], dp[i][j-1]);
+      steps.push({ i, j, match });
+    }
+  let s = 0;
+  const step = () => {
+    if (s >= steps.length) {
+      document.querySelectorAll('#lcsMtx th').forEach(t => t.classList.remove('hl'));
+      cell(M, N).classList.add('path');
+      setNote('lcsNote', '🎉 LCS length = <strong>3</strong> — the subsequence "ACE" lives inside both strings. Follow the green flashes back: every +1 happened exactly where characters matched (A, C, E).');
+      lcsBusy = false; btn.disabled = false;
+      return;
+    }
+    const st = steps[s];
+    const td = cell(st.i, st.j);
+    document.querySelectorAll('#lcsMtx td').forEach(t => t.classList.remove('on', 'src'));
+    document.querySelectorAll('#lcsMtx th').forEach(t => t.classList.remove('hl'));
+    document.getElementById('lrh' + st.i).classList.add('hl');
+    document.getElementById('lch' + st.j).classList.add('hl');
+    td.classList.add('on');
+    if (st.match) {
+      cell(st.i - 1, st.j - 1).classList.add('src');
+      setNote('lcsNote', '\'' + s1[st.i-1] + '\' == \'' + s2[st.j-1] + '\' — <strong style="color:var(--green)">MATCH!</strong> Take the diagonal ↖ and add 1 → <strong>' + dp[st.i][st.j] + '</strong>');
+    } else {
+      cell(st.i - 1, st.j).classList.add('src');
+      cell(st.i, st.j - 1).classList.add('src');
+      setNote('lcsNote', '\'' + s1[st.i-1] + '\' ≠ \'' + s2[st.j-1] + '\' — mismatch. Best of dropping either char: max(top ' + dp[st.i-1][st.j] + ', left ' + dp[st.i][st.j-1] + ') = <strong>' + dp[st.i][st.j] + '</strong>');
+    }
+    setTimeout(() => {
+      td.textContent = dp[st.i][st.j];
+      td.classList.remove('on');
+      td.classList.add(st.match ? 'path' : 'set');
+      setTimeout(() => { if (!(st.i === M && st.j === N)) { td.classList.remove('path'); td.classList.add('set'); } }, st.match ? 600 : 0);
+      s++;
+      setTimeout(step, 320);
+    }, 1150);
+  };
+  step();
+}
+
+/* ═══ 11 · LIS LAB ═══ */
+const lisNums = [10, 9, 2, 5, 3, 7, 101, 18];
+let lisBusy = false;
+function initLis() {
+  const vals = document.getElementById('lisVals');
+  vals.innerHTML = '';
+  lisNums.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'dp-cell';
+    c.innerHTML = '<div class="dp-box" id="lisV' + i + '" style="color:var(--white);">' + v + '</div><span class="dp-idx">nums[' + i + ']</span>';
+    vals.appendChild(c);
+  });
+  const row = document.getElementById('lisViz');
+  row.innerHTML = '';
+  lisNums.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'dp-cell';
+    c.innerHTML = '<div class="dp-box" id="lisD' + i + '">?</div><span class="dp-idx">dp[' + i + ']</span>';
+    row.appendChild(c);
+  });
+}
+function runLisLab(btn) {
+  if (lisBusy) return;
+  lisBusy = true; btn.disabled = true;
+  initLis();
+  const dp = lisNums.map(() => 1);
+  const steps = [];
+  for (let i = 0; i < lisNums.length; i++) {
+    let bestJ = -1;
+    const smaller = [];
+    for (let j = 0; j < i; j++)
+      if (lisNums[j] < lisNums[i]) {
+        smaller.push(j);
+        if (dp[j] + 1 > dp[i]) { dp[i] = dp[j] + 1; bestJ = j; }
+      }
+    steps.push({ i, smaller, bestJ, val: dp[i] });
+  }
+  let s = 0;
+  const step = () => {
+    if (s >= steps.length) {
+      document.querySelectorAll('#lisVals .dp-box, #lisViz .dp-box').forEach(b => b.classList.remove('on', 'src'));
+      /* reconstruct one LIS chain: [2,3,7,18] = indices 2,4,5,7 */
+      let need = Math.max(...dp), last = Infinity;
+      const chain = [];
+      for (let i = lisNums.length - 1; i >= 0; i--)
+        if (dp[i] === need && lisNums[i] < last) { chain.push(i); last = lisNums[i]; need--; }
+      chain.forEach(i => { document.getElementById('lisV' + i).classList.add('win'); document.getElementById('lisD' + i).classList.add('win'); });
+      setNote('lisNote', '🎉 LIS length = <strong>4</strong> — chain <strong>' + chain.reverse().map(i => lisNums[i]).join(' → ') + '</strong> glows green. And notice: the answer sits at dp[6]=4, NOT in the last cell — that\'s why Step ④ is max(dp[]).');
+      lisBusy = false; btn.disabled = false;
+      return;
+    }
+    const st = steps[s];
+    document.querySelectorAll('#lisVals .dp-box, #lisViz .dp-box').forEach(b => b.classList.remove('on', 'src'));
+    document.getElementById('lisV' + st.i).classList.add('on');
+    st.smaller.forEach(j => document.getElementById('lisV' + j).classList.add('src'));
+    if (st.i === 0) {
+      setNote('lisNote', 'nums[0] = 10: nothing to its left → a chain of just itself → dp[0] = <strong>1</strong>');
+    } else if (st.smaller.length === 0) {
+      setNote('lisNote', 'nums[' + st.i + '] = ' + lisNums[st.i] + ': scanned everything left — <strong>nothing is smaller</strong>. It starts a fresh chain → dp = <strong>1</strong>');
+    } else {
+      setNote('lisNote', 'nums[' + st.i + '] = ' + lisNums[st.i] + ': can extend chains ending at ' + st.smaller.map(j => lisNums[j]).join(', ') + ' (cyan). Longest is at ' + lisNums[st.bestJ] + ' (dp=' + (st.val-1) + ') → dp[' + st.i + '] = <strong>' + st.val + '</strong>');
+    }
+    setTimeout(() => {
+      const d = document.getElementById('lisD' + st.i);
+      d.textContent = st.val;
+      d.classList.add('set');
+      s++;
+      setTimeout(step, 380);
+    }, 1350);
+  };
+  step();
+}
+
+/* ═══ INIT ═══ */
+window.addEventListener('DOMContentLoaded', () => {
+  buildRow('tabViz', 8, 'dp');
+  buildRow('stairsViz', 6, 'dp');
+  buildRow('coinViz', 11, 'dp');
+  initLis();
+  const h = location.hash.replace('#', '');
+  if (h && document.getElementById('page-' + h)) showTopic(h);
+});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

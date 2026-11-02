@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Problem Solving Hub — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--amber);opacity:.12;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--blue);opacity:.13;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--green);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:820px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:100px;font-size:12px;color:var(--amber);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:600px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+
+/* SECTION HEADER BAR */
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* HEADINGS */
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+th.c{color:var(--cyan);}th.p{color:var(--purple);}
+td code, li code, p code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+
+/* BULLETS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+
+/* BADGE */
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.bi{background:rgba(99,102,241,.12);color:var(--indigo);}
+
+/* ALERT */
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* INTERVIEW Q */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* ANIM CONTROLS */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+
+/* ═══ EXEC VIEWER (line-by-line Python runner) ═══ */
+.exec-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:1rem;align-items:start;}
+@media(max-width:820px){.exec-grid{grid-template-columns:1fr;}}
+.exec-code{background:#030608;border:1px solid var(--border2);border-radius:var(--r);padding:.8rem 0;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;line-height:1.6;overflow-x:auto;}
+.xline{display:flex;gap:.9rem;padding:.12rem 1rem .12rem .7rem;white-space:pre;border-left:3px solid transparent;}
+.xline .ln{color:var(--muted);width:1.6em;text-align:right;flex-shrink:0;user-select:none;font-size:11px;padding-top:2px;}
+.xline.on{background:rgba(245,158,11,.13);border-left-color:var(--amber);}
+.xline.on .ln{color:var(--amber);}
+.exec-vt{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase;}
+.exec-vars{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:96px;margin-bottom:.8rem;}
+.vbox{display:inline-flex;flex-direction:column;margin:.25rem;padding:.3rem .7rem;border:1.5px solid var(--cyan);border-radius:8px;background:rgba(0,217,255,.06);animation:vpop .3s ease;vertical-align:top;}
+.vbox .vn{font-size:10px;color:var(--slate);font-family:monospace;}
+.vbox .vv{font-size:13px;font-weight:700;color:var(--cyan);font-family:'Fira Code',monospace;}
+.vbox.chg{border-color:var(--amber);background:rgba(245,158,11,.1);}
+.vbox.chg .vv{color:var(--amber);}
+.vbox.fr{border-color:var(--purple);background:rgba(168,85,247,.08);}
+.vbox.fr .vv{color:var(--purple);}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.exec-out{background:#030608;border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:76px;}
+.exec-out pre{background:none;border:none;padding:0;color:var(--green);font-size:12.5px;line-height:1.8;white-space:pre-wrap;}
+.exec-out pre:empty::before{content:'— nothing printed yet —';color:var(--muted);font-style:italic;}
+
+/* ═══ LABS (interactive playgrounds) ═══ */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:130px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-row input.wide{width:230px;}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.5rem;font-weight:800;font-family:'Fira Code',monospace;word-break:break-all;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+
+/* char / element cells (slice lab, list lab) */
+.cellrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:.6rem 0;}
+.cellcol{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cidx{font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;}
+.cidx.neg{color:#7c5cbf;}
+.cchar{min-width:40px;height:40px;padding:0 6px;display:flex;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid rgba(255,255,255,.14);border-radius:9px;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .25s;}
+.cchar.hit{border-color:var(--amber);background:rgba(245,158,11,.16);color:var(--amber);transform:translateY(-3px);}
+.cchar.new{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);animation:vpop .35s ease;}
+.cchar.dead{border-color:var(--rose);background:rgba(244,63,94,.14);color:var(--rose);opacity:.45;transform:scale(.85);}
+.sitem{display:inline-block;padding:.3rem .75rem;margin:.2rem;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;background:var(--bg4);transition:all .25s;}
+.sitem.hit{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12);}
+.sitem.dim{opacity:.3;}
+.setlabel{font-size:11px;color:var(--slate);font-family:monospace;margin:.5rem 0 .1rem;}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+
+/* PIPELINE DIAGRAM (how python runs) */
+.pipe{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;justify-content:center;padding:1rem 0;}
+.pipe-box{background:var(--bg4);border:1.5px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:center;min-width:118px;}
+.pipe-box .pb-t{font-size:13px;font-weight:700;}
+.pipe-box .pb-s{font-size:10.5px;color:var(--slate);}
+.pipe-arrow{color:var(--muted);font-size:18px;font-weight:700;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+
+/* ═══ LANGUAGE TABS ═══ */
+.lt-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.9rem 0;background:var(--bg4);}
+.lt-tabs{display:flex;background:var(--bg3);border-bottom:1px solid var(--border);}
+.lt-tab{padding:.5rem 1.1rem;font-size:12px;font-weight:700;cursor:pointer;color:var(--slate);border:none;background:none;font-family:'Fira Code',monospace;border-bottom:2px solid transparent;transition:all .15s;}
+.lt-tab:hover{color:var(--white);}
+.lt-tab.on[data-l="py"]{color:var(--amber);border-bottom-color:var(--amber);background:rgba(245,158,11,.06);}
+.lt-tab.on[data-l="cpp"]{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,217,255,.06);}
+.lt-tab.on[data-l="jv"]{color:var(--orange);border-bottom-color:var(--orange);background:rgba(251,146,60,.06);}
+.lt-pane{display:none;}
+.lt-pane.on{display:block;}
+.lt-pane pre{border:none;border-radius:0;margin:0;}
+.prob{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;margin:1.4rem 0;}
+.prob-head{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.5rem;}
+.prob-head h3{margin:0;font-size:1.1rem;}
+.prob-state{font-size:13.5px;color:var(--slate);margin-bottom:.6rem;}
+.think{background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.22);border-radius:9px;padding:.6rem 1rem;font-size:13px;margin:.6rem 0;}
+.think b{color:var(--purple);}
+.cx{font-size:12px;color:var(--muted);font-family:'Fira Code',monospace;margin-top:.5rem;}
+.cx b{color:var(--green);}
+.langbar{position:sticky;top:54px;z-index:150;background:rgba(13,21,38,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.6rem 0;}
+.langbar-inner{display:flex;align-items:center;gap:.7rem;justify-content:center;flex-wrap:wrap;}
+.langbar span{font-size:12px;color:var(--slate);}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· Problems</span></div>
+  <div class="nav-links">
+    <a href="#ds">DSA Implementations</a>
+    <a href="#basic">🟢 Basic</a>
+    <a href="#medium">🟡 Medium</a>
+    <a href="#hard">🔴 Hard</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero" style="min-height:70vh;">
+  <div class="hero-blob hb1" style="background:var(--rose);"></div>
+  <div class="hero-blob hb2" style="background:var(--cyan);"></div>
+  <div class="hero-blob hb3" style="background:var(--amber);"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge" style="background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.3);color:var(--rose);">CoddingBuddY · Placement Preparation Series</div>
+    <h1 style="font-size:clamp(2rem,4.8vw,3.6rem);"><em style="color:var(--rose);">Problem Solving</em> Hub</h1>
+    <p>Every solution in <strong style="color:var(--amber)">🐍 Python</strong>, <strong style="color:var(--cyan)">⚡ C++</strong> AND <strong style="color:var(--orange)">☕ Java</strong> — switch languages with one click. Core DSA implementations first, then solved problems from basic to hard, each with the thinking behind it.</p>
+    <div class="chips">
+      <span class="ch ch-c">9 DSA Implementations</span>
+      <span class="ch ch-g">6 Basic Problems</span>
+      <span class="ch ch-a">6 Medium Problems</span>
+      <span class="ch ch-r">4 Hard Problems</span>
+      <span class="ch ch-p">3 Languages Each</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GLOBAL LANGUAGE BAR ═══ -->
+<div class="langbar">
+  <div class="page"><div class="langbar-inner">
+    <span>Set ALL code blocks to:</span>
+    <button class="opchip" onclick="setAllLang('py')">🐍 Python</button>
+    <button class="opchip" onclick="setAllLang('cpp')">⚡ C++</button>
+    <button class="opchip" onclick="setAllLang('jv')">☕ Java</button>
+  </div></div>
+</div>
+
+<!-- ═══ SEC 01: DSA IMPLEMENTATIONS ═══ -->
+<div class="sec-bar" id="ds">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">01</div>
+  <div class="sec-info"><h2>DSA Implementations — All 3 Languages</h2><p>The core building blocks, written the idiomatic way in each language</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🔍 Linear Search</h3><span class="b bg">O(n)</span></div>
+    <div class="prob-state">Walk the array left to right; return the index of the first match, or −1.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int linearSearch(vector&lt;int&gt;&amp; arr, int target) {
+    for (int i = 0; i &lt; arr.size(); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int linearSearch(int[] arr, int target) {
+    for (int i = 0; i &lt; arr.length; i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> — works on ANY array, sorted or not.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">✂️ Binary Search</h3><span class="b bg">O(log n)</span><span class="b ba">needs sorted</span></div>
+    <div class="prob-state">Halve the search space every step. A million elements → ~20 checks.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def binary_search(arr, target):
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        mid = (lo + hi) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int binarySearch(vector&lt;int&gt;&amp; arr, int target) {
+    int lo = 0, hi = arr.size() - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;  // overflow-safe!
+        if (arr[mid] == target) return mid;
+        else if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int binarySearch(int[] arr, int target) {
+    int lo = 0, hi = arr.length - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;  // overflow-safe!
+        if (arr[mid] == target) return mid;
+        else if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(log n)</b> · Space: <b>O(1)</b> · Note the C++/Java trick <code>lo + (hi−lo)/2</code> — plain <code>(lo+hi)/2</code> can overflow int. Python ints never overflow.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🫧 Bubble Sort</h3><span class="b br">O(n²)</span><span class="b bp">learning sort</span></div>
+    <div class="prob-state">Repeatedly swap adjacent out-of-order pairs; the biggest value "bubbles" to the end each pass.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        swapped = False
+        for j in range(n - 1 - i):
+            if arr[j] &gt; arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:      # already sorted → done
+            break</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">void bubbleSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break;   // already sorted
+    }
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static void bubbleSort(int[] arr) {
+    int n = arr.length;
+    for (int i = 0; i &lt; n - 1; i++) {
+        boolean swapped = false;
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                int t = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = t;
+                swapped = true;
+            }
+        }
+        if (!swapped) break;   // already sorted
+    }
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n²)</b>, best O(n) with the swapped flag · Space: <b>O(1)</b> · Real code uses <code>sorted()</code> / <code>sort()</code> / <code>Arrays.sort()</code> — O(n log n).</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🔁 Recursion Pack — Factorial &amp; Fibonacci</h3><span class="b bc">base case first!</span></div>
+    <div class="prob-state">The two functions every interviewer uses to test recursion basics.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def factorial(n):
+    if n &lt;= 1:               # base case
+        return 1
+    return n * factorial(n - 1)
+
+def fib(n):
+    if n &lt;= 1:
+        return n
+    return fib(n - 1) + fib(n - 2)
+# fib is O(2^n) — memoize it! (see the DP page)</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">long long factorial(int n) {
+    if (n &lt;= 1) return 1;        // base case
+    return (long long)n * factorial(n - 1);
+}
+
+int fib(int n) {
+    if (n &lt;= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+// fib is O(2^n) — memoize it! (see the DP page)</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static long factorial(int n) {
+    if (n &lt;= 1) return 1;        // base case
+    return (long) n * factorial(n - 1);
+}
+
+static int fib(int n) {
+    if (n &lt;= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+// fib is O(2^n) — memoize it! (see the DP page)</pre></div>
+    </div>
+    <div class="cx">factorial: <b>O(n)</b> · naive fib: <b>O(2ⁿ)</b> → with memoization <b>O(n)</b> — the full story is on the <a href="dp_complete.html" style="color:var(--cyan)">DP page</a>.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">📚 Stack — LIFO</h3><span class="b bg">push/pop O(1)</span></div>
+    <div class="prob-state">Last In, First Out — undo history, matched brackets, call stacks.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">stack = []            # a plain list IS a stack
+stack.append(10)      # push
+stack.append(20)
+top = stack[-1]       # peek → 20
+x = stack.pop()       # pop  → 20
+empty = len(stack) == 0</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">#include &lt;stack&gt;
+stack&lt;int&gt; st;
+st.push(10);
+st.push(20);
+int top = st.top();   // peek → 20
+st.pop();             // removes (returns void!)
+bool empty = st.empty();</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+stack.push(10);
+stack.push(20);
+int top = stack.peek();   // → 20
+int x = stack.pop();      // → 20
+boolean empty = stack.isEmpty();
+// prefer ArrayDeque over the legacy Stack class</pre></div>
+    </div>
+    <div class="cx">All operations <b>O(1)</b> · Classic problems: Valid Parentheses (LC 20), Min Stack (LC 155), Next Greater Element (LC 496).</div>
+  </div>
+</div>
+</section>
+<section style="padding-top:0;">
+<div class="page">
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🚶 Queue — FIFO</h3><span class="b bg">enqueue/dequeue O(1)</span></div>
+    <div class="prob-state">First In, First Out — printer queues, BFS, anything served in arrival order.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">from collections import deque
+q = deque()
+q.append(10)          # enqueue
+q.append(20)
+front = q[0]          # peek → 10
+x = q.popleft()       # dequeue → 10
+# never use list.pop(0) — that's O(n)!</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">#include &lt;queue&gt;
+queue&lt;int&gt; q;
+q.push(10);           // enqueue
+q.push(20);
+int front = q.front();   // peek → 10
+q.pop();                 // dequeue (returns void)
+bool empty = q.empty();</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">Deque&lt;Integer&gt; q = new ArrayDeque&lt;&gt;();
+q.offer(10);          // enqueue
+q.offer(20);
+int front = q.peek(); // → 10
+int x = q.poll();     // dequeue → 10
+boolean empty = q.isEmpty();</pre></div>
+    </div>
+    <div class="cx">All operations <b>O(1)</b> · The engine inside BFS — see the <a href="graph.html" style="color:var(--cyan)">Graphs page</a>.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🔗 Singly Linked List</h3><span class="b ba">insert front O(1)</span></div>
+    <div class="prob-state">Nodes scattered in memory, each pointing to the next. Grows without shifting anything.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+def push_front(head, data):
+    node = Node(data)
+    node.next = head
+    return node              # new head
+
+def traverse(head):
+    cur = head
+    while cur:
+        print(cur.data, end=" ")
+        cur = cur.next</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">struct Node {
+    int data;
+    Node* next;
+    Node(int d) : data(d), next(nullptr) {}
+};
+
+Node* pushFront(Node* head, int data) {
+    Node* node = new Node(data);
+    node-&gt;next = head;
+    return node;             // new head
+}
+
+void traverse(Node* head) {
+    for (Node* cur = head; cur; cur = cur-&gt;next)
+        cout &lt;&lt; cur-&gt;data &lt;&lt; " ";
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; }
+}
+
+static Node pushFront(Node head, int data) {
+    Node node = new Node(data);
+    node.next = head;
+    return node;             // new head
+}
+
+static void traverse(Node head) {
+    for (Node cur = head; cur != null; cur = cur.next)
+        System.out.print(cur.data + " ");
+}</pre></div>
+    </div>
+    <div class="cx">Insert front <b>O(1)</b> · access by index <b>O(n)</b> — the exact opposite of arrays. Reverse it (LC 206) is THE linked-list interview question.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">#️⃣ Hashing — Frequency Count</h3><span class="b bg">O(n)</span></div>
+    <div class="prob-state">The single most reused snippet in interviews: count how often each value appears.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def frequency(arr):
+    counts = {}
+    for x in arr:
+        counts[x] = counts.get(x, 0) + 1
+    return counts
+# or: from collections import Counter
+#     counts = Counter(arr)</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">unordered_map&lt;int, int&gt; frequency(vector&lt;int&gt;&amp; arr) {
+    unordered_map&lt;int, int&gt; counts;
+    for (int x : arr)
+        counts[x]++;          // auto-creates as 0
+    return counts;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static Map&lt;Integer, Integer&gt; frequency(int[] arr) {
+    Map&lt;Integer, Integer&gt; counts = new HashMap&lt;&gt;();
+    for (int x : arr)
+        counts.merge(x, 1, Integer::sum);
+    return counts;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(k)</b> distinct values · Unlocks: anagrams, duplicates, majority element, two sum.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="c">🕸️ BFS &amp; DFS on a Graph</h3><span class="b bg">O(V + E)</span></div>
+    <div class="prob-state">The two traversals that solve 90% of graph questions — full animations on the <a href="graph.html" style="color:var(--cyan)">Graphs page</a>.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    q = deque([start])
+    while q:
+        node = q.popleft()
+        for nb in graph[node]:
+            if nb not in visited:
+                visited.add(nb)
+                q.append(nb)
+
+def dfs(graph, node, visited):
+    visited.add(node)
+    for nb in graph[node]:
+        if nb not in visited:
+            dfs(graph, nb, visited)</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">void bfs(vector&lt;vector&lt;int&gt;&gt;&amp; g, int start) {
+    vector&lt;bool&gt; visited(g.size(), false);
+    queue&lt;int&gt; q;
+    visited[start] = true; q.push(start);
+    while (!q.empty()) {
+        int node = q.front(); q.pop();
+        for (int nb : g[node])
+            if (!visited[nb]) {
+                visited[nb] = true; q.push(nb);
+            }
+    }
+}
+
+void dfs(vector&lt;vector&lt;int&gt;&gt;&amp; g, int node,
+         vector&lt;bool&gt;&amp; visited) {
+    visited[node] = true;
+    for (int nb : g[node])
+        if (!visited[nb]) dfs(g, nb, visited);
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static void bfs(List&lt;List&lt;Integer&gt;&gt; g, int start) {
+    boolean[] visited = new boolean[g.size()];
+    Deque&lt;Integer&gt; q = new ArrayDeque&lt;&gt;();
+    visited[start] = true; q.offer(start);
+    while (!q.isEmpty()) {
+        int node = q.poll();
+        for (int nb : g.get(node))
+            if (!visited[nb]) {
+                visited[nb] = true; q.offer(nb);
+            }
+    }
+}
+
+static void dfs(List&lt;List&lt;Integer&gt;&gt; g, int node,
+                boolean[] visited) {
+    visited[node] = true;
+    for (int nb : g.get(node))
+        if (!visited[nb]) dfs(g, nb, visited);
+}</pre></div>
+    </div>
+    <div class="cx">Both <b>O(V + E)</b> · BFS = shortest path (unweighted) · DFS = components, cycles, flood fill.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 02: BASIC PROBLEMS ═══ -->
+<div class="sec-bar" id="basic">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">02</div>
+  <div class="sec-info"><h2>🟢 Basic Problems</h2><p>The warm-ups every fresher must do blindfolded</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">1 · Reverse a Number</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">1234 → 4321. No string conversion allowed.</div>
+    <div class="think"><b>💭 How to think:</b> peel the last digit with <code>% 10</code>, glue it onto <code>rev × 10</code>, drop it with <code>/ 10</code>. Repeat till zero.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def reverse_number(n):
+    rev = 0
+    while n &gt; 0:
+        rev = rev * 10 + n % 10
+        n //= 10
+    return rev
+# reverse_number(1234) → 4321</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int reverseNumber(int n) {
+    int rev = 0;
+    while (n &gt; 0) {
+        rev = rev * 10 + n % 10;
+        n /= 10;
+    }
+    return rev;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int reverseNumber(int n) {
+    int rev = 0;
+    while (n &gt; 0) {
+        rev = rev * 10 + n % 10;
+        n /= 10;
+    }
+    return rev;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(digits)</b> · Space: <b>O(1)</b></div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">2 · Palindrome Number</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">Is 12321 the same backwards? True. 123? False.</div>
+    <div class="think"><b>💭 How to think:</b> reverse it with the previous trick, compare with the original. Done.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def is_palindrome(n):
+    original, rev = n, 0
+    while n &gt; 0:
+        rev = rev * 10 + n % 10
+        n //= 10
+    return original == rev</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">bool isPalindrome(int n) {
+    int original = n;
+    long long rev = 0;      // avoid overflow
+    while (n &gt; 0) {
+        rev = rev * 10 + n % 10;
+        n /= 10;
+    }
+    return original == rev;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static boolean isPalindrome(int n) {
+    int original = n;
+    long rev = 0;           // avoid overflow
+    while (n &gt; 0) {
+        rev = rev * 10 + n % 10;
+        n /= 10;
+    }
+    return original == rev;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(digits)</b> · Space: <b>O(1)</b> · Note the <code>long long</code>/<code>long</code> in C++/Java — reversing can overflow int!</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">3 · Prime Check</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">Is n divisible only by 1 and itself?</div>
+    <div class="think"><b>💭 How to think:</b> a factor pair always has one member ≤ √n — so testing up to √n is enough. 10⁹ needs only ~31,623 checks.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def is_prime(n):
+    if n &lt; 2:
+        return False
+    i = 2
+    while i * i &lt;= n:
+        if n % i == 0:
+            return False
+        i += 1
+    return True</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">bool isPrime(int n) {
+    if (n &lt; 2) return false;
+    for (int i = 2; (long long)i * i &lt;= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static boolean isPrime(int n) {
+    if (n &lt; 2) return false;
+    for (int i = 2; (long) i * i &lt;= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(√n)</b> · Space: <b>O(1)</b></div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">4 · Max in Array (no built-ins)</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">Find the largest value in one pass.</div>
+    <div class="think"><b>💭 How to think:</b> assume the first element is champion; every element gets one chance to dethrone it.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def find_max(arr):
+    biggest = arr[0]
+    for x in arr[1:]:
+        if x &gt; biggest:
+            biggest = x
+    return biggest</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int findMax(vector&lt;int&gt;&amp; arr) {
+    int biggest = arr[0];
+    for (int i = 1; i &lt; arr.size(); i++)
+        if (arr[i] &gt; biggest) biggest = arr[i];
+    return biggest;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int findMax(int[] arr) {
+    int biggest = arr[0];
+    for (int i = 1; i &lt; arr.length; i++)
+        if (arr[i] &gt; biggest) biggest = arr[i];
+    return biggest;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> · Extend it: track (biggest, second) together → Second Largest in one pass.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">5 · Vowel Counter</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">Count a, e, i, o, u in a sentence, any case.</div>
+    <div class="think"><b>💭 How to think:</b> normalize to lowercase once, then membership-check each character against the vowel set.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def count_vowels(s):
+    return sum(ch in "aeiou" for ch in s.lower())</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int countVowels(string s) {
+    int count = 0;
+    for (char ch : s) {
+        ch = tolower(ch);
+        if (ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u')
+            count++;
+    }
+    return count;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int countVowels(String s) {
+    int count = 0;
+    for (char ch : s.toLowerCase().toCharArray())
+        if ("aeiou".indexOf(ch) &gt;= 0) count++;
+    return count;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b></div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="g">6 · Fibonacci Series (first n)</h3><span class="b bg">EASY</span></div>
+    <div class="prob-state">Print 0 1 1 2 3 5 8 … n terms, iteratively.</div>
+    <div class="think"><b>💭 How to think:</b> keep just the last two values and roll them forward. No recursion needed for printing a series.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def fib_series(n):
+    a, b = 0, 1
+    for _ in range(n):
+        print(a, end=" ")
+        a, b = b, a + b</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">void fibSeries(int n) {
+    long long a = 0, b = 1;
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; a &lt;&lt; " ";
+        long long next = a + b;
+        a = b; b = next;
+    }
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static void fibSeries(int n) {
+    long a = 0, b = 1;
+    for (int i = 0; i &lt; n; i++) {
+        System.out.print(a + " ");
+        long next = a + b;
+        a = b; b = next;
+    }
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> · Python's tuple swap does in one line what C++/Java need a temp for.</div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 03: MEDIUM PROBLEMS ═══ -->
+<div class="sec-bar" id="medium">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">03</div>
+  <div class="sec-info"><h2>🟡 Medium Problems</h2><p>The placement core — each one demonstrates a reusable pattern</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">1 · Two Sum</h3><span class="b ba">MEDIUM</span><span class="b bc">hashing</span><span class="b bp">LC 1</span></div>
+    <div class="prob-state">Find indices of the two numbers adding to target. [2,7,11,15], target 9 → [0,1].</div>
+    <div class="think"><b>💭 How to think:</b> for each number, the partner it NEEDS is <code>target − x</code>. Keep every number you've seen in a hash map — one lookup tells you if the partner already appeared.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def two_sum(nums, target):
+    seen = {}                    # value → index
+    for i, x in enumerate(nums):
+        need = target - x
+        if need in seen:
+            return [seen[need], i]
+        seen[x] = i
+    return []</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) {
+    unordered_map&lt;int, int&gt; seen;   // value → index
+    for (int i = 0; i &lt; nums.size(); i++) {
+        int need = target - nums[i];
+        if (seen.count(need))
+            return {seen[need], i};
+        seen[nums[i]] = i;
+    }
+    return {};
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int[] twoSum(int[] nums, int target) {
+    Map&lt;Integer, Integer&gt; seen = new HashMap&lt;&gt;();
+    for (int i = 0; i &lt; nums.length; i++) {
+        int need = target - nums[i];
+        if (seen.containsKey(need))
+            return new int[]{seen.get(need), i};
+        seen.put(nums[i], i);
+    }
+    return new int[]{};
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(n)</b> — vs O(n²) brute force. The single most-asked interview question on earth.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">2 · Maximum Subarray (Kadane)</h3><span class="b ba">MEDIUM</span><span class="b bc">kadane</span><span class="b bp">LC 53</span></div>
+    <div class="prob-state">Largest sum of any contiguous run. [-2,1,-3,4,-1,2,1,-5,4] → 6 (from [4,-1,2,1]).</div>
+    <div class="think"><b>💭 How to think:</b> at each element ask ONE question — extend the previous run, or start fresh here? A negative running sum can only hurt; drop it.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def max_subarray(nums):
+    best = cur = nums[0]
+    for x in nums[1:]:
+        cur = max(x, cur + x)    # extend or restart
+        best = max(best, cur)
+    return best</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int maxSubarray(vector&lt;int&gt;&amp; nums) {
+    int best = nums[0], cur = nums[0];
+    for (int i = 1; i &lt; nums.size(); i++) {
+        cur = max(nums[i], cur + nums[i]);
+        best = max(best, cur);
+    }
+    return best;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int maxSubarray(int[] nums) {
+    int best = nums[0], cur = nums[0];
+    for (int i = 1; i &lt; nums.length; i++) {
+        cur = Math.max(nums[i], cur + nums[i]);
+        best = Math.max(best, cur);
+    }
+    return best;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> · Animated step by step on the <a href="arrays_learn.html#kadane" style="color:var(--cyan)">Arrays page</a>.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">3 · Remove Duplicates from Sorted Array</h3><span class="b ba">MEDIUM</span><span class="b bc">two pointers</span><span class="b bp">LC 26</span></div>
+    <div class="prob-state">In place, return the new length. [1,1,2,2,3] → 3 (array becomes [1,2,3,...]).</div>
+    <div class="think"><b>💭 How to think:</b> slow pointer = "last kept position", fast pointer scans. A new value? Move it next to the kept ones.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def remove_duplicates(nums):
+    if not nums:
+        return 0
+    slow = 0
+    for fast in range(1, len(nums)):
+        if nums[fast] != nums[slow]:
+            slow += 1
+            nums[slow] = nums[fast]
+    return slow + 1</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int removeDuplicates(vector&lt;int&gt;&amp; nums) {
+    if (nums.empty()) return 0;
+    int slow = 0;
+    for (int fast = 1; fast &lt; nums.size(); fast++) {
+        if (nums[fast] != nums[slow]) {
+            slow++;
+            nums[slow] = nums[fast];
+        }
+    }
+    return slow + 1;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int removeDuplicates(int[] nums) {
+    if (nums.length == 0) return 0;
+    int slow = 0;
+    for (int fast = 1; fast &lt; nums.length; fast++) {
+        if (nums[fast] != nums[slow]) {
+            slow++;
+            nums[slow] = nums[fast];
+        }
+    }
+    return slow + 1;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> · The slow/fast template also solves Move Zeroes and Remove Element.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">4 · Best Window of Size K</h3><span class="b ba">MEDIUM</span><span class="b bc">sliding window</span><span class="b bp">LC 643</span></div>
+    <div class="prob-state">Maximum sum of any k consecutive elements.</div>
+    <div class="think"><b>💭 How to think:</b> don't re-add k numbers per position! Slide: subtract the element leaving the window, add the one entering. Each slide is O(1).</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def max_window_sum(nums, k):
+    window = sum(nums[:k])
+    best = window
+    for i in range(k, len(nums)):
+        window += nums[i] - nums[i - k]
+        best = max(best, window)
+    return best</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int maxWindowSum(vector&lt;int&gt;&amp; nums, int k) {
+    int window = 0;
+    for (int i = 0; i &lt; k; i++) window += nums[i];
+    int best = window;
+    for (int i = k; i &lt; nums.size(); i++) {
+        window += nums[i] - nums[i - k];
+        best = max(best, window);
+    }
+    return best;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int maxWindowSum(int[] nums, int k) {
+    int window = 0;
+    for (int i = 0; i &lt; k; i++) window += nums[i];
+    int best = window;
+    for (int i = k; i &lt; nums.length; i++) {
+        window += nums[i] - nums[i - k];
+        best = Math.max(best, window);
+    }
+    return best;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> — vs O(n·k) recomputing. Animated on the <a href="arrays_learn.html#window" style="color:var(--cyan)">Arrays page</a>.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">5 · Valid Anagram</h3><span class="b ba">MEDIUM</span><span class="b bc">hashing</span><span class="b bp">LC 242</span></div>
+    <div class="prob-state">Do "listen" and "silent" use exactly the same letters?</div>
+    <div class="think"><b>💭 How to think:</b> same letters = same frequency counts. Count one string up, count the other down — everything should return to zero.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def is_anagram(s, t):
+    if len(s) != len(t):
+        return False
+    counts = {}
+    for ch in s:
+        counts[ch] = counts.get(ch, 0) + 1
+    for ch in t:
+        if counts.get(ch, 0) == 0:
+            return False
+        counts[ch] -= 1
+    return True
+# one-liner: sorted(s) == sorted(t) — O(n log n)</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">bool isAnagram(string s, string t) {
+    if (s.size() != t.size()) return false;
+    int counts[26] = {0};
+    for (char ch : s) counts[ch - 'a']++;
+    for (char ch : t) {
+        if (--counts[ch - 'a'] &lt; 0) return false;
+    }
+    return true;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static boolean isAnagram(String s, String t) {
+    if (s.length() != t.length()) return false;
+    int[] counts = new int[26];
+    for (char ch : s.toCharArray()) counts[ch - 'a']++;
+    for (char ch : t.toCharArray()) {
+        if (--counts[ch - 'a'] &lt; 0) return false;
+    }
+    return true;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> (26 letters) · C++/Java use a plain 26-slot array as the "hash map" — a common micro-optimization.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="a">6 · Move Zeroes</h3><span class="b ba">MEDIUM</span><span class="b bc">two pointers</span><span class="b bp">LC 283</span></div>
+    <div class="prob-state">Push all 0s to the end, keep the order of everything else. In place!</div>
+    <div class="think"><b>💭 How to think:</b> slow pointer marks where the next NON-zero belongs. Fast pointer finds non-zeros and swaps them into place — zeros drift right automatically.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def move_zeroes(nums):
+    slow = 0
+    for fast in range(len(nums)):
+        if nums[fast] != 0:
+            nums[slow], nums[fast] = nums[fast], nums[slow]
+            slow += 1</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">void moveZeroes(vector&lt;int&gt;&amp; nums) {
+    int slow = 0;
+    for (int fast = 0; fast &lt; nums.size(); fast++) {
+        if (nums[fast] != 0) {
+            swap(nums[slow], nums[fast]);
+            slow++;
+        }
+    }
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static void moveZeroes(int[] nums) {
+    int slow = 0;
+    for (int fast = 0; fast &lt; nums.length; fast++) {
+        if (nums[fast] != 0) {
+            int t = nums[slow]; nums[slow] = nums[fast];
+            nums[fast] = t;
+            slow++;
+        }
+    }
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b></div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 04: HARD PROBLEMS ═══ -->
+<div class="sec-bar" id="hard">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">04</div>
+  <div class="sec-info"><h2>🔴 Hard Problems</h2><p>Boss battles — the ones product companies actually ask</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="r">1 · Trapping Rain Water</h3><span class="b br">HARD</span><span class="b bc">two pointers</span><span class="b bp">LC 42</span></div>
+    <div class="prob-state">Bars of heights [0,1,0,2,1,0,1,3,2,1,2,1] — how much rain collects between them? → 6 units.</div>
+    <div class="think"><b>💭 How to think:</b> water above a bar = min(tallest-to-left, tallest-to-right) − bar. Two pointers move inward from both ends; the side with the SMALLER max is safe to settle, because the other side is guaranteed taller.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def trap(height):
+    l, r = 0, len(height) - 1
+    left_max = right_max = water = 0
+    while l &lt; r:
+        if height[l] &lt; height[r]:
+            left_max = max(left_max, height[l])
+            water += left_max - height[l]
+            l += 1
+        else:
+            right_max = max(right_max, height[r])
+            water += right_max - height[r]
+            r -= 1
+    return water</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int trap(vector&lt;int&gt;&amp; height) {
+    int l = 0, r = height.size() - 1;
+    int leftMax = 0, rightMax = 0, water = 0;
+    while (l &lt; r) {
+        if (height[l] &lt; height[r]) {
+            leftMax = max(leftMax, height[l]);
+            water += leftMax - height[l];
+            l++;
+        } else {
+            rightMax = max(rightMax, height[r]);
+            water += rightMax - height[r];
+            r--;
+        }
+    }
+    return water;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int trap(int[] height) {
+    int l = 0, r = height.length - 1;
+    int leftMax = 0, rightMax = 0, water = 0;
+    while (l &lt; r) {
+        if (height[l] &lt; height[r]) {
+            leftMax = Math.max(leftMax, height[l]);
+            water += leftMax - height[l];
+            l++;
+        } else {
+            rightMax = Math.max(rightMax, height[r]);
+            water += rightMax - height[r];
+            r--;
+        }
+    }
+    return water;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(1)</b> — the elegant version of the O(n) space prefix-max approach.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="r">2 · Longest Consecutive Sequence</h3><span class="b br">HARD</span><span class="b bc">hashing</span><span class="b bp">LC 128</span></div>
+    <div class="prob-state">[100,4,200,1,3,2] → 4 (the run 1,2,3,4). Must be O(n) — sorting is banned.</div>
+    <div class="think"><b>💭 How to think:</b> dump everything in a set. Only a number with NO left-neighbor (x−1 absent) can start a run — walk right from only those starts. Every number is touched at most twice.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def longest_consecutive(nums):
+    s = set(nums)
+    best = 0
+    for x in s:
+        if x - 1 not in s:          # run START only
+            length = 1
+            while x + length in s:
+                length += 1
+            best = max(best, length)
+    return best</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int longestConsecutive(vector&lt;int&gt;&amp; nums) {
+    unordered_set&lt;int&gt; s(nums.begin(), nums.end());
+    int best = 0;
+    for (int x : s) {
+        if (!s.count(x - 1)) {        // run START only
+            int length = 1;
+            while (s.count(x + length)) length++;
+            best = max(best, length);
+        }
+    }
+    return best;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int longestConsecutive(int[] nums) {
+    Set&lt;Integer&gt; s = new HashSet&lt;&gt;();
+    for (int x : nums) s.add(x);
+    int best = 0;
+    for (int x : s) {
+        if (!s.contains(x - 1)) {     // run START only
+            int length = 1;
+            while (s.contains(x + length)) length++;
+            best = Math.max(best, length);
+        }
+    }
+    return best;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> · Space: <b>O(n)</b> · The "only start from run beginnings" insight is what makes it linear.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="r">3 · Sort Colors (Dutch National Flag)</h3><span class="b br">HARD</span><span class="b bc">three pointers</span><span class="b bp">LC 75</span></div>
+    <div class="prob-state">Array of 0s, 1s, 2s — sort in ONE pass, no counting, no sort().</div>
+    <div class="think"><b>💭 How to think:</b> three zones — low (0s), mid (scanning 1s), high (2s). See a 0? Swap to the low zone. See a 2? Swap to the high zone — but DON'T advance mid (the swapped-in value is unchecked!).</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def sort_colors(nums):
+    low, mid, high = 0, 0, len(nums) - 1
+    while mid &lt;= high:
+        if nums[mid] == 0:
+            nums[low], nums[mid] = nums[mid], nums[low]
+            low += 1; mid += 1
+        elif nums[mid] == 1:
+            mid += 1
+        else:  # 2
+            nums[mid], nums[high] = nums[high], nums[mid]
+            high -= 1        # mid stays!</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">void sortColors(vector&lt;int&gt;&amp; nums) {
+    int low = 0, mid = 0, high = nums.size() - 1;
+    while (mid &lt;= high) {
+        if (nums[mid] == 0) {
+            swap(nums[low], nums[mid]);
+            low++; mid++;
+        } else if (nums[mid] == 1) {
+            mid++;
+        } else {  // 2
+            swap(nums[mid], nums[high]);
+            high--;          // mid stays!
+        }
+    }
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static void sortColors(int[] nums) {
+    int low = 0, mid = 0, high = nums.length - 1;
+    while (mid &lt;= high) {
+        if (nums[mid] == 0) {
+            int t = nums[low]; nums[low] = nums[mid]; nums[mid] = t;
+            low++; mid++;
+        } else if (nums[mid] == 1) {
+            mid++;
+        } else {  // 2
+            int t = nums[mid]; nums[mid] = nums[high]; nums[high] = t;
+            high--;          // mid stays!
+        }
+    }
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> one pass · Space: <b>O(1)</b> · Invented by Dijkstra. The "mid stays after the 2-swap" detail is what interviewers watch for.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-head"><h3 class="r">4 · First Missing Positive</h3><span class="b br">HARD</span><span class="b bc">index as hash</span><span class="b bp">LC 41</span></div>
+    <div class="prob-state">[3,4,-1,1] → 2. O(n) time and O(1) extra space — the array must BE the hash table.</div>
+    <div class="think"><b>💭 How to think:</b> the answer is in 1..n+1. Put every value v into its "home" index v−1 by swapping. Then the first index whose tenant is wrong reveals the missing number.</div>
+    <div class="lt-wrap">
+      <div class="lt-tabs"><button class="lt-tab on" data-l="py">🐍 Python</button><button class="lt-tab" data-l="cpp">⚡ C++</button><button class="lt-tab" data-l="jv">☕ Java</button></div>
+      <div class="lt-pane on" data-l="py"><pre class="py">def first_missing_positive(nums):
+    n = len(nums)
+    for i in range(n):
+        # keep swapping nums[i] to its home
+        while 1 &lt;= nums[i] &lt;= n and \
+              nums[nums[i] - 1] != nums[i]:
+            home = nums[i] - 1
+            nums[i], nums[home] = nums[home], nums[i]
+    for i in range(n):
+        if nums[i] != i + 1:
+            return i + 1
+    return n + 1</pre></div>
+      <div class="lt-pane" data-l="cpp"><pre class="cpp">int firstMissingPositive(vector&lt;int&gt;&amp; nums) {
+    int n = nums.size();
+    for (int i = 0; i &lt; n; i++) {
+        while (nums[i] &gt;= 1 &amp;&amp; nums[i] &lt;= n
+               &amp;&amp; nums[nums[i] - 1] != nums[i]) {
+            swap(nums[i], nums[nums[i] - 1]);
+        }
+    }
+    for (int i = 0; i &lt; n; i++)
+        if (nums[i] != i + 1) return i + 1;
+    return n + 1;
+}</pre></div>
+      <div class="lt-pane" data-l="jv"><pre class="jv">static int firstMissingPositive(int[] nums) {
+    int n = nums.length;
+    for (int i = 0; i &lt; n; i++) {
+        while (nums[i] &gt;= 1 &amp;&amp; nums[i] &lt;= n
+               &amp;&amp; nums[nums[i] - 1] != nums[i]) {
+            int home = nums[i] - 1;
+            int t = nums[i]; nums[i] = nums[home]; nums[home] = t;
+        }
+    }
+    for (int i = 0; i &lt; n; i++)
+        if (nums[i] != i + 1) return i + 1;
+    return n + 1;
+}</pre></div>
+    </div>
+    <div class="cx">Time: <b>O(n)</b> (each value swapped to its home at most once) · Space: <b>O(1)</b> · "Cyclic sort" — the index-as-hash trick.</div>
+  </div>
+
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Keep going</b>Want the patterns behind these solutions, animated? <a href="arrays_learn.html" style="color:var(--cyan)">Arrays</a> · <a href="graph.html" style="color:var(--cyan)">Graphs</a> · <a href="dp_complete.html" style="color:var(--cyan)">Dynamic Programming</a> · <a href="dsa_learn.html" style="color:var(--cyan)">Full DSA Course</a>. And practice each in all three languages — syntax fluency is FREE marks in interviews. 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Problem Solving Hub · Python + C++ + Java · For placement preparation</p>
+  <div class="links">
+    <span>🧰 9 DSA Implementations</span><span>🟢 6 Basic</span><span>🟡 6 Medium</span><span>🔴 4 Hard</span><span>🌐 Every solution × 3 languages</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+
+<script>
+/* ═══ HIGHLIGHTERS ═══ */
+const PY_KW = new Set(['def','class','return','if','elif','else','for','while','in','not','and','or','None','True','False','lambda','break','continue','import','from','yield','pass','is']);
+const PY_FN = new Set(['range','len','max','min','sum','set','int','str','list','dict','enumerate','print','sorted','deque','popleft','append','add','get','Counter']);
+const CPP_KW = new Set(['int','double','float','char','bool','void','long','string','class','struct','public','private','return','if','else','for','while','do','switch','case','break','continue','default','using','namespace','new','delete','const','auto','true','false','vector','unordered_map','unordered_set','map','set','queue','stack','pair','include','nullptr']);
+const CPP_FN = new Set(['cout','cin','endl','main','push_back','size','sort','begin','end','count','insert','erase','swap','max','min','empty','front','pop','push','top','tolower']);
+const JV_KW = new Set(['public','private','static','void','int','double','float','char','boolean','long','String','class','new','return','if','else','for','while','do','switch','case','break','continue','default','true','false','null','extends','implements','import']);
+const JV_FN = new Set(['println','print','main','length','max','min','put','get','containsKey','merge','add','contains','offer','poll','peek','push','pop','isEmpty','toCharArray','toLowerCase','indexOf','charAt']);
+function mkHi(KW, FN){
+  return raw => {
+    let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return t.replace(/(\/\/.*$|#.*$|\/\*[\s\S]*?\*\/)|('(?:\\.|[^'])*'|"(?:\\.|[^"])*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\b\d+\.?\d*)/gm, (m, cm, st, w, num) => {
+      if (cm)  return '<span class="cm">' + cm + '</span>';
+      if (st)  return '<span class="st2">' + st + '</span>';
+      if (w){
+        if (KW.has(w)) return '<span class="kw">' + w + '</span>';
+        if (FN.has(w)) return '<span class="fn">' + w + '</span>';
+        return m;
+      }
+      if (num) return '<span class="nm">' + num + '</span>';
+      return m;
+    });
+  };
+}
+const hiPy = mkHi(PY_KW, PY_FN), hiCppF = mkHi(CPP_KW, CPP_FN), hiJv = mkHi(JV_KW, JV_FN);
+document.querySelectorAll('pre.py').forEach(p => { p.innerHTML = hiPy(p.textContent); });
+document.querySelectorAll('pre.cpp').forEach(p => { p.innerHTML = hiCppF(p.textContent); });
+document.querySelectorAll('pre.jv').forEach(p => { p.innerHTML = hiJv(p.textContent); });
+
+/* ═══ LANGUAGE TAB LOGIC ═══ */
+function activate(wrap, lang){
+  wrap.querySelectorAll('.lt-tab').forEach(t => t.classList.toggle('on', t.dataset.l === lang));
+  wrap.querySelectorAll('.lt-pane').forEach(p => p.classList.toggle('on', p.dataset.l === lang));
+}
+document.querySelectorAll('.lt-wrap').forEach(wrap => {
+  wrap.querySelectorAll('.lt-tab').forEach(tab => {
+    tab.addEventListener('click', () => activate(wrap, tab.dataset.l));
+  });
+});
+function setAllLang(lang){
+  document.querySelectorAll('.lt-wrap').forEach(wrap => activate(wrap, lang));
+}
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

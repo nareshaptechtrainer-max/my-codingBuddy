@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CoddingBuddY — by Naresh G.</title>
+<style>
+/* ── ROOT ── */
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--amber:#F59E0B;--green:#22C55E;
+  --purple:#A855F7;--rose:#F43F5E;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* ── TERMINAL INTRO ── */
+#terminal-overlay{
+  position:fixed;inset:0;z-index:9999;background:#000;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .8s ease, transform .8s ease;
+}
+#terminal-overlay.hide{opacity:0;transform:translateY(-100%);pointer-events:none;}
+.terminal-box{
+  width:min(700px,90vw);background:#0A0F0A;border:1px solid #22C55E;
+  border-radius:10px;overflow:hidden;box-shadow:0 0 60px rgba(34,197,94,.3);
+}
+.terminal-bar{
+  background:#1A1F1A;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem;
+  border-bottom:1px solid #22C55E30;
+}
+.t-dot{width:12px;height:12px;border-radius:50%;}
+.t-dot1{background:#F43F5E;}.t-dot2{background:#F59E0B;}.t-dot3{background:#22C55E;}
+.t-title{flex:1;text-align:center;font-size:12px;color:#475569;font-family:monospace;}
+.terminal-body{padding:1.5rem;min-height:280px;}
+.t-line{font-family:'Fira Code','Courier New',monospace;font-size:14px;color:#22C55E;
+  line-height:2;opacity:0;white-space:nowrap;overflow:hidden;}
+.t-line.visible{opacity:1;}
+.t-line.typing{border-right:2px solid #22C55E;animation:blink .7s step-end infinite;}
+.t-line.prompt{color:#00D9FF;}
+.t-line.success{color:#F59E0B;font-weight:700;}
+@keyframes blink{50%{border-color:transparent;}}
+
+/* ── CANVAS BG ── */
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.35;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(7,12,24,.88);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;padding:0 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;height:60px;
+}
+.nav-brand{display:flex;flex-direction:column;line-height:1;}
+.nav-brand-name{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-brand-sub{font-size:10px;color:var(--amber);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.nav-links{display:flex;gap:.25rem;}
+.nav-links a{padding:.35rem .85rem;border-radius:7px;color:var(--slate);font-size:13px;
+  text-decoration:none;transition:all .2s;}
+.nav-links a:hover{background:var(--glass);color:var(--white);}
+.nav-cta{padding:.45rem 1.2rem;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#000;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,217,255,.4);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:7rem 1.5rem 4rem;position:relative;z-index:1;
+}
+.hero-inner{max-width:860px;margin:0 auto;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.35rem 1.1rem;background:rgba(0,217,255,.06);
+  border:1px solid rgba(0,217,255,.2);border-radius:100px;
+  font-size:12px;color:var(--cyan);margin-bottom:1.5rem;letter-spacing:.06em;
+}
+.hero-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse2 1.5s ease infinite;}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.4);}}
+.hero h1{
+  font-size:clamp(2.6rem,6vw,5rem);font-weight:800;line-height:1.05;
+  letter-spacing:-.03em;margin-bottom:1rem;
+}
+.hero h1 .grad{
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--blue) 50%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{font-size:1rem;color:var(--amber);font-weight:600;margin-bottom:2rem;
+  letter-spacing:.04em;text-transform:uppercase;}
+/* ANIMATED TEXT SEQUENCE */
+.hero-seq{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:1.35rem;font-weight:700;margin-bottom:1.5rem;min-height:2rem;
+}
+.seq-arrow{color:var(--cyan);font-size:1rem;}
+#seqText{color:var(--cyan);}
+.hero-desc{
+  font-size:15px;color:var(--slate);line-height:1.85;max-width:680px;
+  margin:0 auto 2.5rem;
+}
+.hero-desc strong{color:var(--white);}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.btn-primary{
+  padding:.75rem 2rem;border-radius:10px;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;
+  text-decoration:none;border:none;cursor:pointer;transition:all .25s;
+  box-shadow:0 4px 24px rgba(0,217,255,.25);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,217,255,.45);}
+.btn-secondary{
+  padding:.75rem 2rem;border-radius:10px;font-size:14px;font-weight:700;
+  background:transparent;color:var(--white);text-decoration:none;
+  border:1px solid rgba(255,255,255,.15);transition:all .25s;cursor:pointer;
+}
+.btn-secondary:hover{background:var(--glass);border-color:rgba(255,255,255,.3);transform:translateY(-2px);}
+
+/* HERO SCROLL HINT */
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);text-align:center;}
+.scroll-hint span{font-size:11px;color:var(--muted);letter-spacing:.08em;display:block;margin-bottom:.4rem;}
+.scroll-dot{width:24px;height:40px;border:2px solid rgba(255,255,255,.2);border-radius:12px;margin:0 auto;position:relative;}
+.scroll-dot::after{content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
+  width:4px;height:8px;background:var(--cyan);border-radius:2px;animation:scrollDown 2s ease infinite;}
+@keyframes scrollDown{0%{top:5px;opacity:1;}80%{top:20px;opacity:0;}100%{top:5px;opacity:0;}}
+
+/* ── STATS ── */
+.stats-bar{
+  position:relative;z-index:1;background:rgba(0,217,255,.04);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:2rem 1.5rem;
+}
+.stats-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-around;flex-wrap:wrap;gap:1.5rem;}
+.stat-item{text-align:center;}
+.stat-num{font-size:2.5rem;font-weight:800;letter-spacing:-.03em;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-lbl{font-size:12px;color:var(--slate);text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem;}
+
+/* ── SECTION WRAPPER ── */
+.section{padding:5rem 1.5rem;position:relative;z-index:1;}
+.section-center{text-align:center;margin-bottom:3rem;}
+.tag{display:inline-block;padding:.25rem .8rem;border-radius:100px;font-size:11px;
+  font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.8rem;}
+.tag-c{background:rgba(0,217,255,.1);color:var(--cyan);border:1px solid rgba(0,217,255,.2);}
+.tag-a{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.tag-g{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.tag-p{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2);}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;line-height:1.15;margin-bottom:.6rem;letter-spacing:-.02em;}
+.section-sub{font-size:15px;color:var(--slate);max-width:560px;margin:0 auto;line-height:1.7;}
+
+/* ── MOTTO SECTION ── */
+.motto-section{
+  background:linear-gradient(135deg,rgba(0,217,255,.04),rgba(99,102,241,.04));
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.motto-quote{
+  font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.15;
+  text-align:center;letter-spacing:-.03em;margin-bottom:1rem;
+}
+.motto-quote .hl{
+  background:linear-gradient(135deg,var(--amber),var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.motto-support{text-align:center;color:var(--slate);font-size:14px;margin-bottom:3rem;}
+.motto-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1rem;max-width:900px;margin:0 auto;
+}
+.motto-item{
+  display:flex;align-items:flex-start;gap:.9rem;padding:1.1rem 1.3rem;
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  transition:all .25s;
+}
+.motto-item:hover{background:rgba(0,217,255,.05);border-color:rgba(0,217,255,.2);transform:translateY(-2px);}
+.motto-icon{
+  width:36px;height:36px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;flex-shrink:0;
+}
+.motto-text h4{font-size:14px;font-weight:700;margin-bottom:.15rem;}
+.motto-text p{font-size:12px;color:var(--slate);}
+
+/* ── LANGUAGE CARDS ── */
+.lang-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.5rem;max-width:1100px;margin:0 auto;
+}
+.lang-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;position:relative;overflow:hidden;cursor:pointer;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);text-decoration:none;display:block;
+}
+.lang-card::before{
+  content:'';position:absolute;inset:0;border-radius:20px;opacity:0;
+  transition:opacity .3s;
+}
+.lang-card:hover{transform:translateY(-6px);border-color:var(--card-color);}
+.lang-card:hover::before{opacity:1;}
+.lang-card.c-card{--card-color:#22C55E;}
+.lang-card.cpp-card{--card-color:#00D9FF;}
+.lang-card.java-card{--card-color:#FB923C;}
+.lang-card.py-card{--card-color:#F59E0B;}
+.lang-card:hover{box-shadow:0 20px 60px color-mix(in srgb, var(--card-color) 20%, transparent);}
+.lang-icon-wrap{
+  width:64px;height:64px;border-radius:16px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:1.2rem;font-size:2rem;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(0,0,0,.3);
+}
+.lang-name{font-size:1.5rem;font-weight:800;margin-bottom:.25rem;}
+.lang-tagline{font-size:12px;color:var(--slate);margin-bottom:1.2rem;}
+.lang-topics{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.3rem;}
+.lang-topic{
+  font-size:11px;padding:3px 9px;border-radius:100px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--slate);
+}
+.lang-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:1rem;border-top:1px solid var(--border);
+}
+.lang-level{font-size:12px;color:var(--slate);}
+.lang-arrow{
+  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:all .25s;
+}
+.lang-card:hover .lang-arrow{background:var(--card-color);border-color:var(--card-color);color:#000;}
+/* code preview that appears on hover */
+.lang-code-preview{
+  position:absolute;bottom:-100%;right:0;left:0;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  border-top:1px solid rgba(255,255,255,.07);padding:.8rem 1rem;
+  font-family:'Fira Code',monospace;font-size:11px;color:#22C55E;
+  line-height:1.7;transition:bottom .3s ease;
+}
+.lang-card:hover .lang-code-preview{bottom:0;}
+
+/* ── ROADMAP SECTION ── */
+.roadmap-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.roadmap-track{
+  display:flex;align-items:stretch;gap:0;max-width:1000px;margin:0 auto;
+  position:relative;flex-wrap:wrap;
+}
+.road-step{
+  flex:1;min-width:160px;display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:1.5rem 1rem;position:relative;
+}
+.road-step:not(:last-child)::after{
+  content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);
+  font-size:1.4rem;color:var(--border2);z-index:2;
+}
+.road-num{
+  width:48px;height:48px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;font-weight:800;margin-bottom:.8rem;
+  border:2px solid;
+}
+.road-step h4{font-size:13px;font-weight:700;margin-bottom:.3rem;}
+.road-step p{font-size:11px;color:var(--slate);}
+
+/* ── FOUNDER SECTION ── */
+.founder-card{
+  max-width:780px;margin:0 auto;
+  background:var(--glass);border:1px solid var(--border);border-radius:24px;
+  padding:2.5rem;display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:start;
+}
+.founder-avatar{
+  width:130px;height:130px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  position:relative;
+}
+.founder-avatar::after{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));z-index:-1;
+  animation:rotateBorder 4s linear infinite;
+}
+@keyframes rotateBorder{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+.founder-initials{
+  width:122px;height:122px;border-radius:50%;background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;font-weight:800;color:var(--cyan);position:relative;z-index:1;
+}
+.founder-title{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:.4rem;}
+.founder-name{font-size:2rem;font-weight:800;margin-bottom:.2rem;letter-spacing:-.02em;}
+.founder-role{font-size:13.5px;color:var(--slate);margin-bottom:1.1rem;line-height:1.6;}
+.founder-badges{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;}
+.f-badge{
+  padding:.3rem .9rem;border-radius:100px;font-size:11px;font-weight:700;
+  background:rgba(0,217,255,.08);border:1px solid rgba(0,217,255,.2);color:var(--cyan);
+}
+.founder-quote{
+  background:rgba(245,158,11,.05);border-left:3px solid var(--amber);
+  border-radius:0 10px 10px 0;padding:1rem 1.2rem;
+  font-size:14px;color:var(--white);font-style:italic;line-height:1.75;
+}
+.founder-quote::before{content:'"';color:var(--amber);font-size:2rem;line-height:0;vertical-align:-.4rem;margin-right:.2rem;}
+.founder-bio{font-size:13.5px;color:var(--slate);line-height:1.75;margin-bottom:1rem;}
+
+/* ── HOW IT WORKS ── */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;max-width:1000px;margin:0 auto;}
+.how-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.5rem;text-align:center;transition:all .25s;position:relative;
+}
+.how-card:hover{transform:translateY(-4px);border-color:var(--border2);}
+.how-num{
+  font-size:2.5rem;font-weight:800;opacity:.1;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  position:absolute;top:.8rem;right:1rem;
+}
+.how-icon{font-size:2rem;margin-bottom:.8rem;}
+.how-card h4{font-size:14px;font-weight:700;margin-bottom:.4rem;}
+.how-card p{font-size:12.5px;color:var(--slate);line-height:1.6;}
+
+/* ── BOTTOM CTA ── */
+.cta-section{
+  background:linear-gradient(135deg,rgba(0,217,255,.06),rgba(168,85,247,.06));
+  border-top:1px solid var(--border);text-align:center;
+}
+.cta-box{max-width:680px;margin:0 auto;}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:2.5rem 1.5rem;text-align:center;position:relative;z-index:1;
+}
+.footer-brand{
+  font-size:1.4rem;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:.3rem;
+}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.8rem;}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.8rem;}
+.footer-links a{font-size:13px;color:var(--slate);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--cyan);}
+.footer-copy{font-size:12px;color:var(--muted);}
+
+/* ── OOP SECTION ── */
+.oop-section{border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.oop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.3rem;max-width:1100px;margin:0 auto;}
+.oop-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.6rem 1.4rem;transition:all .25s;position:relative;overflow:hidden;
+}
+.oop-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:var(--r) var(--r) 0 0;
+}
+.oop-card:hover{transform:translateY(-4px);}
+.oop-card.pillar-1::before{background:linear-gradient(90deg,var(--cyan),var(--blue));}
+.oop-card.pillar-2::before{background:linear-gradient(90deg,var(--purple),var(--rose));}
+.oop-card.pillar-3::before{background:linear-gradient(90deg,var(--green),var(--cyan));}
+.oop-card.pillar-4::before{background:linear-gradient(90deg,var(--amber),var(--orange));}
+.oop-card:hover.pillar-1{border-color:rgba(0,217,255,.3);box-shadow:0 12px 40px rgba(0,217,255,.08);}
+.oop-card:hover.pillar-2{border-color:rgba(168,85,247,.3);box-shadow:0 12px 40px rgba(168,85,247,.08);}
+.oop-card:hover.pillar-3{border-color:rgba(34,197,94,.3);box-shadow:0 12px 40px rgba(34,197,94,.08);}
+.oop-card:hover.pillar-4{border-color:rgba(245,158,11,.3);box-shadow:0 12px 40px rgba(245,158,11,.08);}
+.oop-icon{font-size:2rem;margin-bottom:.8rem;}
+.oop-title{font-size:1.1rem;font-weight:800;margin-bottom:.4rem;}
+.oop-tagline{font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.7rem;}
+.oop-desc{font-size:13px;color:var(--slate);line-height:1.7;margin-bottom:1rem;}
+.oop-example{
+  background:rgba(0,0,0,.3);border-radius:8px;padding:.7rem .9rem;
+  font-family:'Fira Code',monospace;font-size:11.5px;line-height:1.75;
+  border:1px solid rgba(255,255,255,.05);
+}
+
+/* ── DSA SECTION ── */
+.dsa-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.dsa-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1.2rem;max-width:1100px;margin:0 auto;
+}
+.dsa-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.4rem 1.3rem;display:flex;align-items:flex-start;gap:1rem;
+  transition:all .25s;cursor:pointer;text-decoration:none;color:inherit;
+}
+.dsa-card:hover{transform:translateY(-3px);border-color:var(--border2);background:rgba(0,217,255,.04);}
+.dsa-icon-wrap{
+  width:44px;height:44px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:1.3rem;flex-shrink:0;
+}
+.dsa-body h4{font-size:14px;font-weight:700;margin-bottom:.3rem;}
+.dsa-body p{font-size:11.5px;color:var(--slate);line-height:1.55;}
+.dsa-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem;}
+.dsa-tag{font-size:10px;padding:2px 7px;border-radius:100px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);color:var(--muted);}
+.dsa-diff{
+  display:inline-block;margin-top:.55rem;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:100px;letter-spacing:.04em;
+}
+.diff-easy{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.diff-med{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.diff-hard{background:rgba(244,63,94,.1);color:var(--rose);border:1px solid rgba(244,63,94,.2);}
+
+/* ── PROBLEM SOLVING SECTION ── */
+.ps-section{background:linear-gradient(135deg,rgba(168,85,247,.03),rgba(0,217,255,.03));
+  border-top:1px solid var(--border);}
+.ps-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto;align-items:start;}
+.ps-approach{}
+.ps-approach h3{font-size:1.2rem;font-weight:800;margin-bottom:1.2rem;color:var(--white);}
+.approach-steps{display:flex;flex-direction:column;gap:.7rem;}
+.approach-step{
+  display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  transition:all .25s;
+}
+.approach-step:hover{border-color:var(--border2);background:rgba(0,217,255,.04);}
+.step-num{
+  width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.85rem;font-weight:800;flex-shrink:0;
+}
+.step-body h4{font-size:13px;font-weight:700;margin-bottom:.2rem;}
+.step-body p{font-size:12px;color:var(--slate);line-height:1.5;}
+
+.ps-patterns h3{font-size:1.2rem;font-weight:800;margin-bottom:1.2rem;color:var(--white);}
+.pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+.pattern-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
+  padding:.9rem 1rem;transition:all .25s;
+}
+.pattern-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.pattern-name{font-size:12.5px;font-weight:700;margin-bottom:.25rem;}
+.pattern-use{font-size:11px;color:var(--slate);}
+.pattern-icon{font-size:1.1rem;margin-bottom:.35rem;}
+
+@media(max-width:800px){
+  .ps-layout{grid-template-columns:1fr;}
+}
+
+/* ── COMPILER SECTION ── */
+.compiler-section{
+  background:linear-gradient(135deg,rgba(0,217,255,.04),rgba(168,85,247,.04));
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+}
+.compiler-showcase{
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;
+  align-items:center;max-width:1100px;margin:0 auto;
+}
+.compiler-info{}
+.compiler-info .tag{margin-bottom:.8rem;}
+.compiler-info h2{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;line-height:1.15;
+  letter-spacing:-.02em;margin-bottom:.8rem;}
+.compiler-info p{font-size:14px;color:var(--slate);line-height:1.8;margin-bottom:1.5rem;}
+.compiler-features{display:flex;flex-direction:column;gap:.6rem;margin-bottom:2rem;}
+.compiler-feature{display:flex;align-items:center;gap:.6rem;font-size:13px;color:var(--slate);}
+.compiler-feature span:first-child{font-size:.9rem;}
+.compiler-launch{
+  display:inline-flex;align-items:center;gap:.7rem;
+  padding:.8rem 2rem;border-radius:10px;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,var(--green),#16A34A);color:#000;
+  text-decoration:none;transition:all .25s;
+  box-shadow:0 4px 24px rgba(34,197,94,.25);
+}
+.compiler-launch:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(34,197,94,.4);}
+.compiler-window{
+  background:#0A0F0A;border:1px solid rgba(34,197,94,.25);border-radius:12px;
+  overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.compiler-window-bar{
+  background:#111711;padding:.5rem .9rem;display:flex;align-items:center;gap:.45rem;
+  border-bottom:1px solid rgba(34,197,94,.15);
+}
+.cw-dot{width:10px;height:10px;border-radius:50%;}
+.cw-dot1{background:#F43F5E;}.cw-dot2{background:#F59E0B;}.cw-dot3{background:#22C55E;}
+.cw-title{font-size:11px;color:var(--muted);font-family:monospace;margin-left:.4rem;}
+.compiler-code{padding:1.2rem 1.4rem;font-family:'Fira Code','Courier New',monospace;font-size:12.5px;line-height:1.9;}
+.compiler-output-bar{
+  background:#0D1A0D;border-top:1px solid rgba(34,197,94,.15);
+  padding:.5rem .9rem;font-size:11px;color:#22C55E;font-family:monospace;font-weight:700;
+}
+.compiler-output-text{padding:.6rem 1.4rem 1rem;font-family:monospace;font-size:12px;color:#22C55E;line-height:1.8;}
+
+/* ── LANG CARD COMPILER BUTTON ── */
+.lang-compiler-btn{
+  display:inline-flex;align-items:center;gap:.4rem;margin-top:.8rem;
+  padding:.4rem 1rem;border-radius:7px;font-size:11.5px;font-weight:600;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--slate);text-decoration:none;transition:all .2s;
+  position:relative;z-index:5;
+}
+.lang-compiler-btn:hover{background:rgba(0,217,255,.1);border-color:rgba(0,217,255,.3);color:var(--cyan);}
+
+@media(max-width:800px){
+  .compiler-showcase{grid-template-columns:1fr;}
+  .compiler-window{display:none;}
+}
+
+/* ── UTILS ── */
+.page{max-width:1200px;margin:0 auto;}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TERMINAL INTRO ═══════════════════ -->
+<div id="terminal-overlay">
+  <div class="terminal-box">
+    <div class="terminal-bar">
+      <div class="t-dot t-dot1"></div>
+      <div class="t-dot t-dot2"></div>
+      <div class="t-dot t-dot3"></div>
+      <div class="t-title">CoddingBuddY Terminal</div>
+    </div>
+    <div class="terminal-body" id="termBody"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ BG CANVAS ═══════════════════ -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="nav-brand-name">CoddingBuddY</span>
+      <span class="nav-brand-sub">by Naresh G.</span>
+    </div>
+    <div class="nav-links">
+      <a href="#languages">Languages</a>
+      <a href="#oop">OOP</a>
+      <a href="#dsa">DSA</a>
+      <a href="#problemsolving">Problems</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#mentor">Mentor</a>
+      <a href="compiler.html" style="color:var(--cyan);font-weight:700">⚡ Compiler</a>
+    </div>
+    <a href="#languages" class="nav-cta">Start Learning</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🟢 Learning Platform is Live</div>
+    <div class="hero-sub">Presented by Mr. Naresh G.</div>
+    <h1>Welcome to<br/><span class="grad">CoddingBuddY</span></h1>
+    <div class="hero-seq">
+      <span style="color:var(--slate);font-size:1rem;">→</span>
+      <span id="seqText">Learn Concepts</span>
+    </div>
+    <p class="hero-desc">
+      <strong style="color:var(--cyan);">"I know the concepts, but how do I start?"</strong><br/><br/>
+      <strong style="color:var(--amber);">"Understood the problem, but stuck while writing the code?"</strong><br/><br/>
+      <strong>You're not alone, Buddy. CoddingBuddY is with you.</strong><br/><br/>
+      We'll help you transform <strong>concepts into logic</strong>, logic into solutions, and solutions into confidence.<br/><br/>
+      Learn how to <strong>think, analyze, build approaches, recognize patterns,</strong> and solve problems independently.<br/><br/>
+      <span style="color:var(--slate);">Welcome to CoddingBuddY. Your journey from <strong style="color:var(--white);">learner to problem solver</strong> starts here.</span>
+    </p>
+    <div class="hero-btns">
+      <a href="#languages" class="btn-primary">🚀 Start Learning</a>
+      <a href="#roadmap" class="btn-secondary">📍 Explore Roadmaps</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="scroll-dot"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ STATS ═══════════════════ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="4">0</div>
+      <div class="stat-lbl">Languages</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="200">0</div>
+      <div class="stat-lbl">+ Concepts</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="150">0</div>
+      <div class="stat-lbl">+ LeetCode Problems</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="7">0</div>
+      <div class="stat-lbl">+ Years of Teaching</div>
+    </div>
+    <div class="stat-item reveal">
+      <div class="stat-num" data-target="100">0</div>
+      <div class="stat-lbl">% Free to Learn</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MOTTO ═══════════════════ -->
+<div class="section motto-section" id="motto">
+  <div class="page">
+    <div class="motto-quote reveal">
+      "Don't Learn Code.<br/>
+      Learn How To <span class="hl">Think."</span>
+    </div>
+    <p class="motto-support reveal">Every lesson at CoddingBuddY is built around one goal — developing your problem-solving mind.</p>
+    <div class="motto-grid">
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(0,217,255,.1);">🧩</div>
+        <div class="motto-text">
+          <h4>Concept Visualization</h4>
+          <p>See how code executes step by step with animated flow diagrams</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(245,158,11,.1);">🌍</div>
+        <div class="motto-text">
+          <h4>Real-Life Examples</h4>
+          <p>Every concept tied to something you see in everyday life</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(34,197,94,.1);">🧠</div>
+        <div class="motto-text">
+          <h4>Logic Building</h4>
+          <p>Learn to approach any problem from scratch — no memorizing</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(168,85,247,.1);">🔁</div>
+        <div class="motto-text">
+          <h4>Pattern Recognition</h4>
+          <p>Spot patterns in problems. Apply templates. Solve faster.</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(244,63,94,.1);">💻</div>
+        <div class="motto-text">
+          <h4>Coding Practice</h4>
+          <p>Hands-on problems at every topic — not just theory</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(0,217,255,.1);">📊</div>
+        <div class="motto-text">
+          <h4>DSA Mastery</h4>
+          <p>Arrays to Graphs — visualized, explained, and practiced</p>
+        </div>
+      </div>
+      <div class="motto-item reveal">
+        <div class="motto-icon" style="background:rgba(245,158,11,.1);">🎯</div>
+        <div class="motto-text">
+          <h4>Placement Preparation</h4>
+          <p>Interview questions, company patterns, and approach strategies</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ LANGUAGE CARDS ═══════════════════ -->
+<div class="section" id="languages">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-c">Choose Your Language</div>
+      <h2 class="section-title">Where Do You Want<br/>to <span style="background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Start?</span></h2>
+      <p class="section-sub">Pick any language. The structure is the same — Core → OOPs → DSA → Problems. Everything you need in one place.</p>
+    </div>
+    <div class="lang-grid">
+
+      <!-- C -->
+      <a href="c_learn.html" class="lang-card c-card reveal">
+        <div class="lang-icon-wrap" style="background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);">
+          <span style="font-family:monospace;font-weight:900;font-size:1.8rem;color:#22C55E;">C</span>
+        </div>
+        <div class="lang-name" style="color:#22C55E;">C Language</div>
+        <div class="lang-tagline">The Mother of All Languages</div>
+        <div class="lang-topics">
+          <span class="lang-topic">Pointers</span>
+          <span class="lang-topic">Memory</span>
+          <span class="lang-topic">Structures</span>
+          <span class="lang-topic">File I/O</span>
+          <span class="lang-topic">DSA</span>
+        </div>
+        <div class="lang-footer">
+          <span class="lang-level">🟡 Beginner → Advanced</span>
+          <span class="lang-arrow">→</span>
+        </div>
+        <div class="lang-code-preview">
+<span style="color:#475569;">// Hello World in C</span><br/>
+<span style="color:#A855F7;">#include</span> <span style="color:#22C55E;">&lt;stdio.h&gt;</span><br/>
+<span style="color:#A855F7;">int</span> <span style="color:#00D9FF;">main</span>() {<br/>
+&nbsp;&nbsp;<span style="color:#00D9FF;">printf</span>(<span style="color:#22C55E;">"Hello, World!\n"</span>);<br/>
+}
+        </div>
+      </a>
+
+      <!-- C++ -->
+      <a href="cpp_learn.html" class="lang-card cpp-card reveal">
+        <div class="lang-icon-wrap" style="background:rgba(0,217,255,.1);border-color:rgba(0,217,255,.2);">
+          <span style="font-family:monospace;font-weight:900;font-size:1.4rem;color:#00D9FF;">C++</span>
+        </div>
+        <div class="lang-name" style="color:#00D9FF;">C++</div>
+        <div class="lang-tagline">Power of C + Object-Oriented</div>
+        <div class="lang-topics">
+          <span class="lang-topic">OOPs</span>
+          <span class="lang-topic">STL</span>
+          <span class="lang-topic">Templates</span>
+          <span class="lang-topic">DSA</span>
+          <span class="lang-topic">Competitive</span>
+        </div>
+        <div class="lang-footer">
+          <span class="lang-level">🟡 Beginner → Advanced</span>
+          <span class="lang-arrow">→</span>
+        </div>
+        <div class="lang-code-preview">
+<span style="color:#475569;">// Hello World in C++</span><br/>
+<span style="color:#A855F7;">#include</span> <span style="color:#22C55E;">&lt;iostream&gt;</span><br/>
+<span style="color:#A855F7;">using namespace</span> std;<br/>
+<span style="color:#A855F7;">int</span> <span style="color:#00D9FF;">main</span>() {<br/>
+&nbsp;&nbsp;cout &lt;&lt; <span style="color:#22C55E;">"Hello, World!"</span>;<br/>
+}
+        </div>
+      </a>
+
+      <!-- Java -->
+      <a href="java_learn.html" class="lang-card java-card reveal">
+        <div class="lang-icon-wrap" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);">
+          <span style="font-size:1.8rem;">☕</span>
+        </div>
+        <div class="lang-name" style="color:#FB923C;">Java</div>
+        <div class="lang-tagline">Write Once, Run Anywhere</div>
+        <div class="lang-topics">
+          <span class="lang-topic">OOPs</span>
+          <span class="lang-topic">Collections</span>
+          <span class="lang-topic">JVM</span>
+          <span class="lang-topic">DSA</span>
+          <span class="lang-topic">Interview</span>
+        </div>
+        <div class="lang-footer">
+          <span class="lang-level">🟡 Beginner → Advanced</span>
+          <span class="lang-arrow">→</span>
+        </div>
+        <div class="lang-code-preview">
+<span style="color:#475569;">// Hello World in Java</span><br/>
+<span style="color:#A855F7;">public class</span> <span style="color:#00D9FF;">Main</span> {<br/>
+&nbsp;&nbsp;<span style="color:#A855F7;">public static void</span> <span style="color:#22C55E;">main</span>(String[] args) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.<span style="color:#00D9FF;">println</span>(<span style="color:#22C55E;">"Hello!"</span>);<br/>
+&nbsp;&nbsp;}<br/>}
+        </div>
+      </a>
+
+      <!-- Python -->
+      <a href="python_learn.html" class="lang-card py-card reveal">
+        <div class="lang-icon-wrap" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.2);">
+          <span style="font-size:1.8rem;">🐍</span>
+        </div>
+        <div class="lang-name" style="color:#F59E0B;">Python</div>
+        <div class="lang-tagline">Simple. Powerful. Everywhere.</div>
+        <div class="lang-topics">
+          <span class="lang-topic">OOPs</span>
+          <span class="lang-topic">DSA</span>
+          <span class="lang-topic">Libraries</span>
+          <span class="lang-topic">ML/AI</span>
+          <span class="lang-topic">Automation</span>
+        </div>
+        <div class="lang-footer">
+          <span class="lang-level">🟢 Perfect for Beginners</span>
+          <span class="lang-arrow">→</span>
+        </div>
+        <div class="lang-code-preview">
+<span style="color:#475569;"># Hello World in Python</span><br/>
+<span style="color:#22C55E;">print</span>(<span style="color:#F59E0B;">"Hello, World!"</span>)<br/><br/>
+<span style="color:#475569;"># That's it. Just one line!</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ OOP SECTION ═══════════════════ -->
+<div class="section oop-section" id="oop">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-p">Object Oriented Programming</div>
+      <h2 class="section-title">The <span style="background:linear-gradient(135deg,var(--purple),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">4 Pillars</span> of OOP</h2>
+      <p class="section-sub">OOP is not just syntax — it's a way of thinking. Master these 4 pillars and design real-world software with confidence.</p>
+    </div>
+    <div class="oop-grid">
+
+      <!-- Encapsulation -->
+      <div class="oop-card pillar-1 reveal">
+        <div class="oop-icon">🔒</div>
+        <div class="oop-title" style="color:var(--cyan);">Encapsulation</div>
+        <div class="oop-tagline" style="color:rgba(0,217,255,.6);">Hiding Internal Details</div>
+        <div class="oop-desc">Bundle data and methods together. Expose only what's needed. Protect internal state from outside interference.</div>
+        <div class="oop-example">
+          <span style="color:#A855F7;">class</span> <span style="color:#00D9FF;">BankAccount</span> {<br/>
+          &nbsp;&nbsp;<span style="color:#475569;">// private — hidden</span><br/>
+          &nbsp;&nbsp;<span style="color:#A855F7;">private</span> balance = 5000;<br/>
+          &nbsp;&nbsp;<span style="color:#475569;">// public — exposed</span><br/>
+          &nbsp;&nbsp;<span style="color:#22C55E;">getBalance</span>() { <span style="color:#A855F7;">return</span> balance; }<br/>
+          }
+        </div>
+      </div>
+
+      <!-- Inheritance -->
+      <div class="oop-card pillar-2 reveal">
+        <div class="oop-icon">🧬</div>
+        <div class="oop-title" style="color:var(--purple);">Inheritance</div>
+        <div class="oop-tagline" style="color:rgba(168,85,247,.6);">Reuse & Extend</div>
+        <div class="oop-desc">A child class inherits properties and methods from a parent class. Promotes code reuse and establishes an is-a relationship.</div>
+        <div class="oop-example">
+          <span style="color:#A855F7;">class</span> <span style="color:#00D9FF;">Animal</span> {<br/>
+          &nbsp;&nbsp;<span style="color:#22C55E;">speak</span>() { <span style="color:#F59E0B;">"..."</span> }<br/>
+          }<br/>
+          <span style="color:#A855F7;">class</span> <span style="color:#00D9FF;">Dog</span> <span style="color:#A855F7;">extends</span> Animal {<br/>
+          &nbsp;&nbsp;<span style="color:#22C55E;">speak</span>() { <span style="color:#F59E0B;">"Woof!"</span> }<br/>
+          }
+        </div>
+      </div>
+
+      <!-- Polymorphism -->
+      <div class="oop-card pillar-3 reveal">
+        <div class="oop-icon">🎭</div>
+        <div class="oop-title" style="color:var(--green);">Polymorphism</div>
+        <div class="oop-tagline" style="color:rgba(34,197,94,.6);">Many Forms, One Interface</div>
+        <div class="oop-desc">Same method name, different behaviour depending on the object. Achieved via overloading (compile-time) and overriding (run-time).</div>
+        <div class="oop-example">
+          <span style="color:#475569;">// same call, different result</span><br/>
+          <span style="color:#00D9FF;">Animal</span> a = <span style="color:#A855F7;">new</span> Dog();<br/>
+          a.<span style="color:#22C55E;">speak</span>(); <span style="color:#475569;">// "Woof!"</span><br/>
+          <span style="color:#00D9FF;">Animal</span> b = <span style="color:#A855F7;">new</span> Cat();<br/>
+          b.<span style="color:#22C55E;">speak</span>(); <span style="color:#475569;">// "Meow!"</span>
+        </div>
+      </div>
+
+      <!-- Abstraction -->
+      <div class="oop-card pillar-4 reveal">
+        <div class="oop-icon">🎨</div>
+        <div class="oop-title" style="color:var(--amber);">Abstraction</div>
+        <div class="oop-tagline" style="color:rgba(245,158,11,.6);">Show What, Hide How</div>
+        <div class="oop-desc">Show only essential features. Hide complex implementation details. The user knows what an object does — not how it does it.</div>
+        <div class="oop-example">
+          <span style="color:#475569;">// you just call drive()</span><br/>
+          <span style="color:#475569;">// engine internals are hidden</span><br/>
+          <span style="color:#00D9FF;">Car</span> c = <span style="color:#A855F7;">new</span> Car();<br/>
+          c.<span style="color:#22C55E;">drive</span>(); <span style="color:#475569;">// simple!</span><br/>
+          <span style="color:#475569;">// fuel, pistons → abstracted</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ COMPILER SHOWCASE ═══════════════════ -->
+<div class="section compiler-section" id="compiler">
+  <div class="page">
+    <div class="compiler-showcase">
+      <div class="compiler-info reveal">
+        <div class="tag tag-g">Built-In Tool</div>
+        <h2>Code It.<br/><span style="background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Run It. Right Here.</span></h2>
+        <p>No installs. No setup. Write code in <strong style="color:var(--white);">C, C++, Java, or Python</strong> directly in your browser and see the output instantly — along with <strong style="color:var(--white);">Time & Space Complexity</strong> analysis after every run.</p>
+        <div class="compiler-features">
+          <div class="compiler-feature"><span>✅</span><span>Instant execution — powered by Wandbox</span></div>
+          <div class="compiler-feature"><span>📊</span><span>Auto complexity analysis after every run</span></div>
+          <div class="compiler-feature"><span>🎨</span><span>Syntax-aware editor with line numbers</span></div>
+          <div class="compiler-feature"><span>📋</span><span>Starter templates for all 4 languages</span></div>
+          <div class="compiler-feature"><span>⌨️</span><span>Keyboard shortcut: Ctrl + Enter to run</span></div>
+        </div>
+        <a href="compiler.html" class="compiler-launch">⚡ Launch Live Compiler</a>
+      </div>
+      <div class="compiler-window reveal">
+        <div class="compiler-window-bar">
+          <div class="cw-dot cw-dot1"></div>
+          <div class="cw-dot cw-dot2"></div>
+          <div class="cw-dot cw-dot3"></div>
+          <span class="cw-title">main.c — CoddingBuddY Compiler</span>
+        </div>
+        <div class="compiler-code">
+<span style="color:#475569;">// Factorial in C</span><br/>
+<span style="color:#A855F7;">#include</span> <span style="color:#22C55E;">&lt;stdio.h&gt;</span><br/><br/>
+<span style="color:#A855F7;">int</span> <span style="color:#00D9FF;">main</span>() {<br/>
+&nbsp;&nbsp;<span style="color:#A855F7;">int</span> n = 6, i;<br/>
+&nbsp;&nbsp;<span style="color:#A855F7;">long</span> fact = 1;<br/>
+&nbsp;&nbsp;<span style="color:#3B82F6;">for</span> (i = 1; i &lt;= n; i++)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;fact *= i;<br/>
+&nbsp;&nbsp;<span style="color:#00D9FF;">printf</span>(<span style="color:#22C55E;">"6! = %ld\n"</span>, fact);<br/>
+&nbsp;&nbsp;<span style="color:#3B82F6;">return</span> 0;<br/>
+}
+        </div>
+        <div class="compiler-output-bar">▶ OUTPUT</div>
+        <div class="compiler-output-text">
+✅ 6! = 720<br/><br/>
+<span style="color:#475569;">────────────────────────────────</span><br/>
+📊 Time&nbsp; : <span style="color:#F59E0B;">O(n)</span> — Single loop<br/>
+🗄 Space : <span style="color:#00D9FF;">O(1)</span> — Fixed variables
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ROADMAP ═══════════════════ -->
+<div class="section roadmap-section" id="roadmap">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-a">Learning Path</div>
+      <h2 class="section-title">Your Journey to <span style="color:var(--amber);">Placement</span></h2>
+      <p class="section-sub">A proven path from absolute beginner to placement-ready developer. Follow it step by step.</p>
+    </div>
+    <div class="roadmap-track reveal">
+      <div class="road-step">
+        <div class="road-num" style="color:var(--cyan);border-color:rgba(0,217,255,.3);background:rgba(0,217,255,.08);">1</div>
+        <h4>Core Concepts</h4>
+        <p>Syntax, variables, operators, control flow, loops, functions</p>
+      </div>
+      <div class="road-step">
+        <div class="road-num" style="color:var(--purple);border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08);">2</div>
+        <h4>OOP Mastery</h4>
+        <p>Classes, objects, inheritance, polymorphism, encapsulation</p>
+      </div>
+      <div class="road-step">
+        <div class="road-num" style="color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08);">3</div>
+        <h4>Logic Building</h4>
+        <p>Patterns, formulas, problem approaches, dry runs</p>
+      </div>
+      <div class="road-step">
+        <div class="road-num" style="color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08);">4</div>
+        <h4>DSA</h4>
+        <p>Arrays to Graphs — every structure visualized and practiced</p>
+      </div>
+      <div class="road-step">
+        <div class="road-num" style="color:var(--orange);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08);">5</div>
+        <h4>LeetCode</h4>
+        <p>Topic-wise problems — Easy to Hard with every approach</p>
+      </div>
+      <div class="road-step">
+        <div class="road-num" style="color:var(--rose);border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.08);">6</div>
+        <h4>Placements</h4>
+        <p>Interview patterns, company questions, and time management</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DSA SECTION ═══════════════════ -->
+<div class="section dsa-section" id="dsa">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-p">Data Structures & Algorithms</div>
+      <h2 class="section-title">Master <span style="background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">DSA</span> — Topic by Topic</h2>
+      <p class="section-sub">Every data structure explained visually, coded step by step, and practiced with real problems — from Arrays to Graphs.</p>
+    </div>
+    <div class="dsa-grid">
+
+      <a href="arrays_learn.html" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(0,217,255,.1);">📦</div>
+        <div class="dsa-body">
+          <h4>Arrays & Strings</h4>
+          <p>Full course: 7 patterns animated + 42 problems (basic → hard)</p>
+          <div class="dsa-tags"><span class="dsa-tag">Prefix Sum</span><span class="dsa-tag">Two Pointers</span><span class="dsa-tag">Sliding Window</span></div>
+          <span class="dsa-diff diff-easy">Beginner → Master</span>
+        </div>
+      </a>
+
+      <a href="dsa_learn.html#linkedlist" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(168,85,247,.1);">🔗</div>
+        <div class="dsa-body">
+          <h4>Linked Lists</h4>
+          <p>Singly, doubly, circular — insertion, deletion, reversal</p>
+          <div class="dsa-tags"><span class="dsa-tag">Singly</span><span class="dsa-tag">Doubly</span><span class="dsa-tag">Circular</span></div>
+          <span class="dsa-diff diff-easy">Beginner</span>
+        </div>
+      </a>
+
+      <a href="dsa_learn.html#stackqueue" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(245,158,11,.1);">📚</div>
+        <div class="dsa-body">
+          <h4>Stacks & Queues</h4>
+          <p>LIFO/FIFO operations, balanced brackets, monotonic stack</p>
+          <div class="dsa-tags"><span class="dsa-tag">Stack</span><span class="dsa-tag">Queue</span><span class="dsa-tag">Deque</span></div>
+          <span class="dsa-diff diff-easy">Beginner</span>
+        </div>
+      </a>
+
+      <a href="dsa_learn.html#trees" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(34,197,94,.1);">🌲</div>
+        <div class="dsa-body">
+          <h4>Trees</h4>
+          <p>Binary tree, BST, traversals — inorder, preorder, postorder</p>
+          <div class="dsa-tags"><span class="dsa-tag">Binary Tree</span><span class="dsa-tag">BST</span><span class="dsa-tag">Traversal</span></div>
+          <span class="dsa-diff diff-med">Intermediate</span>
+        </div>
+      </a>
+
+      <a href="dsa_learn.html#hashing" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(251,146,60,.1);">🔢</div>
+        <div class="dsa-body">
+          <h4>Hashing</h4>
+          <p>HashMap, HashSet — frequency counting, anagram detection</p>
+          <div class="dsa-tags"><span class="dsa-tag">HashMap</span><span class="dsa-tag">HashSet</span><span class="dsa-tag">Frequency</span></div>
+          <span class="dsa-diff diff-med">Intermediate</span>
+        </div>
+      </a>
+
+      <a href="dsa_learn.html#sorting" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(0,217,255,.1);">🔀</div>
+        <div class="dsa-body">
+          <h4>Sorting & Searching</h4>
+          <p>Bubble, merge, quick sort — binary search and variants</p>
+          <div class="dsa-tags"><span class="dsa-tag">Merge Sort</span><span class="dsa-tag">Quick Sort</span><span class="dsa-tag">Binary Search</span></div>
+          <span class="dsa-diff diff-med">Intermediate</span>
+        </div>
+      </a>
+
+      <a href="graph.html" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(244,63,94,.1);">🕸️</div>
+        <div class="dsa-body">
+          <h4>Graphs — Zero to Master</h4>
+          <p>Ripple Lab, BFS/DFS node-by-node animations, islands, topological sort, Dijkstra &amp; 36-problem sheet</p>
+          <div class="dsa-tags"><span class="dsa-tag">🧪 Ripple Lab</span><span class="dsa-tag">🎬 6 Animations</span><span class="dsa-tag">📝 36 Problems</span></div>
+          <span class="dsa-diff diff-hard">Zero → Master</span>
+        </div>
+      </a>
+
+      <a href="dp_complete.html" class="dsa-card reveal">
+        <div class="dsa-icon-wrap" style="background:rgba(168,85,247,.1);">🧠</div>
+        <div class="dsa-body">
+          <h4>Dynamic Programming — Zero to Master</h4>
+          <p>DP Lab, memoization, tabulation, knapsack, LCS, LIS — 10 step-by-step animations, 18 Python solutions &amp; 42-problem practice sheet</p>
+          <div class="dsa-tags"><span class="dsa-tag">🧪 DP Lab</span><span class="dsa-tag">🎬 10 Animations</span><span class="dsa-tag">📝 42 Problems</span></div>
+          <span class="dsa-diff diff-hard">Zero → Master</span>
+        </div>
+      </a>
+
+    </div>
+    <div style="text-align:center;margin-top:2.5rem;" class="reveal">
+      <a href="dsa_learn.html" class="btn-primary" style="background:linear-gradient(135deg,var(--purple),#7C3AED);color:#fff;">🧠 Open the Full DSA Course</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PROBLEM SOLVING SECTION ═══════════════════ -->
+<div class="section ps-section" id="problemsolving">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-c">Problem Solving</div>
+      <h2 class="section-title">How to <span style="background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Approach</span> Any Problem</h2>
+      <p class="section-sub">We don't just give you solutions. We teach you the thinking process that builds solutions.</p>
+    </div>
+    <div class="ps-layout">
+
+      <!-- LEFT: 4-step approach -->
+      <div class="ps-approach reveal">
+        <h3>🧩 The CoddingBuddY Approach</h3>
+        <div class="approach-steps">
+          <div class="approach-step">
+            <div class="step-num" style="background:rgba(0,217,255,.1);color:var(--cyan);border:1.5px solid rgba(0,217,255,.3);">1</div>
+            <div class="step-body">
+              <h4>Understand the Problem</h4>
+              <p>Read carefully. Identify input, output, constraints. Draw examples by hand.</p>
+            </div>
+          </div>
+          <div class="approach-step">
+            <div class="step-num" style="background:rgba(168,85,247,.1);color:var(--purple);border:1.5px solid rgba(168,85,247,.3);">2</div>
+            <div class="step-body">
+              <h4>Think Before You Type</h4>
+              <p>Start with brute force. Recognize patterns. Choose the right data structure.</p>
+            </div>
+          </div>
+          <div class="approach-step">
+            <div class="step-num" style="background:rgba(34,197,94,.1);color:var(--green);border:1.5px solid rgba(34,197,94,.3);">3</div>
+            <div class="step-body">
+              <h4>Code It Clean</h4>
+              <p>Write readable code. Dry run with examples. Handle edge cases explicitly.</p>
+            </div>
+          </div>
+          <div class="approach-step">
+            <div class="step-num" style="background:rgba(245,158,11,.1);color:var(--amber);border:1.5px solid rgba(245,158,11,.3);">4</div>
+            <div class="step-body">
+              <h4>Optimize</h4>
+              <p>Analyze time & space complexity. Push from O(n²) → O(n) → O(log n).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LeetCode patterns -->
+      <div class="ps-patterns reveal">
+        <h3>⚡ Key Problem Patterns</h3>
+        <div class="pattern-grid">
+          <div class="pattern-card">
+            <div class="pattern-icon">🪟</div>
+            <div class="pattern-name" style="color:var(--cyan);">Sliding Window</div>
+            <div class="pattern-use">Max subarray, longest substring, min window</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">👆👆</div>
+            <div class="pattern-name" style="color:var(--green);">Two Pointers</div>
+            <div class="pattern-use">Pair sum, palindrome check, container with water</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">🔍</div>
+            <div class="pattern-name" style="color:var(--amber);">Binary Search</div>
+            <div class="pattern-use">Search on answer, rotated arrays, kth element</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">🔁</div>
+            <div class="pattern-name" style="color:var(--purple);">Recursion & Backtracking</div>
+            <div class="pattern-use">Permutations, subsets, N-Queens, Sudoku</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">🗺️</div>
+            <div class="pattern-name" style="color:var(--rose);">BFS / DFS</div>
+            <div class="pattern-use">Level order, shortest path, connected components</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">💡</div>
+            <div class="pattern-name" style="color:var(--orange);">Dynamic Programming</div>
+            <div class="pattern-use">Overlapping subproblems, optimal substructure</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">🏔️</div>
+            <div class="pattern-name" style="color:var(--cyan);">Greedy</div>
+            <div class="pattern-use">Activity selection, job scheduling, coin change</div>
+          </div>
+          <div class="pattern-card">
+            <div class="pattern-icon">📋</div>
+            <div class="pattern-name" style="color:var(--green);">Prefix Sum</div>
+            <div class="pattern-use">Range queries, subarray sum equals k</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:2.5rem;" class="reveal">
+      <a href="problems.html" class="btn-primary" style="background:linear-gradient(135deg,var(--rose),#E11D48);color:#fff;">🧰 Open the Problem Solving Hub — every solution in Python, C++ &amp; Java</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
+<div class="section" id="how">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-g">Why CoddingBuddY?</div>
+      <h2 class="section-title">Learning That Actually <span style="color:var(--green);">Works</span></h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-card reveal">
+        <div class="how-num">1</div>
+        <div class="how-icon">🎬</div>
+        <h4>Animated Explanations</h4>
+        <p>Control flow arrows, pointer movement, recursion stack — see code come alive</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-num">2</div>
+        <div class="how-icon">🧱</div>
+        <h4>Logic First</h4>
+        <p>Before every solution, you learn how to think about the problem</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-num">3</div>
+        <div class="how-icon">🌍</div>
+        <h4>Real-World Context</h4>
+        <p>Every concept mapped to something you've experienced in real life</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-num">4</div>
+        <div class="how-icon">📍</div>
+        <h4>Inline Problems</h4>
+        <p>LeetCode problems appear right after the topic — not in a separate section</p>
+      </div>
+      <div class="how-card reveal">
+        <div class="how-num">5</div>
+        <div class="how-icon">🔁</div>
+        <h4>Every Approach</h4>
+        <p>Brute force → Better → Optimal — all covered with complexity analysis</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FOUNDER ═══════════════════ -->
+<div class="section" id="mentor" style="background:var(--bg2);border-top:1px solid var(--border);">
+  <div class="page">
+    <div class="section-center reveal">
+      <div class="tag tag-a">Meet Your Mentor</div>
+      <h2 class="section-title">The Person Behind <span style="color:var(--amber);">CoddingBuddY</span></h2>
+    </div>
+    <div class="founder-card reveal">
+      <div>
+        <div class="founder-avatar">
+          <div class="founder-initials">NG</div>
+        </div>
+      </div>
+      <div>
+        <div class="founder-title">Technical Trainer · Programming Mentor · DSA Coach</div>
+        <div class="founder-name">Mr. Naresh G.</div>
+        <div class="founder-bio">7+ years of experience training engineering students — helping them transform from absolute beginners into confident problem solvers through structured learning, visualization, and a logic-first approach to programming.</div>
+        <div class="founder-badges">
+          <span class="f-badge">7+ Years Experience</span>
+          <span class="f-badge">C · C++ · Java · Python</span>
+          <span class="f-badge">DSA Coach</span>
+          <span class="f-badge">Logic-First Teaching</span>
+        </div>
+        <div class="founder-quote">
+          I don't want students to memorize solutions.<br/>I want them to <strong>understand how solutions are built.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<div class="section cta-section">
+  <div class="cta-box reveal">
+    <div class="tag tag-c" style="margin:0 auto .8rem;">Ready to Start?</div>
+    <h2 class="section-title" style="margin-bottom:.8rem;">
+      From Concepts to Logic.<br/>
+      <span style="background:linear-gradient(135deg,var(--amber),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">From Logic to Placements.</span>
+    </h2>
+    <p class="section-sub" style="margin-bottom:2rem;">Pick your language and start building the way you think about code.</p>
+    <div class="hero-btns">
+      <a href="#languages" class="btn-primary">🚀 Choose a Language</a>
+      <a href="#mentor" class="btn-secondary">👤 Know Your Mentor</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <div class="footer-links">
+    <a href="c_learn.html">C Language</a>
+    <a href="cpp_learn.html">C++</a>
+    <a href="java_learn.html">Java</a>
+    <a href="python_learn.html">Python</a>
+    <a href="dsa_learn.html">DSA Course</a>
+    <a href="arrays_learn.html">Arrays</a>
+    <a href="graph.html">Graphs</a>
+    <a href="dp_complete.html">Dynamic Programming</a>
+    <a href="problems.html">Problem Hub</a>
+    <a href="compiler.html">Compiler</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#mentor">Mentor</a>
+  </div>
+  <p class="footer-copy">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+
+<script>
+/* ═══ TERMINAL INTRO ═══ */
+const lines=[
+  {text:'> Initializing CoddingBuddY...',cls:''},
+  {text:'> Loading Logic Builder...',cls:''},
+  {text:'> Loading Problem Solving Engine...',cls:''},
+  {text:'> Loading DSA Visualizer...',cls:''},
+  {text:'> Connecting Future Engineers...',cls:''},
+  {text:'> Welcome to CoddingBuddY by Naresh G.',cls:'success'},
+];
+const body=document.getElementById('termBody');
+let li=0,ci=0;
+
+function typeNext(){
+  if(li>=lines.length){setTimeout(()=>{document.getElementById('terminal-overlay').classList.add('hide');},700);return;}
+  const div=document.createElement('div');div.className='t-line typing visible';body.appendChild(div);
+  const txt=lines[li].text;
+  if(lines[li].cls)div.classList.add(lines[li].cls);
+  let c=0;
+  const t=setInterval(()=>{
+    div.textContent=txt.slice(0,++c);
+    if(c>=txt.length){clearInterval(t);div.classList.remove('typing');li++;setTimeout(typeNext,280);}
+  },38);
+}
+setTimeout(typeNext,400);
+
+/* ═══ BG CANVAS ═══ */
+(function(){
+  const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+  let W,H,nodes=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;
+    nodes=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*3+2,c:['#00D9FF','#3B82F6','#A855F7','#22C55E','#F59E0B'][Math.floor(Math.random()*5)],p:Math.random()*Math.PI*2}));}
+  window.addEventListener('resize',resize);resize();
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<160){ctx.beginPath();ctx.strokeStyle=`rgba(42,58,80,${1-d/160})`;ctx.lineWidth=1;ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}
+    }
+    nodes.forEach(n=>{
+      n.p+=.02;const g=Math.sin(n.p)*.5+.5;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r+g*3,0,Math.PI*2);ctx.fillStyle=n.c+'22';ctx.fill();
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=n.c;ctx.fill();
+      n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ═══ ANIMATED TEXT SEQUENCE ═══ */
+const seqItems=['Learn Concepts','Build Logic','Solve Problems','Master DSA','Crack Interviews','Build Your Career'];
+let si=0;const seqEl=document.getElementById('seqText');
+function cycleSeq(){
+  seqEl.style.opacity='0';seqEl.style.transform='translateY(10px)';
+  setTimeout(()=>{si=(si+1)%seqItems.length;seqEl.textContent=seqItems[si];seqEl.style.opacity='1';seqEl.style.transform='none';},300);
+}
+seqEl.style.transition='opacity .3s, transform .3s';
+setInterval(cycleSeq,2000);
+
+/* ═══ STATS COUNTER ═══ */
+function animCount(el){
+  const target=+el.dataset.target,dur=1800,step=dur/60;
+  let cur=0;
+  const t=setInterval(()=>{cur=Math.min(cur+target/60,target);el.textContent=Math.floor(cur);if(cur>=target){el.textContent=target;clearInterval(t);}},step);
+}
+
+/* ═══ SCROLL REVEAL + COUNTERS ═══ */
+const revEls=document.querySelectorAll('.reveal');
+const statEls=document.querySelectorAll('.stat-num');
+let counted=false;
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(!counted&&e.target.closest('.stats-bar')){counted=true;statEls.forEach(animCount);}
+    }
+  });
+},{threshold:.15});
+revEls.forEach(el=>obs.observe(el));
+
+/* ═══ NAV ACTIVE ═══ */
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  navAs.forEach(a=>a.style.color=a.getAttribute('href')==='#'+cur?'var(--cyan)':'');
+});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

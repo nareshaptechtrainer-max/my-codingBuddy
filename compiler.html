@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Compiler | CoddingBuddY</title>
+<style>
+:root{
+  --bg:#060B16;--bg2:#0D1421;--bg3:#111827;--bg4:#0A0F1A;
+  --cyan:#00D9FF;--green:#22C55E;--amber:#F59E0B;
+  --purple:#A855F7;--red:#EF4444;--blue:#3B82F6;--pink:#EC4899;
+  --text:#E2E8F0;--muted:#64748B;--border:#1E293B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
+
+/* ── TOP NAV ── */
+.topnav{
+  height:52px;background:rgba(6,11,22,.97);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0;
+  position:relative;z-index:10;
+}
+.nav-logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.nav-divider{width:1px;height:20px;background:var(--border)}
+.nav-badge{background:linear-gradient(135deg,rgba(0,217,255,.15),rgba(168,85,247,.15));border:1px solid rgba(0,217,255,.25);border-radius:12px;padding:2px 12px;font-size:.75rem;color:var(--cyan);font-weight:600}
+.nav-back{margin-left:auto;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:.8rem;text-decoration:none;transition:all .2s}
+.nav-back:hover{color:var(--text);border-color:var(--cyan)}
+.nav-status{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── MAIN LAYOUT ── */
+.ide-wrap{
+  height:calc(100vh - 52px);
+  display:grid;
+  grid-template-columns:220px 1fr;
+  grid-template-rows:1fr;
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar{
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-head{padding:14px 16px;border-bottom:1px solid var(--border);font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:1px}
+
+/* LANGUAGE TABS */
+.lang-list{padding:10px 8px;display:flex;flex-direction:column;gap:4px}
+.lang-btn{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
+  border:none;background:none;color:var(--muted);cursor:pointer;font-size:.88rem;
+  text-align:left;transition:all .15s;width:100%;
+}
+.lang-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.lang-btn.active{background:rgba(0,217,255,.1);color:var(--cyan);font-weight:600}
+.lang-btn .lang-icon{font-size:1.1rem;width:22px;text-align:center}
+.lang-btn .lang-ver{font-size:.7rem;color:var(--muted);margin-left:auto}
+.lang-btn.active .lang-ver{color:rgba(0,217,255,.6)}
+
+/* SNIPPETS */
+.snip-head{padding:12px 16px 6px;font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:1px;border-top:1px solid var(--border);margin-top:4px}
+.snip-list{padding:0 8px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.snip-btn{
+  padding:7px 12px;border-radius:6px;border:none;background:none;
+  color:var(--muted);cursor:pointer;font-size:.82rem;text-align:left;
+  transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.snip-btn:hover{background:rgba(255,255,255,.04);color:var(--text)}
+
+/* KEYBOARD SHORTCUTS */
+.kb-section{margin-top:auto;border-top:1px solid var(--border);padding:12px 14px}
+.kb-row{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--muted);padding:3px 0}
+.kb-key{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1px 7px;font-family:monospace;font-size:.7rem}
+
+/* ── RIGHT AREA ── */
+.editor-area{display:flex;flex-direction:column;overflow:hidden}
+
+/* TOOLBAR */
+.toolbar{
+  height:46px;background:var(--bg3);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;
+}
+.tb-filename{font-family:'Cascadia Code','Fira Code',monospace;font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.tb-dot.saved{background:var(--green)}
+.run-btn{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  padding:7px 20px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,var(--green),#16A34A);
+  color:#000;font-weight:700;font-size:.88rem;cursor:pointer;
+  transition:all .2s;box-shadow:0 0 20px rgba(34,197,94,.2);
+}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(34,197,94,.35)}
+.run-btn:disabled{background:var(--bg2);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;border:1px solid var(--border)}
+.run-btn .spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,.3);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.clear-btn{
+  padding:7px 14px;border-radius:8px;border:1px solid var(--border);
+  background:none;color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .2s;
+}
+.clear-btn:hover{border-color:var(--red);color:var(--red)}
+.font-controls{display:flex;align-items:center;gap:4px}
+.fc-btn{width:26px;height:26px;border-radius:5px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.fc-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* EDITOR + OUTPUT SPLIT */
+.code-output-wrap{
+  flex:1;display:grid;
+  grid-template-rows:1fr auto;
+  overflow:hidden;
+  transition:grid-template-rows .3s;
+}
+.code-output-wrap.output-open{
+  grid-template-rows:1fr 260px;
+}
+
+/* CODE EDITOR */
+.editor-container{position:relative;overflow:hidden;background:var(--bg4)}
+.line-numbers{
+  position:absolute;top:0;left:0;bottom:0;width:48px;
+  padding:14px 0;background:var(--bg4);border-right:1px solid var(--border);
+  font-family:'Cascadia Code','Fira Code',monospace;font-size:var(--editor-fs,14px);
+  line-height:1.65;color:var(--muted);text-align:right;overflow:hidden;
+  user-select:none;pointer-events:none;z-index:1;
+}
+.line-numbers span{display:block;padding-right:10px}
+#code-editor{
+  position:absolute;top:0;left:48px;right:0;bottom:0;
+  padding:14px 16px;resize:none;border:none;outline:none;
+  background:transparent;color:var(--text);
+  font-family:'Cascadia Code','Fira Code',monospace;
+  font-size:var(--editor-fs,14px);line-height:1.65;
+  tab-size:4;white-space:pre;overflow:auto;
+  caret-color:var(--cyan);
+}
+#code-editor::selection{background:rgba(0,217,255,.2)}
+#code-editor::-webkit-scrollbar{width:8px;height:8px}
+#code-editor::-webkit-scrollbar-track{background:var(--bg4)}
+#code-editor::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+#code-editor::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* OUTPUT PANEL */
+.output-panel{
+  background:var(--bg2);border-top:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.out-toolbar{
+  height:36px;display:flex;align-items:center;padding:0 14px;gap:10px;
+  border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0;
+}
+.out-tab{font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.out-tab.active{color:var(--green)}
+.out-time{margin-left:auto;font-size:.72rem;color:var(--muted)}
+.out-copy{padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted);font-size:.72rem;cursor:pointer;transition:all .2s}
+.out-copy:hover{border-color:var(--cyan);color:var(--cyan)}
+.out-close{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted);font-size:.72rem;cursor:pointer;transition:all .2s}
+.out-close:hover{border-color:var(--red);color:var(--red)}
+#output{
+  flex:1;padding:12px 16px;font-family:'Cascadia Code','Fira Code',monospace;
+  font-size:.85rem;line-height:1.7;overflow-y:auto;white-space:pre-wrap;
+}
+#output.out-success{color:var(--green)}
+#output.out-error{color:var(--red)}
+#output.out-idle{color:var(--muted);font-style:italic}
+
+/* ERROR LINE HIGHLIGHT */
+.err-line{background:rgba(239,68,68,.08);border-left:2px solid var(--red)}
+
+/* RESIZE HANDLE */
+.resize-handle{
+  height:5px;background:var(--border);cursor:ns-resize;flex-shrink:0;
+  transition:background .2s;
+}
+.resize-handle:hover{background:var(--cyan)}
+
+/* BOTTOM STATUS BAR */
+.statusbar{
+  height:24px;background:#060B16;border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:20px;
+  font-size:.7rem;color:var(--muted);flex-shrink:0;
+}
+.sb-item-s{display:flex;align-items:center;gap:5px}
+.sb-item-s span{color:var(--text)}
+
+/* WELCOME STATE */
+.welcome-msg{
+  text-align:center;padding:60px 24px;
+}
+.welcome-msg .wm-icon{font-size:3rem;margin-bottom:16px}
+.welcome-msg h3{font-size:1.1rem;font-weight:700;margin-bottom:8px;color:var(--text)}
+.welcome-msg p{color:var(--muted);font-size:.88rem;max-width:300px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <span class="nav-logo">CoddingBuddY</span>
+  <div class="nav-divider"></div>
+  <span class="nav-badge">⚡ Live Compiler</span>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span>Piston Engine Ready</span>
+  </div>
+  <a id="nav-back-btn" href="index.html" class="nav-back">← Back</a>
+  <a href="index.html" class="nav-back" style="margin-left:6px">🏠 Home</a>
+</nav>
+
+<div class="ide-wrap">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-head">LANGUAGE</div>
+    <div class="lang-list" id="langList">
+      <button class="lang-btn active" onclick="setLang('c')" data-lang="c">
+        <span class="lang-icon">©️</span> C
+        <span class="lang-ver">GCC Latest</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('cpp')" data-lang="cpp">
+        <span class="lang-icon">➕</span> C++
+        <span class="lang-ver">GCC Latest</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('python')" data-lang="python">
+        <span class="lang-icon">🐍</span> Python
+        <span class="lang-ver">3.12</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('java')" data-lang="java">
+        <span class="lang-icon">☕</span> Java
+        <span class="lang-ver">OpenJDK</span>
+      </button>
+    </div>
+
+    <div class="snip-head">STARTER TEMPLATES</div>
+    <div class="snip-list" id="snippetList"></div>
+
+    <div class="kb-section">
+      <div class="kb-row"><span>Run code</span><span><span class="kb-key">Ctrl</span> + <span class="kb-key">Enter</span></span></div>
+      <div class="kb-row"><span>Clear editor</span><span><span class="kb-key">Ctrl</span> + <span class="kb-key">L</span></span></div>
+      <div class="kb-row"><span>Font size +</span><span><span class="kb-key">Ctrl</span> + <span class="kb-key">+</span></span></div>
+      <div class="kb-row"><span>Font size −</span><span><span class="kb-key">Ctrl</span> + <span class="kb-key">−</span></span></div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: EDITOR + OUTPUT -->
+  <div class="editor-area">
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="tb-filename">
+        <div class="tb-dot" id="tb-dot"></div>
+        <span id="tb-fname">main.c</span>
+      </div>
+      <div class="font-controls">
+        <button class="fc-btn" onclick="changeFontSize(-1)" title="Decrease font">A−</button>
+        <button class="fc-btn" onclick="changeFontSize(1)"  title="Increase font">A+</button>
+      </div>
+      <button class="clear-btn" onclick="clearEditor()" title="Clear editor">✕ Clear</button>
+      <button class="run-btn" id="runBtn" onclick="runCode()">
+        <span id="runIcon">▶</span>
+        <span id="runLabel">Run Code</span>
+      </button>
+    </div>
+
+    <!-- CODE + OUTPUT -->
+    <div class="code-output-wrap" id="codeOutputWrap">
+
+      <!-- EDITOR -->
+      <div class="editor-container" id="editorContainer">
+        <div class="line-numbers" id="lineNumbers"></div>
+        <textarea id="code-editor" spellcheck="false" autocorrect="off" autocapitalize="off"
+          placeholder="// Write your C code here and click Run ▶"></textarea>
+      </div>
+
+      <!-- OUTPUT PANEL (hidden until run) -->
+      <div class="output-panel" id="outputPanel" style="display:none">
+        <div class="out-toolbar">
+          <span class="out-tab active">OUTPUT</span>
+          <span class="out-time" id="outTime"></span>
+          <button class="out-copy" onclick="copyOutput()">⎘ Copy</button>
+          <button class="out-close" onclick="closeOutput()">✕</button>
+        </div>
+        <div id="output" class="out-idle">Output will appear here after you run the code...</div>
+      </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="statusbar">
+      <div class="sb-item-s">Lang: <span id="sb-lang">C</span></div>
+      <div class="sb-item-s">Line: <span id="sb-line">1</span></div>
+      <div class="sb-item-s">Col: <span id="sb-col">1</span></div>
+      <div class="sb-item-s">Lines: <span id="sb-total">1</span></div>
+      <div class="sb-item-s" style="margin-left:auto">Powered by <span style="color:var(--cyan)">Piston API</span></div>
+    </div>
+
+  </div><!-- /editor-area -->
+</div><!-- /ide-wrap -->
+
+<script>
+/* ══════════════════════════════════
+   TEMPLATES PER LANGUAGE
+   ══════════════════════════════════ */
+const TEMPLATES = {
+  c: {
+    fname: 'main.c',
+    snippets: [
+      { label: 'Hello World',       code: `#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}` },
+      { label: 'Variables Demo',    code: `#include <stdio.h>\n\nint main() {\n    int age = 20;\n    float cgpa = 8.75;\n    char grade = 'A';\n    printf("Age  : %d\\n", age);\n    printf("CGPA : %.2f\\n", cgpa);\n    printf("Grade: %c\\n", grade);\n    return 0;\n}` },
+      { label: 'Arithmetic',        code: `#include <stdio.h>\n\nint main() {\n    int a = 17, b = 5;\n    printf("Add : %d\\n", a + b);\n    printf("Sub : %d\\n", a - b);\n    printf("Mul : %d\\n", a * b);\n    printf("Div : %d\\n", a / b);\n    printf("Mod : %d\\n", a % b);\n    return 0;\n}` },
+      { label: 'If / Else',         code: `#include <stdio.h>\n\nint main() {\n    int marks = 85;\n    if (marks >= 90)\n        printf("Grade: A+\\n");\n    else if (marks >= 80)\n        printf("Grade: A\\n");\n    else if (marks >= 70)\n        printf("Grade: B\\n");\n    else\n        printf("Grade: C\\n");\n    return 0;\n}` },
+      { label: 'For Loop',          code: `#include <stdio.h>\n\nint main() {\n    int i;\n    for (i = 1; i <= 10; i++) {\n        printf("%d ", i);\n    }\n    printf("\\n");\n    return 0;\n}` },
+      { label: 'Factorial',         code: `#include <stdio.h>\n\nint main() {\n    int n = 6;\n    long fact = 1;\n    int i;\n    for (i = 1; i <= n; i++)\n        fact *= i;\n    printf("%d! = %ld\\n", n, fact);\n    return 0;\n}` },
+      { label: 'Fibonacci',         code: `#include <stdio.h>\n\nint main() {\n    int n = 10, a = 0, b = 1, c, i;\n    printf("%d %d ", a, b);\n    for (i = 2; i < n; i++) {\n        c = a + b;\n        printf("%d ", c);\n        a = b; b = c;\n    }\n    printf("\\n");\n    return 0;\n}` },
+      { label: 'Even / Odd',        code: `#include <stdio.h>\n\nint main() {\n    int n;\n    printf("Enter a number: ");\n    scanf("%d", &n);\n    if (n % 2 == 0)\n        printf("%d is Even\\n", n);\n    else\n        printf("%d is Odd\\n", n);\n    return 0;\n}` },
+      { label: 'Swap Two Numbers',  code: `#include <stdio.h>\n\nint main() {\n    int a = 10, b = 20, temp;\n    printf("Before: a=%d b=%d\\n", a, b);\n    temp = a; a = b; b = temp;\n    printf("After:  a=%d b=%d\\n", a, b);\n    return 0;\n}` },
+      { label: 'Simple Function',   code: `#include <stdio.h>\n\nint add(int x, int y) {\n    return x + y;\n}\n\nint main() {\n    int result = add(12, 28);\n    printf("12 + 28 = %d\\n", result);\n    return 0;\n}` },
+    ]
+  },
+  cpp: {
+    fname: 'main.cpp',
+    snippets: [
+      { label: 'Hello World',       code: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}` },
+      { label: 'Variables',         code: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int age = 21;\n    double cgpa = 9.1;\n    string name = "Rahul";\n    cout << "Name : " << name << endl;\n    cout << "Age  : " << age << endl;\n    cout << "CGPA : " << cgpa << endl;\n    return 0;\n}` },
+      { label: 'For Loop',          code: `#include <iostream>\nusing namespace std;\n\nint main() {\n    for (int i = 1; i <= 10; i++)\n        cout << i << " ";\n    cout << endl;\n    return 0;\n}` },
+      { label: 'Class & Object',    code: `#include <iostream>\nusing namespace std;\n\nclass Student {\npublic:\n    string name;\n    int age;\n    void display() {\n        cout << "Name: " << name << ", Age: " << age << endl;\n    }\n};\n\nint main() {\n    Student s;\n    s.name = "Priya";\n    s.age = 20;\n    s.display();\n    return 0;\n}` },
+      { label: 'Vector',            code: `#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v = {5, 3, 8, 1, 9, 2};\n    for (int x : v)\n        cout << x << " ";\n    cout << endl;\n    return 0;\n}` },
+    ]
+  },
+  python: {
+    fname: 'main.py',
+    snippets: [
+      { label: 'Hello World',       code: `print("Hello, World!")` },
+      { label: 'Variables',         code: `name = "Arjun"\nage = 20\ncgpa = 8.5\nprint(f"Name : {name}")\nprint(f"Age  : {age}")\nprint(f"CGPA : {cgpa}")` },
+      { label: 'For Loop',          code: `for i in range(1, 11):\n    print(i, end=" ")\nprint()` },
+      { label: 'List Comprehension',code: `squares = [x**2 for x in range(1, 11)]\nprint(squares)` },
+      { label: 'Function',          code: `def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n-1)\n\nprint(f"6! = {factorial(6)}")` },
+      { label: 'Dictionary',        code: `student = {"name": "Divya", "age": 21, "grade": "A"}\nfor key, val in student.items():\n    print(f"{key}: {val}")` },
+    ]
+  },
+  java: {
+    fname: 'Main.java',
+    snippets: [
+      { label: 'Hello World',       code: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}` },
+      { label: 'Variables',         code: `public class Main {\n    public static void main(String[] args) {\n        int age = 22;\n        double cgpa = 8.9;\n        String name = "Karthik";\n        System.out.println("Name : " + name);\n        System.out.println("Age  : " + age);\n        System.out.println("CGPA : " + cgpa);\n    }\n}` },
+      { label: 'For Loop',          code: `public class Main {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 10; i++)\n            System.out.print(i + " ");\n        System.out.println();\n    }\n}` },
+      { label: 'Array',             code: `public class Main {\n    public static void main(String[] args) {\n        int[] arr = {5, 3, 8, 1, 9};\n        int max = arr[0];\n        for (int x : arr)\n            if (x > max) max = x;\n        System.out.println("Max = " + max);\n    }\n}` },
+      { label: 'Class & Object',    code: `public class Main {\n    static class Student {\n        String name;\n        int age;\n        Student(String n, int a) { name=n; age=a; }\n        void display() { System.out.println(name + " - " + age); }\n    }\n    public static void main(String[] args) {\n        Student s = new Student("Meena", 20);\n        s.display();\n    }\n}` },
+    ]
+  }
+};
+
+/* ══════════════════════════════════
+   WANDBOX API CONFIG (free, no key)
+   ══════════════════════════════════ */
+const WANDBOX = 'https://wandbox.org/api/compile.json';
+
+// compiler name + raw flags per language
+const LANG_MAP = {
+  c:      { compiler: 'gcc-head',        raw: '-x c -std=c11',  ver: 'GCC Latest' },
+  cpp:    { compiler: 'gcc-head',        raw: '-std=c++17',     ver: 'GCC Latest' },
+  python: { compiler: 'cpython-3.12.5',  raw: '',               ver: '3.12' },
+  java:   { compiler: 'openjdk-head',    raw: '',               ver: 'OpenJDK' },
+};
+
+async function loadRuntimes() {
+  try {
+    const res = await fetch('https://wandbox.org/api/list.json');
+    if (!res.ok) return;
+    const list = await res.json();
+    const names = list.map(c => c.name);
+
+    // pick latest cpython-3.x
+    const py = names.filter(n => /^cpython-3\./.test(n)).sort().pop();
+    if (py) { LANG_MAP.python.compiler = py; LANG_MAP.python.ver = py.replace('cpython-', ''); }
+
+    // pick latest openjdk
+    const jv = names.find(n => n === 'openjdk-head') ||
+               names.filter(n => n.startsWith('openjdk')).sort().pop();
+    if (jv) { LANG_MAP.java.compiler = jv; LANG_MAP.java.ver = jv.replace('openjdk-', ''); }
+
+    // update sidebar version badges
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      const cfg = LANG_MAP[btn.dataset.lang];
+      if (cfg) btn.querySelector('.lang-ver').textContent = cfg.ver;
+    });
+  } catch(e) {
+    // keep fallback values
+  }
+}
+
+/* ══════════════════════════════════
+   STATE
+   ══════════════════════════════════ */
+let currentLang = 'c';
+let fontSize     = 14;
+
+/* ══════════════════════════════════
+   INIT
+   ══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  const param = new URLSearchParams(location.search).get('lang');
+  const startLang = ['c','cpp','python','java'].includes(param) ? param : 'c';
+
+  // Update back button based on origin lang
+  const backBtn = document.getElementById('nav-back-btn');
+  const backMap = { c: ['c_learn.html','← Back to C'], cpp: ['cpp_learn.html','← Back to C++'], java: ['java_learn.html','← Back to Java'], python: ['python_learn.html','← Back to Python'] };
+  if (param && backMap[param]) { backBtn.href = backMap[param][0]; backBtn.textContent = backMap[param][1]; }
+  else { backBtn.href = 'index.html'; backBtn.textContent = '← Back to Home'; }
+  setLang(startLang);
+  loadSnippet(TEMPLATES[startLang].snippets[0]);
+  setupEditor();
+  setupKeyboard();
+  loadRuntimes();
+});
+
+/* ══════════════════════════════════
+   LANGUAGE SWITCH
+   ══════════════════════════════════ */
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.getElementById('tb-fname').textContent = TEMPLATES[lang].fname;
+  document.getElementById('sb-lang').textContent = lang.toUpperCase();
+  buildSnippets(lang);
+  markUnsaved();
+}
+
+function buildSnippets(lang) {
+  const list = document.getElementById('snippetList');
+  list.innerHTML = '';
+  TEMPLATES[lang].snippets.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'snip-btn';
+    btn.textContent = '▸ ' + s.label;
+    btn.title = s.label;
+    btn.onclick = () => loadSnippet(s);
+    list.appendChild(btn);
+  });
+}
+
+function loadSnippet(s) {
+  document.getElementById('code-editor').value = s.code;
+  updateLineNumbers();
+  updateStatus();
+  markUnsaved();
+}
+
+/* ══════════════════════════════════
+   RUN CODE
+   ══════════════════════════════════ */
+async function runCode() {
+  const code = document.getElementById('code-editor').value.trim();
+  if (!code) { showOutput('Write some code first!', 'error'); return; }
+
+  setRunning(true);
+  showOutputPanel();
+
+  const out = document.getElementById('output');
+  out.className = 'out-idle';
+  out.textContent = '⏳  Compiling and running...';
+
+  const start = Date.now();
+
+  try {
+    const cfg = LANG_MAP[currentLang];
+    const body = { compiler: cfg.compiler, code, stdin: '', save: false };
+    if (cfg.raw) body['compiler-option-raw'] = cfg.raw;
+
+    const res = await fetch(WANDBOX, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+    document.getElementById('outTime').textContent = `${elapsed}s`;
+
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+
+    const compileErr = data.compiler_error || '';
+    const runOut     = data.program_output || '';
+    const runErr     = data.program_error  || '';
+
+    if (compileErr) {
+      showOutput('🔴  Compilation Error:\n\n' + compileErr, 'error');
+    } else if (runErr) {
+      const combined = runOut ? runOut + '\n\n🔴  Runtime Error:\n' + runErr : '🔴  Runtime Error:\n\n' + runErr;
+      showOutput(combined, 'error');
+    } else if (runOut) {
+      const cx = analyzeComplexity(code, currentLang);
+      const sep = '─'.repeat(48);
+      const complexityBlock =
+        `\n${sep}\n` +
+        `📊  Complexity Analysis\n` +
+        `${sep}\n` +
+        `⏱   Time Complexity  :  ${cx.time}\n` +
+        `     Reason          :  ${cx.timeReason}\n\n` +
+        `🗄   Space Complexity :  ${cx.space}\n` +
+        `     Reason          :  ${cx.spaceReason}\n` +
+        `${sep}\n` +
+        `⚠   Static estimate — based on code structure`;
+      showOutput('✅  ' + runOut + complexityBlock, 'success');
+    } else {
+      const cx = analyzeComplexity(code, currentLang);
+      const sep = '─'.repeat(48);
+      const complexityBlock =
+        `\n${sep}\n` +
+        `📊  Complexity Analysis\n` +
+        `${sep}\n` +
+        `⏱   Time Complexity  :  ${cx.time}\n` +
+        `     Reason          :  ${cx.timeReason}\n\n` +
+        `🗄   Space Complexity :  ${cx.space}\n` +
+        `     Reason          :  ${cx.spaceReason}\n` +
+        `${sep}\n` +
+        `⚠   Static estimate — based on code structure`;
+      showOutput('✅  Program ran with no output.' + complexityBlock, 'success');
+    }
+
+  } catch(e) {
+    const elapsed = ((Date.now() - start) / 1000).toFixed(2);
+    document.getElementById('outTime').textContent = `${elapsed}s`;
+    if (e.name === 'TypeError' || e.message.toLowerCase().includes('fetch') || e.message.toLowerCase().includes('network')) {
+      showOutput('🔴  Cannot reach the compiler API.\n\nPossible reasons:\n  • No internet connection\n  • API is temporarily down (emkc.org)\n  • Browser blocked the request\n\nTry: open this file via a local server\n(e.g. VS Code Live Server extension)', 'error');
+    } else {
+      showOutput('🔴  Error: ' + e.message, 'error');
+    }
+  } finally {
+    setRunning(false);
+  }
+}
+
+/* ══════════════════════════════════
+   COMPLEXITY ANALYZER
+   ══════════════════════════════════ */
+function analyzeComplexity(code, lang) {
+  // Strip comments and string literals
+  let clean = code
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/#[^\n]*/g, '')
+    .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+    .replace(/'(?:[^'\\]|\\.)*'/g, "''");
+
+  // ── Loop detection ──
+  const loopMatches = clean.match(/\b(for|while|do)\b/g) || [];
+  const loopCount   = loopMatches.length;
+
+  // Nesting depth: scan char-by-char tracking loop + brace depth
+  let maxNest = 0, nest = 0, inLoop = false;
+  const loopRe = /\b(for|while|do)\b/g;
+  const tokens  = [...clean.matchAll(/\b(for|while|do)\b|[{}]/g)];
+  let depth = 0, loopDepth = 0, peakLoopDepth = 0;
+  tokens.forEach(t => {
+    if (t[0] === '{') { depth++; }
+    else if (t[0] === '}') { depth = Math.max(0, depth - 1); loopDepth = Math.min(loopDepth, depth); }
+    else { loopDepth = depth; peakLoopDepth = Math.max(peakLoopDepth, ++loopDepth); }
+  });
+  const nestDepth = peakLoopDepth || loopCount;
+
+  // ── Recursion detection ──
+  let hasRecursion = false;
+  if (lang === 'python') {
+    const fns = [...clean.matchAll(/\bdef\s+(\w+)\s*\(/g)].map(m => m[1]).filter(n => n !== '__init__');
+    fns.forEach(fn => {
+      const after = clean.slice(clean.indexOf('def ' + fn) + ('def ' + fn).length);
+      if (new RegExp(`\\b${fn}\\s*\\(`).test(after)) hasRecursion = true;
+    });
+  } else {
+    const fns = [...clean.matchAll(/\b(\w+)\s*\([^)]*\)\s*\{/g)].map(m => m[1]).filter(n => !['main','if','for','while','switch'].includes(n));
+    fns.forEach(fn => {
+      const after = clean.slice(clean.indexOf(fn) + fn.length);
+      if (new RegExp(`\\b${fn}\\s*\\(`).test(after)) hasRecursion = true;
+    });
+  }
+
+  // ── Pattern flags ──
+  const hasFibonacci     = /\bfib(onacci)?\b/i.test(clean);
+  const hasDivideConquer = /\bmid\b|\bhalf\b|\/\s*2\b|>>\s*1/.test(clean) && hasRecursion;
+  const hasSorting       = /\bsort\b|\bqsort\b|\bmerge.?sort\b|\bbubble.?sort\b/i.test(clean);
+  const hasBinarySearch  = /\bbinary.?search\b|\bbsearch\b/i.test(clean);
+  const hasHashMap       = /\bHashMap\b|\bHashSet\b|\bunordered_map\b|\bunordered_set\b|\bdict\b|\b{.*}/i.test(clean);
+  const hasDynAlloc      = /\bmalloc\b|\bcalloc\b|\brealloc\b|\bnew\b|\bvector\b|\bArrayList\b|\bList\b/i.test(clean);
+  const hasArray         = /\[|\barray\b|\bvector\b|\blist\b/i.test(clean);
+
+  // ── Time Complexity ──
+  let time, timeReason;
+  if (loopCount === 0 && !hasRecursion) {
+    time = 'O(1)'; timeReason = 'No loops or recursion — constant time';
+  } else if (hasFibonacci && hasRecursion) {
+    time = 'O(2ⁿ)'; timeReason = 'Naive recursive Fibonacci — exponential';
+  } else if (hasDivideConquer) {
+    time = 'O(n log n)'; timeReason = 'Recursive divide-and-conquer pattern';
+  } else if (hasBinarySearch) {
+    time = 'O(log n)'; timeReason = 'Binary search — halves input each step';
+  } else if (hasSorting) {
+    time = 'O(n log n)'; timeReason = 'Sorting operation detected';
+  } else if (hasRecursion) {
+    time = 'O(n)'; timeReason = 'Linear recursion detected';
+  } else if (nestDepth >= 3) {
+    time = 'O(n³)'; timeReason = 'Triple-nested loops detected';
+  } else if (nestDepth === 2) {
+    time = 'O(n²)'; timeReason = 'Nested loops detected';
+  } else {
+    time = 'O(n)'; timeReason = 'Single loop — linear traversal';
+  }
+
+  // ── Space Complexity ──
+  let space, spaceReason;
+  if (hasFibonacci && hasRecursion) {
+    space = 'O(n)'; spaceReason = 'Recursion stack grows with n';
+  } else if (hasDivideConquer) {
+    space = 'O(log n)'; spaceReason = 'Divide-and-conquer recursion stack';
+  } else if (hasRecursion) {
+    space = 'O(n)'; spaceReason = 'Recursion uses call stack proportional to n';
+  } else if (hasHashMap) {
+    space = 'O(n)'; spaceReason = 'Hash map/set stores up to n entries';
+  } else if (hasDynAlloc || (hasArray && loopCount > 0)) {
+    space = 'O(n)'; spaceReason = 'Dynamic array/collection allocated';
+  } else {
+    space = 'O(1)'; spaceReason = 'Only fixed-size variables — constant space';
+  }
+
+  return { time, timeReason, space, spaceReason };
+}
+
+function setRunning(running) {
+  const btn   = document.getElementById('runBtn');
+  const icon  = document.getElementById('runIcon');
+  const label = document.getElementById('runLabel');
+  btn.disabled = running;
+  if (running) {
+    icon.outerHTML = '<span class="spinner" id="runIcon"></span>';
+    label.textContent = 'Running...';
+  } else {
+    document.getElementById('runIcon').outerHTML = '<span id="runIcon">▶</span>';
+    label.textContent = 'Run Code';
+  }
+}
+
+function showOutput(text, type) {
+  const out = document.getElementById('output');
+  out.textContent = text;
+  out.className = type === 'success' ? 'out-success' : type === 'error' ? 'out-error' : 'out-idle';
+}
+
+function showOutputPanel() {
+  const panel = document.getElementById('outputPanel');
+  panel.style.display = 'flex';
+  panel.style.flexDirection = 'column';
+  document.getElementById('codeOutputWrap').classList.add('output-open');
+}
+
+function closeOutput() {
+  document.getElementById('outputPanel').style.display = 'none';
+  document.getElementById('codeOutputWrap').classList.remove('output-open');
+}
+
+/* ══════════════════════════════════
+   EDITOR HELPERS
+   ══════════════════════════════════ */
+function setupEditor() {
+  const ed = document.getElementById('code-editor');
+  ed.addEventListener('input', () => { updateLineNumbers(); updateStatus(); markUnsaved(); });
+  ed.addEventListener('keyup', updateStatus);
+  ed.addEventListener('click', updateStatus);
+  ed.addEventListener('scroll', syncScroll);
+
+  // Tab key → 4 spaces
+  ed.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = ed.selectionStart, end = ed.selectionEnd;
+      ed.value = ed.value.substring(0, s) + '    ' + ed.value.substring(end);
+      ed.selectionStart = ed.selectionEnd = s + 4;
+      updateLineNumbers();
+    }
+  });
+  updateLineNumbers();
+}
+
+function updateLineNumbers() {
+  const ed = document.getElementById('code-editor');
+  const lines = ed.value.split('\n').length;
+  const ln = document.getElementById('lineNumbers');
+  let html = '';
+  for (let i = 1; i <= lines; i++) html += `<span>${i}</span>`;
+  ln.innerHTML = html;
+  document.getElementById('sb-total').textContent = lines;
+}
+
+function syncScroll() {
+  const ed = document.getElementById('code-editor');
+  document.getElementById('lineNumbers').scrollTop = ed.scrollTop;
+}
+
+function updateStatus() {
+  const ed = document.getElementById('code-editor');
+  const text = ed.value;
+  const pos  = ed.selectionStart;
+  const lines = text.substring(0, pos).split('\n');
+  document.getElementById('sb-line').textContent = lines.length;
+  document.getElementById('sb-col').textContent  = lines[lines.length - 1].length + 1;
+}
+
+function clearEditor() {
+  if (!confirm('Clear the editor? Your code will be lost.')) return;
+  document.getElementById('code-editor').value = '';
+  updateLineNumbers();
+  updateStatus();
+  closeOutput();
+  markUnsaved();
+}
+
+function markUnsaved() {
+  document.getElementById('tb-dot').classList.remove('saved');
+}
+
+function changeFontSize(delta) {
+  fontSize = Math.min(22, Math.max(10, fontSize + delta));
+  document.documentElement.style.setProperty('--editor-fs', fontSize + 'px');
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.out-copy');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '⎘ Copy', 1500);
+  });
+}
+
+/* ══════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ══════════════════════════════════ */
+function setupKeyboard() {
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); runCode(); }
+    if (e.ctrlKey && e.key === 'l')     { e.preventDefault(); clearEditor(); }
+    if (e.ctrlKey && e.key === '=')     { e.preventDefault(); changeFontSize(1); }
+    if (e.ctrlKey && e.key === '-')     { e.preventDefault(); changeFontSize(-1); }
+  });
+}
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

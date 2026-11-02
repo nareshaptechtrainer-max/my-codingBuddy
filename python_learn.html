@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Python — Zero to Master — CoddingBuddY</title>
+<style>
+:root{
+  --bg:#070C18;--bg2:#0D1526;--bg3:#111A30;--bg4:#050A14;
+  --glass:rgba(255,255,255,.035);
+  --border:rgba(255,255,255,.07);--border2:rgba(0,217,255,.25);
+  --cyan:#00D9FF;--blue:#3B82F6;--purple:#A855F7;--amber:#F59E0B;
+  --green:#22C55E;--rose:#F43F5E;--indigo:#6366F1;--orange:#FB923C;
+  --white:#F1F5F9;--slate:#94A3B8;--muted:#475569;
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.7;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:54px;padding:0 1.5rem;}
+.nav-back{display:flex;align-items:center;gap:.4rem;color:var(--slate);font-size:12px;text-decoration:none;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.2);}
+.nav-logo{font-size:1rem;font-weight:800;white-space:nowrap;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-logo span{-webkit-text-fill-color:var(--white);}
+.nav-links{display:flex;gap:.1rem;overflow-x:auto;flex:1;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{padding:.25rem .65rem;border-radius:6px;color:var(--slate);font-size:12px;text-decoration:none;white-space:nowrap;transition:all .2s;}
+.nav-links a:hover,.nav-links a.act{background:var(--bg3);color:var(--cyan);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem 3rem;position:relative;overflow:hidden;margin-top:54px;}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.hb1{width:500px;height:500px;background:var(--amber);opacity:.12;top:-120px;right:-80px;animation:bp 7s ease-in-out infinite alternate;}
+.hb2{width:420px;height:420px;background:var(--blue);opacity:.13;bottom:-80px;left:-80px;animation:bp 9s ease-in-out infinite alternate-reverse;}
+.hb3{width:280px;height:280px;background:var(--green);opacity:.1;bottom:60px;right:22%;animation:bp 5s ease-in-out infinite alternate;}
+@keyframes bp{0%{transform:scale(1);}100%{transform:scale(1.18);}}
+.hero-content{position:relative;z-index:1;max-width:820px;}
+.hero-by{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.8rem;}
+.hero-by strong{color:var(--amber);}
+.hero-badge{display:inline-block;padding:.3rem .9rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:100px;font-size:12px;color:var(--amber);margin-bottom:1.2rem;letter-spacing:.05em;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;margin-bottom:1rem;}
+.hero h1 em{color:var(--amber);font-style:normal;}
+.hero p{font-size:1.05rem;color:var(--slate);max-width:600px;margin:0 auto 2rem;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.ch{padding:.3rem .85rem;border-radius:100px;font-size:12px;font-weight:600;border:1px solid;}
+.ch-c{background:rgba(0,217,255,.08);border-color:rgba(0,217,255,.25);color:var(--cyan);}
+.ch-p{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--purple);}
+.ch-a{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:var(--amber);}
+.ch-g{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--green);}
+.ch-r{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.25);color:var(--rose);}
+.ch-i{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.25);color:var(--indigo);}
+
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+section{padding:3.5rem 0;}
+
+/* SECTION HEADER BAR */
+.sec-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 0;}
+.sec-bar-inner{display:flex;align-items:center;gap:1.2rem;}
+.sec-num{font-size:3rem;font-weight:800;opacity:.2;line-height:1;}
+.sec-info h2{font-size:1.6rem;font-weight:700;}
+.sec-info p{color:var(--slate);font-size:13px;}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.cl{border-left:3px solid var(--cyan);} .pl{border-left:3px solid var(--purple);}
+.al{border-left:3px solid var(--amber);} .gl{border-left:3px solid var(--green);}
+.rl{border-left:3px solid var(--rose);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;}
+@media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+
+/* HEADINGS */
+h2.st{font-size:1.7rem;font-weight:700;margin-bottom:.3rem;}
+h2.st .hl{color:var(--cyan);}
+.ss{color:var(--slate);font-size:13px;margin-bottom:1.5rem;}
+h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;}
+h3.c{color:var(--cyan);}h3.p{color:var(--purple);}h3.a{color:var(--amber);}
+h3.g{color:var(--green);}h3.r{color:var(--rose);}
+
+/* CODE */
+.cw{position:relative;margin:.9rem 0;}
+.cl2{position:absolute;top:-10px;left:12px;font-size:9px;font-weight:700;padding:1px 8px;border-radius:100px;letter-spacing:.06em;z-index:2;background:var(--cyan);color:#000;}
+.cl2.am{background:var(--amber);}.cl2.pu{background:var(--purple);color:#fff;}.cl2.gr{background:var(--green);color:#000;}.cl2.ro{background:var(--rose);color:#fff;}
+pre{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;font-size:13px;line-height:1.8;font-family:'Fira Code','Cascadia Code','Courier New',monospace;}
+.kw{color:#A855F7;}.fn{color:#22C55E;}.st2{color:#00D9FF;}
+.cm{color:#475569;font-style:italic;}.nm{color:#F59E0B;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg4);color:var(--slate);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+td{padding:.65rem 1rem;font-size:13.5px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:rgba(255,255,255,.013);}
+.yes{color:var(--green);font-weight:600;}.no{color:var(--rose);font-weight:600;}.ok{color:var(--amber);font-weight:600;}
+th.c{color:var(--cyan);}th.p{color:var(--purple);}
+td code, li code, p code{background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px;font-family:'Fira Code',monospace;color:var(--cyan);}
+
+/* BULLETS */
+ul.bl{list-style:none;}
+ul.bl li{padding:.35rem 0;display:flex;gap:.65rem;align-items:flex-start;font-size:14px;}
+ul.bl li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+ul.bl.c li::before{background:var(--cyan);}ul.bl.p li::before{background:var(--purple);}
+ul.bl.a li::before{background:var(--amber);}ul.bl.g li::before{background:var(--green);}
+ul.bl.r li::before{background:var(--rose);}
+
+/* BADGE */
+.b{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;}
+.bc{background:rgba(0,217,255,.12);color:var(--cyan);}
+.bp{background:rgba(168,85,247,.12);color:var(--purple);}
+.ba{background:rgba(245,158,11,.12);color:var(--amber);}
+.bg{background:rgba(34,197,94,.12);color:var(--green);}
+.br{background:rgba(244,63,94,.12);color:var(--rose);}
+.bi{background:rgba(99,102,241,.12);color:var(--indigo);}
+
+/* ALERT */
+.alert{display:flex;gap:.9rem;padding:.9rem 1.1rem;border-radius:10px;margin:.8rem 0;font-size:13.5px;}
+.ac{background:rgba(0,217,255,.05);border:1px solid rgba(0,217,255,.2);}
+.aa{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);}
+.ag{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);}
+.ar{background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.2);}
+.ap{background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);}
+.alert-ico{font-size:1.1rem;flex-shrink:0;line-height:1.6;}
+.alert b{display:block;margin-bottom:2px;}
+
+/* INTERVIEW Q */
+.qa{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:.6rem 0;}
+.qa-q{background:var(--bg3);padding:.8rem 1.1rem;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.qa-q .qt{color:var(--cyan);font-size:12px;font-family:monospace;margin-right:.5rem;}
+.qa-q .qico{color:var(--muted);font-size:16px;transition:transform .2s;}
+.qa.open .qa-q .qico{transform:rotate(45deg);}
+.qa.open .qa-q{color:var(--cyan);}
+.qa-a{background:var(--bg4);padding:.8rem 1.1rem;font-size:13.5px;color:var(--slate);border-top:1px solid var(--border);display:none;line-height:1.75;}
+.qa.open .qa-a{display:block;}
+
+/* ANIM CONTROLS */
+.anim-wrap{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem;margin:.8rem 0;}
+.anim-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;}
+.anim-ctrl{display:flex;align-items:center;gap:.7rem;margin-top:.8rem;flex-wrap:wrap;}
+.btn{padding:.4rem 1rem;border-radius:7px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;}
+.btn-c{border-color:var(--cyan);color:var(--cyan);}
+.btn-c:hover{background:rgba(0,217,255,.12);}
+.btn-a{border-color:var(--amber);color:var(--amber);}
+.btn-a:hover{background:rgba(245,158,11,.12);}
+.btn-r{border-color:var(--rose);color:var(--rose);}
+.btn-r:hover{background:rgba(244,63,94,.12);}
+.btn-g{border-color:var(--green);color:var(--green);}
+.btn-g:hover{background:rgba(34,197,94,.12);}
+.anim-log{background:#030608;border:1px solid var(--border);border-radius:7px;padding:.5rem .9rem;font-size:12.5px;font-family:'Fira Code',monospace;color:var(--cyan);min-height:34px;margin-top:.5rem;line-height:1.7;}
+
+/* ═══ EXEC VIEWER (line-by-line Python runner) ═══ */
+.exec-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:1rem;align-items:start;}
+@media(max-width:820px){.exec-grid{grid-template-columns:1fr;}}
+.exec-code{background:#030608;border:1px solid var(--border2);border-radius:var(--r);padding:.8rem 0;font-family:'Fira Code','Cascadia Code',monospace;font-size:13px;line-height:1.6;overflow-x:auto;}
+.xline{display:flex;gap:.9rem;padding:.12rem 1rem .12rem .7rem;white-space:pre;border-left:3px solid transparent;}
+.xline .ln{color:var(--muted);width:1.6em;text-align:right;flex-shrink:0;user-select:none;font-size:11px;padding-top:2px;}
+.xline.on{background:rgba(245,158,11,.13);border-left-color:var(--amber);}
+.xline.on .ln{color:var(--amber);}
+.exec-vt{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase;}
+.exec-vars{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:96px;margin-bottom:.8rem;}
+.vbox{display:inline-flex;flex-direction:column;margin:.25rem;padding:.3rem .7rem;border:1.5px solid var(--cyan);border-radius:8px;background:rgba(0,217,255,.06);animation:vpop .3s ease;vertical-align:top;}
+.vbox .vn{font-size:10px;color:var(--slate);font-family:monospace;}
+.vbox .vv{font-size:13px;font-weight:700;color:var(--cyan);font-family:'Fira Code',monospace;}
+.vbox.chg{border-color:var(--amber);background:rgba(245,158,11,.1);}
+.vbox.chg .vv{color:var(--amber);}
+.vbox.fr{border-color:var(--purple);background:rgba(168,85,247,.08);}
+.vbox.fr .vv{color:var(--purple);}
+@keyframes vpop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.exec-out{background:#030608;border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;min-height:76px;}
+.exec-out pre{background:none;border:none;padding:0;color:var(--green);font-size:12.5px;line-height:1.8;white-space:pre-wrap;}
+.exec-out pre:empty::before{content:'— nothing printed yet —';color:var(--muted);font-style:italic;}
+
+/* ═══ LABS (interactive playgrounds) ═══ */
+.playground{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;}
+.lab-row{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;margin-bottom:1rem;}
+.lab-row label{font-size:12px;color:var(--slate);display:block;margin-bottom:.4rem;}
+.lab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;color:var(--white);font-size:14px;width:130px;outline:none;font-family:'Fira Code',monospace;}
+.lab-row input:focus{border-color:var(--cyan);}
+.lab-row input.wide{width:230px;}
+.opchips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1rem;}
+.opchip{padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--white);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;}
+.opchip:hover{border-color:var(--cyan);color:var(--cyan);}
+.opchip.sel{background:rgba(0,217,255,.15);border-color:var(--cyan);color:var(--cyan);}
+.lab-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.lab-stat .lv{font-size:1.5rem;font-weight:800;font-family:'Fira Code',monospace;word-break:break-all;}
+.lab-stat .ll{font-size:11px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+
+/* char / element cells (slice lab, list lab) */
+.cellrow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:.6rem 0;}
+.cellcol{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cidx{font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;}
+.cidx.neg{color:#7c5cbf;}
+.cchar{min-width:40px;height:40px;padding:0 6px;display:flex;align-items:center;justify-content:center;background:var(--bg4);border:1.5px solid rgba(255,255,255,.14);border-radius:9px;font-family:'Fira Code',monospace;font-weight:700;font-size:15px;transition:all .25s;}
+.cchar.hit{border-color:var(--amber);background:rgba(245,158,11,.16);color:var(--amber);transform:translateY(-3px);}
+.cchar.new{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green);animation:vpop .35s ease;}
+.cchar.dead{border-color:var(--rose);background:rgba(244,63,94,.14);color:var(--rose);opacity:.45;transform:scale(.85);}
+.sitem{display:inline-block;padding:.3rem .75rem;margin:.2rem;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);font-family:'Fira Code',monospace;font-size:13px;font-weight:700;background:var(--bg4);transition:all .25s;}
+.sitem.hit{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12);}
+.sitem.dim{opacity:.3;}
+.setlabel{font-size:11px;color:var(--slate);font-family:monospace;margin:.5rem 0 .1rem;}
+
+/* PRACTICE */
+.pc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;}
+.pc .dif{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:.4rem;}
+.pc h4{font-size:14px;font-weight:700;margin-bottom:.25rem;}
+.pc p{font-size:12.5px;color:var(--slate);}
+.ht{font-size:11.5px;color:var(--muted);margin-top:.4rem;font-style:italic;}
+.lc-diff{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.lc-e{background:rgba(34,197,94,.15);color:var(--green);}
+.lc-m{background:rgba(245,158,11,.15);color:var(--amber);}
+.lc-h{background:rgba(244,63,94,.15);color:var(--rose);}
+
+/* PIPELINE DIAGRAM (how python runs) */
+.pipe{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;justify-content:center;padding:1rem 0;}
+.pipe-box{background:var(--bg4);border:1.5px solid var(--border);border-radius:10px;padding:.7rem 1rem;text-align:center;min-width:118px;}
+.pipe-box .pb-t{font-size:13px;font-weight:700;}
+.pipe-box .pb-s{font-size:10.5px;color:var(--slate);}
+.pipe-arrow{color:var(--muted);font-size:18px;font-weight:700;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);text-align:center;padding:2.5rem 1rem;}
+.footer-brand{font-size:1.4rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.3rem;}
+.footer-by{font-size:12px;color:var(--amber);font-weight:600;letter-spacing:.07em;margin-bottom:.5rem;}
+footer p{color:var(--muted);font-size:13px;}
+footer .links{display:flex;gap:1rem;justify-content:center;margin-top:.8rem;flex-wrap:wrap;}
+footer .links span{font-size:12px;color:var(--muted);}
+
+@keyframes pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+<div class="nav-inner">
+  <a href="index.html" class="nav-back">← Home</a>
+  <div class="nav-logo">CoddingBuddY <span>· Python</span></div>
+  <div class="nav-links">
+    <a href="#lab">🧪 Python Lab</a>
+    <a href="#start">Start</a>
+    <a href="#vars">Variables</a>
+    <a href="#ops">Operators</a>
+    <a href="#strings">Strings</a>
+    <a href="#flow">Control Flow</a>
+    <a href="#lists">Lists</a>
+    <a href="#dictset">Dict &amp; Set</a>
+    <a href="#funcs">Functions</a>
+    <a href="#oop">OOP</a>
+    <a href="#errors">Errors &amp; Files</a>
+    <a href="#master">Master Level</a>
+    <a href="#practice">Practice Sheet</a>
+  </div>
+</div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-blob hb1"></div>
+  <div class="hero-blob hb2"></div>
+  <div class="hero-blob hb3"></div>
+  <div class="hero-content">
+    <div class="hero-by">Designed with ❤️ by <strong>Mr. Naresh G.</strong></div>
+    <div class="hero-badge">CoddingBuddY · Placement Preparation Series</div>
+    <h1><em>Python</em><br/>Zero to Master</h1>
+    <p>Don't just read Python — <strong style="color:var(--white)">watch it run, line by line</strong>. Every topic comes with a live animation showing exactly what each line does to memory and output. From your first <code style="color:var(--green)">print()</code> to decorators and generators.</p>
+    <div class="chips">
+      <span class="ch ch-a">Variables &amp; Types</span>
+      <span class="ch ch-c">Operators</span>
+      <span class="ch ch-g">Strings &amp; Slicing</span>
+      <span class="ch ch-p">Control Flow</span>
+      <span class="ch ch-r">Lists · Dicts · Sets</span>
+      <span class="ch ch-i">Functions</span>
+      <span class="ch ch-a">OOP</span>
+      <span class="ch ch-c">Generators &amp; Decorators</span>
+      <span class="ch ch-g">Interview Q&amp;A</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEC 00: PYTHON LAB ═══ -->
+<div class="sec-bar" id="lab">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">00</div>
+  <div class="sec-info"><h2>The Python Lab — See Every Line Run</h2><p>The whole course in one widget: code on the left, memory &amp; output on the right</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="playground">
+    <p style="font-size:13.5px;color:var(--slate);margin-bottom:1rem;">This is how every lesson on this page works. Press <strong style="color:var(--cyan)">▶ Step</strong> and watch: the <span style="color:var(--amber)">highlighted line</span> executes, the <strong style="color:var(--cyan)">VARIABLES panel</strong> shows what's in memory, and <strong style="color:var(--green)">OUTPUT</strong> shows what the user sees. Nothing is hidden — this is exactly what Python does.</p>
+    <div class="anim-wrap" style="background:var(--bg4);">
+      <div class="anim-title">🧪 Demo — restaurant bill splitter</div>
+      <div id="exec-bill"></div>
+      <div class="anim-ctrl">
+        <button class="btn btn-c" onclick="stepExec('exec-bill')">▶ Step</button>
+        <button class="btn btn-a" onclick="autoExec('exec-bill')">⏩ Auto</button>
+        <button class="btn btn-r" onclick="resetExec('exec-bill')">↺ Reset</button>
+      </div>
+      <div class="anim-log" id="exec-bill-cap"></div>
+    </div>
+    <div class="alert ag">
+      <div class="alert-ico">🎯</div>
+      <div><b>How to use this page</b>For every animation: first press ▶ Step slowly and predict what the next line will do BEFORE stepping. If your prediction matches — you understand it. If not — reset and watch again. That prediction game is how you actually learn to code.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 01: GETTING STARTED ═══ -->
+<div class="sec-bar" id="start">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">01</div>
+  <div class="sec-info"><h2>Level 1 — Getting Started</h2><p>What Python is, how it actually runs your code, and your first program</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">Why <span class="hl" style="color:var(--amber)">Python</span>?</h2>
+      <p class="ss">The language that reads like English and runs the world</p>
+      <ul class="bl a">
+        <li><strong>Made for humans:</strong> created by Guido van Rossum (1991). No semicolons, no curly braces, no <code>int main()</code>. Indentation IS the structure.</li>
+        <li><strong>One line to start:</strong> <code>print("Hello")</code> is a complete program. In Java the same thing needs 5 lines.</li>
+        <li><strong>Everywhere:</strong> Instagram, YouTube, Netflix recommendations, NASA, ChatGPT training pipelines — all run Python.</li>
+        <li><strong>For placements:</strong> fastest language to write DSA solutions in — less typing, fewer bugs, more time to think.</li>
+      </ul>
+      <div class="alert aa" style="margin-top:1rem;">
+        <div class="alert-ico">🐍</div>
+        <div><b>Fun fact</b>Python is named after the comedy show <em>Monty Python's Flying Circus</em> — not the snake! That's why official docs are full of spam, eggs and parrots.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-bottom:.6rem;">⚙️ How Python runs your code</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.4rem;">Python is an <strong style="color:var(--white)">interpreted</strong> language. Your file goes through this pipeline every time you press Run:</p>
+      <div class="pipe">
+        <div class="pipe-box" style="border-color:rgba(245,158,11,.4);"><div class="pb-t" style="color:var(--amber)">app.py</div><div class="pb-s">your source code</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(0,217,255,.4);"><div class="pb-t" style="color:var(--cyan)">Compiler</div><div class="pb-s">checks syntax</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(168,85,247,.4);"><div class="pb-t" style="color:var(--purple)">Bytecode</div><div class="pb-s">.pyc — simple instructions</div></div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-box" style="border-color:rgba(34,197,94,.4);"><div class="pb-t" style="color:var(--green)">PVM</div><div class="pb-s">executes line by line</div></div>
+      </div>
+      <div class="alert ac">
+        <div class="alert-ico">💡</div>
+        <div><b>Interview line</b>"Python compiles source to bytecode, then the Python Virtual Machine (PVM) interprets that bytecode one instruction at a time. That's why we call it an interpreted language."</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--amber);">🐍 The three tools you'll use in week 1</h3>
+  <div class="g3">
+    <div class="cw"><span class="cl2 gr">print() — talk TO the user</span>
+<pre class="py">print("Hello, World!")
+print("Sum is", 5 + 3)      # comma adds a space
+print("A", "B", sep="-")    # A-B
+print("no newline", end="") # stays on same line</pre></div>
+    <div class="cw"><span class="cl2">input() — listen to the user</span>
+<pre class="py">name = input("Your name? ")
+age = int(input("Age? "))   # input gives str,
+                            # int() converts it
+print("Hi", name)</pre></div>
+    <div class="cw"><span class="cl2 am"># comments — talk to humans</span>
+<pre class="py"># single line comment
+"""
+Multi-line strings are often
+used as block comments
+and docstrings.
+"""
+x = 5  # inline comment</pre></div>
+  </div>
+  <div class="alert ar">
+    <div class="alert-ico">⚠️</div>
+    <div><b>Beginner trap #1</b><code>input()</code> ALWAYS returns a string. <code>input() + 1</code> crashes with <code>TypeError</code>. Convert first: <code>int(input())</code> for whole numbers, <code>float(input())</code> for decimals.</div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 02: VARIABLES & DATA TYPES ═══ -->
+<div class="sec-bar" id="vars">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">02</div>
+  <div class="sec-info"><h2>Level 1 — Variables &amp; Data Types</h2><p>Names that point to objects — and why Python never asks you to declare a type</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="gap:2rem;align-items:start;">
+    <div>
+      <h2 class="st">A variable is a <span class="hl" style="color:var(--green)">name tag</span>, not a box</h2>
+      <p class="ss">In C/Java a variable is a box of fixed type. In Python it's a sticky label you can move to ANY object</p>
+      <ul class="bl g">
+        <li><code>x = 10</code> means: create an <strong>int object 10</strong> somewhere in memory, then stick the label <code>x</code> on it.</li>
+        <li><code>x = "ten"</code> later? Totally legal — the label just moves to a string object. This is <strong>dynamic typing</strong>.</li>
+        <li>The <strong>object</strong> has a type — the <strong>name</strong> never does. <code>type(x)</code> asks "what is x pointing at right now?"</li>
+        <li>Naming rules: letters, digits, underscore; can't start with a digit; case-sensitive (<code>Age</code> ≠ <code>age</code>); convention is <code>snake_case</code>.</li>
+      </ul>
+      <div class="alert ag" style="margin-top:1rem;">
+        <div class="alert-ico">🏷️</div>
+        <div><b>The one-line mental model</b>"Assignment never copies data — it just makes a name point to an object." Remember this now; it explains lists behaving 'weirdly' later.</div>
+      </div>
+    </div>
+    <div>
+      <div class="anim-wrap">
+        <div class="anim-title">🎬 Animation — dynamic typing: watch the label move</div>
+        <div id="exec-dyn"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-dyn')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-dyn')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-dyn')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-dyn-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--cyan);">🧪 Type Lab — type ANY value, Python tells you what it is</h3>
+  <div class="playground">
+    <div class="lab-row">
+      <div>
+        <label>Type a value exactly as you would in code (try: 42, 3.14, "hello", True, [1, 2, 3])</label>
+        <input type="text" class="wide" id="tl-in" value="42" onkeydown="if(event.key==='Enter')runTypeLab()"/>
+      </div>
+      <button class="btn btn-c" onclick="runTypeLab()">type( it )</button>
+    </div>
+    <div class="g3">
+      <div class="lab-stat"><div class="lv" id="tl-type" style="color:var(--amber);">int</div><div class="ll">type(value)</div></div>
+      <div class="lab-stat"><div class="lv" id="tl-val" style="color:var(--cyan);">42</div><div class="ll">the object created</div></div>
+      <div class="lab-stat"><div class="lv" id="tl-mut" style="color:var(--rose);">immutable</div><div class="ll">can it change in place?</div></div>
+    </div>
+    <div class="anim-log" id="tl-msg" style="margin-top:.9rem;">42 has no decimal point and no quotes → Python creates an int object.</div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--green);">📦 The core data types — memorize this table</h3>
+  <div class="tw"><table>
+    <tr><th>Type</th><th>Example</th><th>What it stores</th><th>Mutable?</th><th>Ordered?</th></tr>
+    <tr><td><strong style="color:var(--amber)">int</strong></td><td><code>42, -7, 10**100</code></td><td>whole numbers (unlimited size!)</td><td class="no">No</td><td>—</td></tr>
+    <tr><td><strong style="color:var(--amber)">float</strong></td><td><code>3.14, -0.5, 2e3</code></td><td>decimal numbers</td><td class="no">No</td><td>—</td></tr>
+    <tr><td><strong style="color:var(--cyan)">str</strong></td><td><code>"hello", 'a'</code></td><td>text (no separate char type)</td><td class="no">No</td><td class="yes">Yes</td></tr>
+    <tr><td><strong style="color:var(--purple)">bool</strong></td><td><code>True, False</code></td><td>truth values (capital T/F!)</td><td class="no">No</td><td>—</td></tr>
+    <tr><td><strong style="color:var(--green)">list</strong></td><td><code>[1, "a", 3.0]</code></td><td>ordered, changeable collection</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+    <tr><td><strong style="color:var(--green)">tuple</strong></td><td><code>(1, 2, 3)</code></td><td>ordered, frozen collection</td><td class="no">No</td><td class="yes">Yes</td></tr>
+    <tr><td><strong style="color:var(--rose)">dict</strong></td><td><code>{"age": 20}</code></td><td>key → value pairs</td><td class="yes">Yes</td><td class="yes">Yes (3.7+)</td></tr>
+    <tr><td><strong style="color:var(--rose)">set</strong></td><td><code>{1, 2, 3}</code></td><td>unique items, no duplicates</td><td class="yes">Yes</td><td class="no">No</td></tr>
+    <tr><td><strong style="color:var(--muted)">NoneType</strong></td><td><code>None</code></td><td>"nothing here yet"</td><td class="no">No</td><td>—</td></tr>
+  </table></div>
+
+  <div class="g2" style="margin-top:1.6rem;">
+    <div class="cw"><span class="cl2 gr">TYPE CONVERSION (casting)</span>
+<pre class="py">int("42")      # 42      str → int
+int(3.99)      # 3       chops, does NOT round
+float("3.5")   # 3.5
+str(42)        # "42"    now you can + it to text
+int("abc")     # ❌ ValueError — not a number
+bool(0), bool("")   # False — zero/empty = False
+bool(42), bool("hi")# True  — everything else</pre></div>
+    <div class="cw"><span class="cl2 am">MULTIPLE ASSIGNMENT — Python magic</span>
+<pre class="py">x, y, z = 1, 2, 3     # unpack in one line
+a = b = c = 0          # all three → same 0
+x, y = y, x            # ✨ swap WITHOUT temp!
+
+# behind the swap: right side becomes a
+# tuple (y, x) FIRST, then unpacks. No
+# third variable needed — interview favorite.</pre></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 03: OPERATORS ═══ -->
+<div class="sec-bar" id="ops">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">03</div>
+  <div class="sec-info"><h2>Level 1 — Operators</h2><p>Every symbol Python understands — try each one live</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">🧪 Operator <span class="hl">Lab</span></h2>
+  <p class="ss">Enter two numbers, click any operator chip, see the result AND the reason</p>
+  <div class="playground">
+    <div class="lab-row">
+      <div><label>a =</label><input type="number" id="ol-a" value="17" onchange="runOpLab()"/></div>
+      <div><label>b =</label><input type="number" id="ol-b" value="5" onchange="runOpLab()"/></div>
+    </div>
+    <div class="opchips" id="ol-chips">
+      <button class="opchip sel" data-op="+" onclick="pickOp(this)">+</button>
+      <button class="opchip" data-op="-" onclick="pickOp(this)">-</button>
+      <button class="opchip" data-op="*" onclick="pickOp(this)">*</button>
+      <button class="opchip" data-op="/" onclick="pickOp(this)">/</button>
+      <button class="opchip" data-op="//" onclick="pickOp(this)">//</button>
+      <button class="opchip" data-op="%" onclick="pickOp(this)">%</button>
+      <button class="opchip" data-op="**" onclick="pickOp(this)">**</button>
+      <button class="opchip" data-op="==" onclick="pickOp(this)">==</button>
+      <button class="opchip" data-op="!=" onclick="pickOp(this)">!=</button>
+      <button class="opchip" data-op=">" onclick="pickOp(this)">&gt;</button>
+      <button class="opchip" data-op="<" onclick="pickOp(this)">&lt;</button>
+      <button class="opchip" data-op=">=" onclick="pickOp(this)">&gt;=</button>
+    </div>
+    <div class="g2">
+      <div class="lab-stat"><div class="lv" id="ol-expr" style="color:var(--cyan);">17 + 5</div><div class="ll">the expression</div></div>
+      <div class="lab-stat"><div class="lv" id="ol-res" style="color:var(--green);">22</div><div class="ll">python evaluates it to</div></div>
+    </div>
+    <div class="anim-log" id="ol-msg" style="margin-top:.9rem;">+ adds the two numbers. int + int stays int.</div>
+  </div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div>
+      <h3 class="a">The 3 division operators — the #1 exam question</h3>
+      <div class="cw"><span class="cl2 am">/, //, % — know all three cold</span>
+<pre class="py">17 / 5    # 3.4   true division — ALWAYS float
+17 // 5   # 3     floor division — drops remainder
+17 % 5    # 2     modulo — ONLY the remainder
+
+# classic uses:
+n % 2 == 0        # is n even?
+n % 10            # last digit of n
+n // 10           # remove last digit
+seconds // 60, seconds % 60   # min, sec</pre></div>
+      <div class="alert ap">
+        <div class="alert-ico">🧠</div>
+        <div><b>Negative floor trap</b><code>-17 // 5</code> is <code>-4</code>, not <code>-3</code>! Floor division rounds DOWN (toward −∞), not toward zero. Interviewers love this one.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c">Logical &amp; identity operators</h3>
+      <div class="cw"><span class="cl2">and · or · not · is · in</span>
+<pre class="py">age = 20
+age &gt;= 18 and age &lt; 60   # True — both true
+age &lt; 18 or age &gt; 60     # False
+not (age &gt;= 18)          # False
+
+"py" in "python"          # True — membership
+3 in [1, 2, 3]            # True
+
+x = [1, 2]; y = [1, 2]
+x == y    # True  — same VALUE
+x is y    # False — different objects in memory!</pre></div>
+      <div class="alert ac">
+        <div class="alert-ico">💡</div>
+        <div><b>== vs is</b><code>==</code> asks "same value?", <code>is</code> asks "literally the same object?". Rule: use <code>is</code> only for <code>None</code> checks: <code>if x is None:</code></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--purple);">⚖️ Operator precedence — who calculates first?</h3>
+  <div class="tw"><table>
+    <tr><th>Priority</th><th>Operators</th><th>Example</th><th>Result</th></tr>
+    <tr><td>1 (highest)</td><td><code>()</code> parentheses</td><td><code>(2 + 3) * 4</code></td><td>20</td></tr>
+    <tr><td>2</td><td><code>**</code> power</td><td><code>2 ** 3 ** 2</code></td><td>512 (right-to-left: 2⁹)</td></tr>
+    <tr><td>3</td><td><code>* / // %</code></td><td><code>2 + 3 * 4</code></td><td>14, not 20</td></tr>
+    <tr><td>4</td><td><code>+ -</code></td><td><code>10 - 4 + 2</code></td><td>8 (left-to-right)</td></tr>
+    <tr><td>5</td><td><code>== != &gt; &lt; &gt;= &lt;=</code></td><td><code>3 + 2 == 5</code></td><td>True (math first)</td></tr>
+    <tr><td>6</td><td><code>not</code>, then <code>and</code>, then <code>or</code></td><td><code>True or False and False</code></td><td>True (and binds tighter)</td></tr>
+  </table></div>
+  <div class="alert ag">
+    <div class="alert-ico">✅</div>
+    <div><b>Pro habit</b>When in doubt, add parentheses. <code>(a and b) or c</code> costs nothing and saves you from precedence bugs forever.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 04: STRINGS ═══ -->
+<div class="sec-bar" id="strings">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">04</div>
+  <div class="sec-info"><h2>Level 2 — Strings &amp; Slicing</h2><p>Indexing, slicing, methods, f-strings — the skills you use every single day</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">🧪 Slice <span class="hl">Lab</span> — the most important widget on this page</h2>
+  <p class="ss">Every character has TWO addresses: positive (from front) and negative (from back). Slicing = cutting with [start : end : step]</p>
+  <div class="playground">
+    <div class="lab-row">
+      <div><label>text =</label><input type="text" class="wide" id="sl-s" value="PYTHON" maxlength="12" oninput="runSliceLab()"/></div>
+      <div><label>start</label><input type="text" id="sl-a" value="1" style="width:70px;" oninput="runSliceLab()"/></div>
+      <div><label>end</label><input type="text" id="sl-b" value="4" style="width:70px;" oninput="runSliceLab()"/></div>
+      <div><label>step</label><input type="text" id="sl-c" value="" style="width:70px;" oninput="runSliceLab()"/></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:.4rem;text-align:center;">positive index on top · <span style="color:#7c5cbf">negative index below</span> · leave boxes empty to mean "from start / till end / step 1"</div>
+    <div class="cellrow" id="sl-cells"></div>
+    <div class="g2" style="margin-top:.8rem;">
+      <div class="lab-stat"><div class="lv" id="sl-expr" style="color:var(--cyan);">"PYTHON"[1:4]</div><div class="ll">the slice expression</div></div>
+      <div class="lab-stat"><div class="lv" id="sl-res" style="color:var(--amber);">"YTH"</div><div class="ll">result</div></div>
+    </div>
+    <div class="anim-log" id="sl-msg" style="margin-top:.9rem;">Start at index 1, stop BEFORE index 4. End is always excluded!</div>
+    <div class="opchips" style="margin-top:1rem;">
+      <button class="opchip" onclick="presetSlice('','','')">whole [:]</button>
+      <button class="opchip" onclick="presetSlice('','3','')">first 3 [:3]</button>
+      <button class="opchip" onclick="presetSlice('-3','','')">last 3 [-3:]</button>
+      <button class="opchip" onclick="presetSlice('','','2')">skip [::2]</button>
+      <button class="opchip" onclick="presetSlice('','','-1')">🔥 reverse [::-1]</button>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div>
+      <h3 class="c">Strings are IMMUTABLE</h3>
+      <div class="cw"><span class="cl2">you can read, never overwrite</span>
+<pre class="py">s = "python"
+s[0]         # 'p' — reading is fine
+s[0] = "P"   # ❌ TypeError! can't change in place
+
+# the fix: build a NEW string
+s = "P" + s[1:]        # "Python"
+s = s.upper()          # returns NEW "PYTHON";
+                       # original is untouched
+                       # until you reassign</pre></div>
+      <div class="alert ar">
+        <div class="alert-ico">⚠️</div>
+        <div><b>Trap</b><code>s.upper()</code> alone does nothing visible — string methods RETURN a new string, they never modify. Always reassign: <code>s = s.upper()</code>.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">f-strings — the modern way to print</h3>
+      <div class="cw"><span class="cl2 gr">put variables INSIDE text with f"..."</span>
+<pre class="py">name, marks = "Asha", 87.5
+
+# old ways (know them, don't use them)
+print("Hi " + name)               # + concat
+print("Marks: {}".format(marks))  # .format
+
+# ✨ the modern way
+print(f"Hi {name}, marks = {marks}")
+print(f"Percent: {marks:.1f}%")   # 87.5%
+print(f"Next year: {2025 + 1}")   # expressions OK!</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--cyan);">🛠️ The 12 string methods you'll actually use</h3>
+  <div class="tw"><table>
+    <tr><th>Method</th><th>Example</th><th>Result</th><th>Use case</th></tr>
+    <tr><td><code>upper() / lower()</code></td><td><code>"Py".upper()</code></td><td><code>"PY"</code></td><td>case-insensitive compare</td></tr>
+    <tr><td><code>strip()</code></td><td><code>"  hi  ".strip()</code></td><td><code>"hi"</code></td><td>clean user input</td></tr>
+    <tr><td><code>split(sep)</code></td><td><code>"a,b,c".split(",")</code></td><td><code>['a','b','c']</code></td><td>str → list</td></tr>
+    <tr><td><code>join(list)</code></td><td><code>"-".join(['a','b'])</code></td><td><code>"a-b"</code></td><td>list → str</td></tr>
+    <tr><td><code>replace(old,new)</code></td><td><code>"aba".replace("a","o")</code></td><td><code>"obo"</code></td><td>replaces ALL</td></tr>
+    <tr><td><code>find(sub)</code></td><td><code>"hello".find("ll")</code></td><td><code>2</code></td><td>-1 if missing (no crash)</td></tr>
+    <tr><td><code>count(sub)</code></td><td><code>"banana".count("a")</code></td><td><code>3</code></td><td>frequency</td></tr>
+    <tr><td><code>startswith / endswith</code></td><td><code>"a.py".endswith(".py")</code></td><td><code>True</code></td><td>file checks</td></tr>
+    <tr><td><code>isdigit() / isalpha()</code></td><td><code>"123".isdigit()</code></td><td><code>True</code></td><td>validate input</td></tr>
+    <tr><td><code>title()</code></td><td><code>"mr naresh".title()</code></td><td><code>"Mr Naresh"</code></td><td>names</td></tr>
+    <tr><td><code>len(s)</code> (function)</td><td><code>len("hello")</code></td><td><code>5</code></td><td>everywhere</td></tr>
+    <tr><td><code>in</code> (operator)</td><td><code>"py" in "python"</code></td><td><code>True</code></td><td>search</td></tr>
+  </table></div>
+
+  <div class="alert aa" style="margin-top:1.2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Placement one-liners built from these</b>Reverse: <code>s[::-1]</code> · Palindrome: <code>s == s[::-1]</code> · Word count: <code>len(s.split())</code> · Remove spaces: <code>s.replace(" ", "")</code> · Vowel count: <code>sum(ch in "aeiou" for ch in s.lower())</code></div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 05: CONTROL FLOW ═══ -->
+<div class="sec-bar" id="flow">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">05</div>
+  <div class="sec-info"><h2>Level 2 — Control Flow</h2><p>if / elif / else and the two loops — where programs start making decisions</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--rose);">🎬 Animation — if / elif / else picks ONE path</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">marks = 67. Watch Python test each condition top-to-bottom and jump into the FIRST true branch — everything else is skipped.</p>
+      <div class="anim-wrap">
+        <div id="exec-if"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-if')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-if')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-if')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-if-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="a" style="margin-top:0;">Rules that beginners break</h3>
+      <ul class="bl a">
+        <li><strong>The colon <code>:</code></strong> ends every <code>if / elif / else / for / while / def</code> line. Forgetting it = SyntaxError.</li>
+        <li><strong>Indentation is grammar.</strong> 4 spaces = "inside the block". Wrong indent = wrong program, not just ugly code.</li>
+        <li><code>elif</code> chains are checked <strong>top to bottom</strong> — order matters! Put the strictest condition first.</li>
+        <li>Only <strong>ONE</strong> branch ever runs, then Python jumps below the whole chain.</li>
+        <li><code>=</code> assigns, <code>==</code> compares. <code>if x = 5:</code> is a SyntaxError (Python protects you — C doesn't!).</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">shortcuts worth knowing</span>
+<pre class="py"># ternary — if/else in one line
+status = "pass" if marks &gt;= 40 else "fail"
+
+# chained comparison — very Pythonic
+if 0 &lt;= marks &lt;= 100:      # both checks at once
+    print("valid")
+
+# truthiness — empty things are False
+if name:            # same as: if name != ""
+    print("hello", name)</pre></div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2.5rem;align-items:start;">
+    <div>
+      <h3 class="g">🎬 Animation — for loop with a running total</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">The classic accumulator pattern: watch <code>i</code> take each value from <code>range(1, 5)</code> and <code>total</code> grow. Note: range STOPS before 5!</p>
+      <div class="anim-wrap">
+        <div id="exec-for"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-for')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-for')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-for')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-for-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="p">🎬 Animation — while loop + break</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">while repeats as long as the condition is True. Watch the countdown — and see the condition finally fail.</p>
+      <div class="anim-wrap">
+        <div id="exec-while"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-while')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-while')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-while')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-while-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.5rem 0 .8rem;font-size:1.05rem;color:var(--rose);">🧰 The loop toolbox</h3>
+  <div class="g3">
+    <div class="cw"><span class="cl2 gr">range() — 3 forms</span>
+<pre class="py">range(5)        # 0 1 2 3 4
+range(2, 6)     # 2 3 4 5
+range(10, 0, -2)# 10 8 6 4 2
+
+for i in range(3):
+    print(i)    # 0 1 2</pre></div>
+    <div class="cw"><span class="cl2 am">break · continue</span>
+<pre class="py">for n in [3, 7, 4, 9]:
+    if n == 4:
+        break     # exit loop NOW
+    print(n)      # 3 7
+
+for n in range(5):
+    if n % 2 == 0:
+        continue  # skip to next turn
+    print(n)      # 1 3</pre></div>
+    <div class="cw"><span class="cl2 pu">enumerate &amp; zip</span>
+<pre class="py">names = ["Ana", "Raj"]
+marks = [88, 92]
+
+for i, n in enumerate(names):
+    print(i, n)   # 0 Ana / 1 Raj
+
+for n, m in zip(names, marks):
+    print(n, m)   # Ana 88 / Raj 92</pre></div>
+  </div>
+  <div class="alert ar">
+    <div class="alert-ico">♾️</div>
+    <div><b>Infinite loop checklist</b>Every <code>while</code> needs something INSIDE the loop that pushes the condition toward False (like <code>n = n - 1</code>). If you're stuck in one: Ctrl+C stops it.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 06: LISTS & TUPLES ═══ -->
+<div class="sec-bar" id="lists">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--green);">06</div>
+  <div class="sec-info"><h2>Level 3 — Lists &amp; Tuples</h2><p>Python's workhorse collection — press the buttons and watch it mutate</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">🧪 List <span class="hl" style="color:var(--green)">Lab</span> — every method, animated</h2>
+  <p class="ss">The list below is real. Click any method button — the boxes update exactly like Python's memory does</p>
+  <div class="playground">
+    <div class="cellrow" id="ll-cells"></div>
+    <div class="lab-row" style="justify-content:center;margin-top:.6rem;">
+      <div><label>value</label><input type="number" id="ll-v" value="99" style="width:85px;"/></div>
+      <div><label>index</label><input type="number" id="ll-i" value="1" style="width:85px;"/></div>
+    </div>
+    <div class="opchips" style="justify-content:center;">
+      <button class="opchip" onclick="listOp('append')">append(v)</button>
+      <button class="opchip" onclick="listOp('insert')">insert(i, v)</button>
+      <button class="opchip" onclick="listOp('pop')">pop()</button>
+      <button class="opchip" onclick="listOp('popi')">pop(i)</button>
+      <button class="opchip" onclick="listOp('remove')">remove(v)</button>
+      <button class="opchip" onclick="listOp('sort')">sort()</button>
+      <button class="opchip" onclick="listOp('reverse')">reverse()</button>
+      <button class="opchip" onclick="listOp('reset')">↺ reset</button>
+    </div>
+    <div class="anim-log" id="ll-msg">Click a method. Watch which box appears, disappears, or moves.</div>
+  </div>
+
+  <div class="g2" style="margin-top:2rem;align-items:start;">
+    <div>
+      <h3 class="g">List essentials</h3>
+      <div class="cw"><span class="cl2 gr">create · read · slice · nest</span>
+<pre class="py">nums = [10, 20, 30, 40]
+nums[0]       # 10        indexing like strings
+nums[-1]      # 40        last item
+nums[1:3]     # [20, 30]  slicing works too!
+len(nums)     # 4
+nums[0] = 99  # ✅ lists ARE mutable
+
+matrix = [[1, 2], [3, 4]]
+matrix[1][0]  # 3 — row 1, column 0</pre></div>
+      <div class="cw"><span class="cl2 am">the aliasing trap — MUST know</span>
+<pre class="py">a = [1, 2, 3]
+b = a            # NOT a copy! Same object,
+b.append(4)      # two name tags on it
+print(a)         # [1, 2, 3, 4] 😱 a changed!
+
+c = a.copy()     # real (shallow) copy
+c.append(5)
+print(a)         # [1, 2, 3, 4] — safe now</pre></div>
+    </div>
+    <div>
+      <h3 class="p">Tuples — lists that can't change</h3>
+      <div class="cw"><span class="cl2 pu">tuple = frozen list</span>
+<pre class="py">point = (3, 5)
+point[0]        # 3 — reading OK
+point[0] = 9    # ❌ TypeError — immutable
+
+x, y = point    # unpacking — very common
+single = (5,)   # one item NEEDS the comma!
+                # (5) is just the number 5</pre></div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>Question</th><th style="color:var(--green)">list</th><th style="color:var(--purple)">tuple</th></tr>
+        <tr><td>Can modify after creation?</td><td class="yes">Yes</td><td class="no">No</td></tr>
+        <tr><td>Syntax</td><td><code>[1, 2]</code></td><td><code>(1, 2)</code></td></tr>
+        <tr><td>Speed / memory</td><td>heavier</td><td class="yes">lighter, faster</td></tr>
+        <tr><td>Usable as dict key?</td><td class="no">No</td><td class="yes">Yes</td></tr>
+        <tr><td>Use for…</td><td>growing data</td><td>fixed records (x, y), (r, g, b)</td></tr>
+      </table></div>
+      <div class="alert ap" style="margin-top:1rem;">
+        <div class="alert-ico">💬</div>
+        <div><b>Interview answer</b>"Use a tuple when the data should never change — coordinates, RGB colors, dict keys. It signals intent and Python can optimize it."</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 07: DICTS & SETS ═══ -->
+<div class="sec-bar" id="dictset">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">07</div>
+  <div class="sec-info"><h2>Level 3 — Dictionaries &amp; Sets</h2><p>Key → value lookup in O(1) — the data structure that wins interviews</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h2 class="st">🧪 Dict <span class="hl" style="color:var(--rose)">Lab</span></h2>
+      <p class="ss">A dictionary is a phone book: you never scan page by page — you jump straight to the name</p>
+      <div class="playground">
+        <div id="dl-view" style="min-height:64px;padding:.4rem 0;"></div>
+        <div class="lab-row">
+          <div><label>key</label><input type="text" id="dl-k" value="mango" style="width:110px;"/></div>
+          <div><label>value</label><input type="text" id="dl-v" value="60" style="width:90px;"/></div>
+        </div>
+        <div class="opchips">
+          <button class="opchip" onclick="dictOp('set')">d[key] = value</button>
+          <button class="opchip" onclick="dictOp('get')">d.get(key)</button>
+          <button class="opchip" onclick="dictOp('del')">pop(key)</button>
+          <button class="opchip" onclick="dictOp('reset')">↺ reset</button>
+        </div>
+        <div class="anim-log" id="dl-msg">Add a new fruit price, look one up, or remove one.</div>
+      </div>
+      <div class="cw" style="margin-top:1.2rem;"><span class="cl2 ro">dict essentials</span>
+<pre class="py">prices = {"apple": 40, "banana": 10}
+prices["apple"]        # 40
+prices["kiwi"]         # ❌ KeyError!
+prices.get("kiwi", 0)  # 0 — safe, no crash
+
+prices["mango"] = 60         # add / update
+for fruit, cost in prices.items():
+    print(fruit, cost)
+
+# THE interview pattern — counting:
+counts = {}
+for ch in "banana":
+    counts[ch] = counts.get(ch, 0) + 1
+# {'b': 1, 'a': 3, 'n': 2}</pre></div>
+    </div>
+    <div>
+      <h2 class="st">🧪 Set <span class="hl" style="color:var(--green)">Lab</span></h2>
+      <p class="ss">A set = a bag of UNIQUE items. Its superpower: instant membership tests and set algebra</p>
+      <div class="playground">
+        <div class="setlabel">A =</div><div id="st-a"></div>
+        <div class="setlabel">B =</div><div id="st-b"></div>
+        <div class="opchips" style="margin-top:.8rem;">
+          <button class="opchip sel" data-sop="|" onclick="setOp(this)">A | B union</button>
+          <button class="opchip" data-sop="&" onclick="setOp(this)">A &amp; B intersection</button>
+          <button class="opchip" data-sop="-" onclick="setOp(this)">A - B difference</button>
+          <button class="opchip" data-sop="^" onclick="setOp(this)">A ^ B sym-diff</button>
+        </div>
+        <div class="setlabel">result =</div><div id="st-r"></div>
+        <div class="anim-log" id="st-msg" style="margin-top:.7rem;">Union: every item that appears in A or B (or both). Duplicates impossible.</div>
+      </div>
+      <div class="cw" style="margin-top:1.2rem;"><span class="cl2 gr">set essentials</span>
+<pre class="py">s = {1, 2, 2, 3, 3, 3}
+print(s)              # {1, 2, 3} — dupes gone!
+
+nums = [4, 2, 4, 1, 2]
+unique = list(set(nums))   # dedupe a list
+
+3 in s        # True — O(1), instant even
+              # with a million items
+s.add(9); s.remove(1)
+empty = set()  # NOT {} — that's an empty dict!</pre></div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.2rem 0 .8rem;font-size:1.05rem;color:var(--rose);">🧭 Which collection do I use? (30-second decision)</h3>
+  <div class="tw"><table>
+    <tr><th>You need…</th><th>Use</th><th>Why</th></tr>
+    <tr><td>An ordered sequence you'll modify</td><td><strong style="color:var(--green)">list</strong></td><td>append/insert/sort — the default choice</td></tr>
+    <tr><td>A fixed record that must not change</td><td><strong style="color:var(--purple)">tuple</strong></td><td>immutable, hashable, lighter</td></tr>
+    <tr><td>Lookup by name/id, counting things</td><td><strong style="color:var(--rose)">dict</strong></td><td>O(1) key → value jumps</td></tr>
+    <tr><td>Uniqueness or fast "have I seen this?"</td><td><strong style="color:var(--cyan)">set</strong></td><td>O(1) membership, auto-dedupe</td></tr>
+  </table></div>
+  <div class="alert ag">
+    <div class="alert-ico">🏆</div>
+    <div><b>The placement cheat code</b>Half of all "optimize this" interview questions are solved by replacing a list scan (O(n)) with a dict/set lookup (O(1)). Two Sum, duplicates, anagrams, frequency — all dict/set problems.</div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 08: FUNCTIONS ═══ -->
+<div class="sec-bar" id="funcs">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--indigo);">08</div>
+  <div class="sec-info"><h2>Level 4 — Functions</h2><p>Reusable blocks, the call stack, *args/**kwargs, scope and lambda</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--indigo);">🎬 Animation — a function call, frame by frame</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Watch carefully: <code>def</code> only STORES the recipe. Nothing runs until the call on line 6 — then control JUMPS up, a <span style="color:var(--purple)">local frame</span> appears, and <code>return</code> sends the value back down.</p>
+      <div class="anim-wrap">
+        <div id="exec-func"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-func')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-func')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-func')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-func-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-top:0;">Function anatomy</h3>
+      <div class="cw"><span class="cl2">every piece named</span>
+<pre class="py">def greet(name, greeting="Hi"):
+#   │     │      └ default parameter
+#   │     └ parameter
+#   └ function name
+    """Says hello. (docstring)"""
+    return f"{greeting}, {name}!"
+#   └ return sends a value back
+
+msg = greet("Asha")          # "Hi, Asha!"
+msg = greet("Raj", "Hello")  # positional
+msg = greet(name="Zia")      # keyword arg</pre></div>
+      <ul class="bl c" style="margin-top:.6rem;">
+        <li>No <code>return</code>? The function silently returns <code>None</code>.</li>
+        <li><code>return</code> exits IMMEDIATELY — code after it never runs.</li>
+        <li>Defaults must come after non-defaults: <code>def f(a, b=1)</code> ✅, <code>def f(a=1, b)</code> ❌</li>
+        <li>Functions are objects! You can pass them around: <code>apply = greet</code>, then <code>apply("Om")</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-top:2.2rem;">
+    <div class="cw"><span class="cl2 pu">*args — many positionals</span>
+<pre class="py">def total(*nums):
+    # nums is a TUPLE
+    return sum(nums)
+
+total(1, 2)        # 3
+total(1, 2, 3, 4)  # 10
+total()            # 0</pre></div>
+    <div class="cw"><span class="cl2 am">**kwargs — many keywords</span>
+<pre class="py">def profile(**info):
+    # info is a DICT
+    for k, v in info.items():
+        print(k, "=", v)
+
+profile(name="Ana", age=21)
+# name = Ana
+# age = 21</pre></div>
+    <div class="cw"><span class="cl2 gr">lambda — tiny nameless fn</span>
+<pre class="py">square = lambda x: x * x
+square(5)            # 25
+
+# real use: as sort keys
+pairs = [(1, 9), (2, 3)]
+pairs.sort(key=lambda p: p[1])
+# [(2, 3), (1, 9)]</pre></div>
+  </div>
+
+  <div class="g2" style="margin-top:2rem;align-items:start;">
+    <div>
+      <h3 class="a">Scope — the LEGB rule</h3>
+      <div class="cw"><span class="cl2 am">where does Python LOOK for a name?</span>
+<pre class="py">x = "global"
+
+def outer():
+    x = "enclosing"
+    def inner():
+        x = "local"
+        print(x)   # local → found here first
+    inner()
+
+# search order: Local → Enclosing
+#             → Global → Built-in  (LEGB)</pre></div>
+      <div class="alert aa">
+        <div class="alert-ico">⚠️</div>
+        <div><b>Assignment makes it local</b>Reading a global inside a function is fine. But <em>assigning</em> to it creates a NEW local unless you declare <code>global x</code>. Best practice: don't — pass values in, return values out.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="r">The mutable default argument trap</h3>
+      <div class="cw"><span class="cl2 ro">the most famous Python interview bug</span>
+<pre class="py">def add_item(item, box=[]):    # ❌ DANGER
+    box.append(item)
+    return box
+
+add_item(1)   # [1]
+add_item(2)   # [1, 2] 😱 same list reused!
+
+# defaults are created ONCE at def time.
+# ✅ the fix:
+def add_item(item, box=None):
+    if box is None:
+        box = []
+    box.append(item)
+    return box</pre></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 09: OOP ═══ -->
+<div class="sec-bar" id="oop">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--amber);">09</div>
+  <div class="sec-info"><h2>Level 5 — Object-Oriented Python</h2><p>Classes, self, inheritance and dunder methods — explained without jargon</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h2 class="st">Class = <span class="hl" style="color:var(--amber)">blueprint</span>, object = the house built from it</h2>
+      <p class="ss">One Dog class, many actual dogs — each with its own name in its own memory</p>
+      <ul class="bl a">
+        <li><code>__init__</code> is the <strong>constructor</strong> — it runs automatically every time you build an object, and its job is to fill in that object's data.</li>
+        <li><code>self</code> = "THIS particular object". <code>self.name</code> means "the name belonging to the dog being handled right now". Python passes it automatically.</li>
+        <li><strong>Attributes</strong> = the object's variables (<code>self.name</code>). <strong>Methods</strong> = the object's functions (<code>speak</code>).</li>
+        <li>Each object gets its OWN attributes: <code>Dog("Rex")</code> and <code>Dog("Tomy")</code> don't share names.</li>
+      </ul>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 am">two dogs from one blueprint</span>
+<pre class="py">class Dog:
+    def __init__(self, name, breed):
+        self.name = name
+        self.breed = breed
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+d1 = Dog("Rex", "Lab")     # __init__ runs
+d2 = Dog("Tomy", "Pug")    # separate object
+d1.speak()   # "Rex says Woof!"
+d2.speak()   # "Tomy says Woof!"</pre></div>
+    </div>
+    <div>
+      <h3 style="color:var(--amber);">🎬 Animation — watch __init__ build the object</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Line 7 LOOKS simple — but stepping shows it secretly calls <code>__init__</code>, creates <code>self</code>, and fills the attributes one by one.</p>
+      <div class="anim-wrap">
+        <div id="exec-class"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-class')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-class')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-class')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-class-cap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2.5rem;align-items:start;">
+    <div>
+      <h3 class="g">Inheritance — reuse a whole class</h3>
+      <div class="cw"><span class="cl2 gr">child gets everything, overrides what it wants</span>
+<pre class="py">class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        return "..."
+
+class Dog(Animal):            # Dog IS-A Animal
+    def speak(self):          # override
+        return "Woof!"
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow!"
+
+for pet in [Dog("Rex"), Cat("Kitty")]:
+    print(pet.name, pet.speak())
+# Rex Woof! / Kitty Meow!   ← polymorphism:
+# same call, each object answers its own way</pre></div>
+      <div class="alert ag">
+        <div class="alert-ico">🧬</div>
+        <div><b>super()</b>calls the parent's version: <code>super().__init__(name)</code> inside the child's <code>__init__</code> lets the parent do its setup first, then the child adds its own attributes.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="p">Dunder methods — teach Python your type</h3>
+      <div class="cw"><span class="cl2 pu">__these__ hook into built-in syntax</span>
+<pre class="py">class Money:
+    def __init__(self, rs):
+        self.rs = rs
+    def __str__(self):          # print(m)
+        return f"₹{self.rs}"
+    def __add__(self, other):   # m1 + m2
+        return Money(self.rs + other.rs)
+    def __eq__(self, other):    # m1 == m2
+        return self.rs == other.rs
+
+a, b = Money(50), Money(70)
+print(a + b)       # ₹120 — + just works!</pre></div>
+      <div class="tw" style="margin-top:1rem;"><table>
+        <tr><th>You write</th><th>Python secretly calls</th></tr>
+        <tr><td><code>print(obj)</code></td><td><code>obj.__str__()</code></td></tr>
+        <tr><td><code>a + b</code></td><td><code>a.__add__(b)</code></td></tr>
+        <tr><td><code>len(obj)</code></td><td><code>obj.__len__()</code></td></tr>
+        <tr><td><code>a == b</code></td><td><code>a.__eq__(b)</code></td></tr>
+        <tr><td><code>obj[i]</code></td><td><code>obj.__getitem__(i)</code></td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <h3 style="margin:2.2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">🏛️ The 4 pillars in one table (placement rapid-fire)</h3>
+  <div class="tw"><table>
+    <tr><th>Pillar</th><th>One-line meaning</th><th>Python tool</th></tr>
+    <tr><td><strong style="color:var(--cyan)">Encapsulation</strong></td><td>bundle data + methods, hide internals</td><td><code>_protected</code>, <code>__private</code> name-mangling, <code>@property</code></td></tr>
+    <tr><td><strong style="color:var(--green)">Inheritance</strong></td><td>child class reuses parent's code</td><td><code>class Dog(Animal)</code>, <code>super()</code></td></tr>
+    <tr><td><strong style="color:var(--amber)">Polymorphism</strong></td><td>same call, different behavior per type</td><td>method overriding, duck typing</td></tr>
+    <tr><td><strong style="color:var(--rose)">Abstraction</strong></td><td>expose WHAT, hide HOW</td><td><code>abc.ABC</code>, <code>@abstractmethod</code></td></tr>
+  </table></div>
+</div>
+</section>
+
+<!-- ═══ SEC 10: ERRORS & FILES ═══ -->
+<div class="sec-bar" id="errors">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--rose);">10</div>
+  <div class="sec-info"><h2>Level 5 — Errors &amp; Files</h2><p>Crash-proof code with try/except, and reading/writing real files</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <div class="g2" style="align-items:start;">
+    <div>
+      <h3 style="color:var(--rose);">🎬 Animation — an exception in flight</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">Line 2 explodes. Watch Python ABANDON the try block mid-way, hunt for a matching except, and still run finally at the end.</p>
+      <div class="anim-wrap">
+        <div id="exec-try"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-try')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-try')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-try')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-try-cap"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="c" style="margin-top:0;">The errors you'll meet this month</h3>
+      <div class="tw"><table>
+        <tr><th>Exception</th><th>You caused it by…</th></tr>
+        <tr><td><code>SyntaxError</code></td><td>typo — missing <code>:</code> or bracket (can't be caught!)</td></tr>
+        <tr><td><code>NameError</code></td><td>using a variable that doesn't exist yet</td></tr>
+        <tr><td><code>TypeError</code></td><td><code>"age: " + 21</code> — mixing types</td></tr>
+        <tr><td><code>ValueError</code></td><td><code>int("abc")</code> — right type, bad value</td></tr>
+        <tr><td><code>IndexError</code></td><td><code>[1,2,3][5]</code> — index too big</td></tr>
+        <tr><td><code>KeyError</code></td><td><code>d["missing"]</code> — key not in dict</td></tr>
+        <tr><td><code>ZeroDivisionError</code></td><td><code>x / 0</code></td></tr>
+      </table></div>
+      <div class="cw" style="margin-top:1rem;"><span class="cl2 ro">full pattern + raising your own</span>
+<pre class="py">try:
+    marks = int(input("Marks? "))
+    if not 0 &lt;= marks &lt;= 100:
+        raise ValueError("0–100 only!")
+except ValueError as e:
+    print("Bad input:", e)
+else:
+    print("OK:", marks)   # runs if NO error
+finally:
+    print("Done.")        # runs ALWAYS</pre></div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2.5rem;align-items:start;">
+    <div>
+      <h3 class="g">Files — the `with` way (the only way)</h3>
+      <div class="cw"><span class="cl2 gr">read &amp; write text files</span>
+<pre class="py"># WRITE (creates / overwrites)
+with open("scores.txt", "w") as f:
+    f.write("Asha,88\n")
+    f.write("Raj,92\n")
+
+# READ — whole file
+with open("scores.txt") as f:
+    data = f.read()
+
+# READ — line by line (big files!)
+with open("scores.txt") as f:
+    for line in f:
+        name, score = line.strip().split(",")
+        print(name, "scored", score)</pre></div>
+      <div class="alert ag">
+        <div class="alert-ico">🔒</div>
+        <div><b>Why with?</b><code>with</code> closes the file automatically — even if an exception fires in the middle. No <code>f.close()</code> to forget. Interviews expect you to say "context manager".</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="a">File modes cheat sheet</h3>
+      <div class="tw"><table>
+        <tr><th>Mode</th><th>Meaning</th><th>If file exists</th><th>If missing</th></tr>
+        <tr><td><code>"r"</code></td><td>read (default)</td><td>reads</td><td class="no">error</td></tr>
+        <tr><td><code>"w"</code></td><td>write</td><td class="no">WIPES it!</td><td>creates</td></tr>
+        <tr><td><code>"a"</code></td><td>append</td><td>adds to end</td><td>creates</td></tr>
+        <tr><td><code>"x"</code></td><td>create only</td><td class="no">error</td><td>creates</td></tr>
+        <tr><td><code>"rb"/"wb"</code></td><td>binary (images…)</td><td>—</td><td>—</td></tr>
+      </table></div>
+      <div class="alert ar" style="margin-top:1rem;">
+        <div class="alert-ico">⚠️</div>
+        <div><b>The "w" trap</b>Opening an existing file in <code>"w"</code> mode erases it INSTANTLY — before you write anything. Use <code>"a"</code> when adding to logs or records.</div>
+      </div>
+      <div class="alert ac">
+        <div class="alert-ico">💬</div>
+        <div><b>Interview line</b>"Never catch a bare <code>except:</code> — it swallows even Ctrl+C and hides real bugs. Catch the SPECIFIC exception you expect."</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- ═══ SEC 11: MASTER LEVEL ═══ -->
+<div class="sec-bar" id="master">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--purple);">11</div>
+  <div class="sec-info"><h2>Level 6 — Master Python</h2><p>Comprehensions, generators, decorators, closures — the features that make you look senior</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <h2 class="st">Comprehensions — a <span class="hl">loop in one line</span></h2>
+  <p class="ss">The same pattern works for lists, dicts and sets. Read it right-to-left: "for each x … keep if … transform to …"</p>
+  <div class="g3">
+    <div class="cw"><span class="cl2 gr">list comprehension</span>
+<pre class="py"># the loop way
+squares = []
+for x in range(5):
+    squares.append(x * x)
+
+# the comprehension way
+squares = [x * x for x in range(5)]
+# [0, 1, 4, 9, 16]
+
+# with a filter
+evens = [x for x in range(10) if x % 2 == 0]</pre></div>
+    <div class="cw"><span class="cl2 am">dict &amp; set comprehension</span>
+<pre class="py">names = ["Ana", "Raj", "Zia"]
+
+lengths = {n: len(n) for n in names}
+# {'Ana': 3, 'Raj': 3, 'Zia': 3}
+
+firsts = {n[0] for n in names}
+# {'A', 'R', 'Z'} — a set
+
+# transpose pairs
+flip = {v: k for k, v in lengths.items()}</pre></div>
+    <div class="cw"><span class="cl2 pu">with map / filter flavor</span>
+<pre class="py">nums = [3, -1, 4, -5, 9]
+
+# keep positives, square them
+out = [n * n for n in nums if n &gt; 0]
+
+# same with map+filter (older style)
+out = list(map(lambda n: n * n,
+        filter(lambda n: n &gt; 0, nums)))
+# comprehension wins on readability!</pre></div>
+  </div>
+
+  <div class="g2" style="margin-top:2.5rem;align-items:start;">
+    <div>
+      <h3 class="p">🎬 Animation — a generator PAUSES at yield</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">A normal function runs start-to-finish. A generator runs until <code>yield</code>, hands over a value, and <strong style="color:var(--purple)">freezes</strong> — resuming exactly there on the next <code>next()</code>.</p>
+      <div class="anim-wrap">
+        <div id="exec-gen"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-gen')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-gen')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-gen')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-gen-cap"></div>
+      </div>
+      <div class="alert ap">
+        <div class="alert-ico">♻️</div>
+        <div><b>Why care?</b><code>range(10**9)</code> doesn't build a billion numbers — it generates them one at a time. Generators = huge data with tiny memory. Say "lazy evaluation" in the interview.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="a">🎬 Animation — a decorator wraps a function</h3>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:.6rem;">A decorator takes a function, returns an upgraded version, and quietly swaps it in. Watch <code>hello</code> get replaced by <code>wrapper</code>.</p>
+      <div class="anim-wrap">
+        <div id="exec-deco"></div>
+        <div class="anim-ctrl">
+          <button class="btn btn-c" onclick="stepExec('exec-deco')">▶ Step</button>
+          <button class="btn btn-a" onclick="autoExec('exec-deco')">⏩ Auto</button>
+          <button class="btn btn-r" onclick="resetExec('exec-deco')">↺ Reset</button>
+        </div>
+        <div class="anim-log" id="exec-deco-cap"></div>
+      </div>
+      <div class="alert aa">
+        <div class="alert-ico">🎁</div>
+        <div><b>Where you've seen them</b><code>@app.route("/")</code> in Flask, <code>@staticmethod</code>, <code>@property</code>, <code>@functools.lru_cache</code> (instant memoization — remember the DP page?). All decorators.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:2.5rem;align-items:start;">
+    <div>
+      <h3 class="c">Closures — functions that remember</h3>
+      <div class="cw"><span class="cl2">the inner function keeps outer variables alive</span>
+<pre class="py">def make_counter():
+    count = 0
+    def step():
+        nonlocal count
+        count += 1
+        return count
+    return step
+
+c1 = make_counter()
+c1(); c1(); print(c1())   # 3
+c2 = make_counter()
+print(c2())               # 1 — own memory!</pre></div>
+      <div class="alert ac">
+        <div class="alert-ico">🧠</div>
+        <div><b>One line</b>"A closure is an inner function that captures variables from its enclosing scope — they survive after the outer function returns." Decorators are built on closures.</div>
+      </div>
+    </div>
+    <div>
+      <h3 class="g">Modules, pip &amp; the standard library</h3>
+      <div class="cw"><span class="cl2 gr">import — using other people's code</span>
+<pre class="py">import math
+math.sqrt(16)            # 4.0
+
+from random import randint
+randint(1, 6)            # dice roll 🎲
+
+from collections import Counter
+Counter("banana")        # {'a':3,'n':2,'b':1}
+
+# your own file utils.py → import utils
+# install new powers:  pip install requests</pre></div>
+      <div class="tw" style="margin-top:.9rem;"><table>
+        <tr><th>Module</th><th>Superpower</th></tr>
+        <tr><td><code>math, random</code></td><td>maths &amp; randomness</td></tr>
+        <tr><td><code>collections</code></td><td>Counter, defaultdict, deque</td></tr>
+        <tr><td><code>itertools</code></td><td>permutations, combinations</td></tr>
+        <tr><td><code>datetime, os, sys</code></td><td>dates, files, system</td></tr>
+        <tr><td><code>json, re</code></td><td>JSON APIs, regex</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="alert ap" style="margin-top:2rem;">
+    <div class="alert-ico">🔐</div>
+    <div><b>Bonus master topic — the GIL</b>Python's Global Interpreter Lock lets only ONE thread execute Python bytecode at a time. Threads still help for waiting-heavy work (downloads, I/O); for CPU-heavy work use <code>multiprocessing</code>. Dropping "GIL" correctly in an interview instantly raises your level.</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ SEC 12: MASTER MAP & INTERVIEW Q&A ═══ -->
+<div class="sec-bar" id="map">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--orange);">12</div>
+  <div class="sec-info"><h2>The Master Map</h2><p>Choose the right tool in 30 seconds + rapid-fire interview Q&amp;A</p></div>
+</div></div></div>
+<section>
+<div class="page">
+  <h2 class="st">The <span class="hl">Pattern Map</span> — hear the phrase, know the tool</h2>
+  <p class="ss">Interviewers describe a task — you should instantly hear which Python feature it is</p>
+  <div class="tw"><table>
+    <tr><th>They say…</th><th>You think…</th><th>Tool</th></tr>
+    <tr><td>"count the frequency of…"</td><td>key → count</td><td><strong style="color:var(--rose)">dict</strong> / <code>Counter</code></td></tr>
+    <tr><td>"remove duplicates", "unique"</td><td>uniqueness</td><td><strong style="color:var(--cyan)">set</strong></td></tr>
+    <tr><td>"reverse a string/list"</td><td>slicing</td><td><code>s[::-1]</code></td></tr>
+    <tr><td>"transform every element"</td><td>one-line loop</td><td><strong style="color:var(--green)">comprehension</strong></td></tr>
+    <tr><td>"huge file / stream / infinite"</td><td>lazy, one at a time</td><td><strong style="color:var(--purple)">generator</strong></td></tr>
+    <tr><td>"add logging/timing to functions"</td><td>wrap behavior</td><td><strong style="color:var(--amber)">decorator</strong></td></tr>
+    <tr><td>"model a real-world thing"</td><td>data + behavior</td><td><strong style="color:var(--amber)">class</strong></td></tr>
+    <tr><td>"program must not crash on bad input"</td><td>guard it</td><td><strong style="color:var(--rose)">try/except</strong></td></tr>
+    <tr><td>"pair up two lists"</td><td>parallel iterate</td><td><code>zip()</code></td></tr>
+    <tr><td>"index AND value in a loop"</td><td>numbered iterate</td><td><code>enumerate()</code></td></tr>
+  </table></div>
+
+  <div class="g2" style="margin-top:2rem;">
+    <div class="card gl">
+      <h3 class="g">✅ Signs of a Python master</h3>
+      <ul class="bl g" style="margin-top:.4rem;">
+        <li>Uses <code>for item in items</code>, never <code>for i in range(len(items))</code> unless the index is needed</li>
+        <li>Reaches for dict/set the moment "lookup" or "seen before" appears</li>
+        <li>Writes <code>with open(...)</code> automatically, catches SPECIFIC exceptions</li>
+        <li>f-strings everywhere; comprehensions where they stay readable</li>
+        <li>Can explain <code>is</code> vs <code>==</code>, mutable default args, and shallow vs deep copy without blinking</li>
+      </ul>
+    </div>
+    <div class="card rl">
+      <h3 class="r">❌ The 5 classic Python mistakes</h3>
+      <ul class="bl r" style="margin-top:.4rem;">
+        <li><code>b = a</code> on a list and being shocked both change (aliasing!)</li>
+        <li><code>def f(x, box=[])</code> — the mutable default trap</li>
+        <li>Forgetting <code>input()</code> returns str → <code>TypeError</code> math</li>
+        <li>Modifying a list WHILE looping over it (iterate a copy: <code>for x in nums[:]</code>)</li>
+        <li>Bare <code>except:</code> hiding every bug in the program</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:2rem 0 .8rem;font-size:1.05rem;color:var(--amber);">💬 Rapid-fire Interview Q&amp;A</h3>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q1</span>List vs tuple — when and why?</span><span class="qico">+</span></div><div class="qa-a">List = mutable, for collections that grow/change. Tuple = immutable, for fixed records — safer, slightly faster, usable as dict keys and set members (hashable). If the data shouldn't change, a tuple documents that intent.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q2</span>What is the difference between == and is?</span><span class="qico">+</span></div><div class="qa-a"><code>==</code> compares VALUES (calls <code>__eq__</code>). <code>is</code> compares IDENTITY — are both names pointing at the exact same object in memory? Two equal lists are <code>==</code> but not <code>is</code>. Only use <code>is</code> for <code>None</code>: <code>if x is None</code>.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q3</span>Shallow copy vs deep copy?</span><span class="qico">+</span></div><div class="qa-a"><code>a.copy()</code> (shallow) copies the outer list but inner lists are still SHARED — changing <code>a[0][0]</code> also changes the copy's. <code>copy.deepcopy(a)</code> recursively copies everything. For flat lists shallow is enough; for nested structures you usually want deep.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q4</span>Why is a generator better than a list here?</span><span class="qico">+</span></div><div class="qa-a">A list materializes ALL items in memory at once; a generator produces one item on demand and forgets it. For a 10 GB log file or an infinite stream, the generator uses constant memory. Trade-off: you can only iterate it once and can't index it.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q5</span>Explain decorators in one minute.</span><span class="qico">+</span></div><div class="qa-a">A decorator is a function that takes a function and returns an enhanced replacement. <code>@timer</code> above <code>def work()</code> is just <code>work = timer(work)</code>. Built on closures: the wrapper remembers the original. Used for logging, timing, caching (<code>lru_cache</code>), auth checks (Flask/Django).</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q6</span>What is the GIL and why does it matter?</span><span class="qico">+</span></div><div class="qa-a">The Global Interpreter Lock allows only one thread to run Python bytecode at a time, so threads don't speed up CPU-bound code. Threads still shine for I/O-bound work (network, disk waits). For true parallel CPU work, use <code>multiprocessing</code> — separate processes, separate GILs.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q7</span>How does Python manage memory?</span><span class="qico">+</span></div><div class="qa-a">Reference counting: every object tracks how many names point to it; hitting zero frees it immediately. A cyclic garbage collector handles reference cycles (a→b→a). <code>del x</code> removes the NAME, not necessarily the object.</div></div>
+  <div class="qa" onclick="this.classList.toggle('open')"><div class="qa-q"><span><span class="qt">Q8</span>What are *args and **kwargs actually?</span><span class="qico">+</span></div><div class="qa-a"><code>*args</code> collects extra positional arguments into a TUPLE; <code>**kwargs</code> collects extra keyword arguments into a DICT. The names are convention — the stars do the work. Reversed at call sites: <code>f(*mylist)</code> unpacks a list into separate arguments.</div></div>
+</div>
+</section>
+
+<!-- ═══ SEC 13: PRACTICE SHEET ═══ -->
+<div class="sec-bar" id="practice">
+<div class="page"><div class="sec-bar-inner">
+  <div class="sec-num" style="color:var(--cyan);">13</div>
+  <div class="sec-info"><h2>The 42-Problem Practice Sheet</h2><p>Solve in order — each level unlocks the next. Tick them off! ✅</p></div>
+</div></div></div>
+<section>
+<div class="page">
+
+  <h3 class="c" style="margin-bottom:.8rem;">🟢 Level 1 — Absolute basics (print, input, math)</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Greeting Machine</h4><p>Ask name &amp; age, print "Hi X, next year you'll be Y".</p><div class="ht">Hint: int(input()), f-string</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Bill Splitter</h4><p>Total + friends → per-head amount, 2 decimals.</p><div class="ht">Hint: f"{x:.2f}"</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Time Converter</h4><p>Seconds → hours, minutes, seconds.</p><div class="ht">Hint: // and % with 3600, 60</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Swap Without Temp</h4><p>Swap two variables in one line.</p><div class="ht">Hint: a, b = b, a</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Last Digit Game</h4><p>Print last digit, then the number without it.</p><div class="ht">Hint: n % 10, n // 10</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Even or Odd</h4><p>Read n, print "even"/"odd" using one ternary.</p><div class="ht">Hint: "even" if n % 2 == 0 else "odd"</div></div>
+  </div>
+
+  <h3 class="p" style="margin:1.8rem 0 .8rem;">🟣 Level 2 — Conditions &amp; loops</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Grade Calculator</h4><p>Marks → A/B/C/F with elif chain, validate 0–100.</p><div class="ht">Hint: strictest condition first</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>FizzBuzz</h4><p>1–50: "Fizz" for ÷3, "Buzz" for ÷5, both for ÷15.</p><div class="ht">Hint: check 15 FIRST</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Multiplication Table</h4><p>Print the full table of n, formatted.</p><div class="ht">Hint: f"{n} x {i} = {n*i}"</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Prime Checker</h4><p>Is n prime? Loop only till √n.</p><div class="ht">Hint: range(2, int(n**0.5)+1)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Guess Number Game</h4><p>Random 1–100, while loop, "higher/lower" hints.</p><div class="ht">Hint: randint + while True + break</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Star Pyramid</h4><p>Print n rows of centered stars.</p><div class="ht">Hint: " "*(n-i) + "*"*(2*i-1)</div></div>
+  </div>
+
+  <h3 class="a" style="margin:1.8rem 0 .8rem;">🟡 Level 3 — Strings</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Palindrome Test</h4><p>Ignore case &amp; spaces: "Never odd or even" → True.</p><div class="ht">Hint: clean, then s == s[::-1]</div></div>
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Vowel Counter</h4><p>Count vowels in a sentence.</p><div class="ht">Hint: sum(ch in "aeiou" ...)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Word Reverser</h4><p>"I love Python" → "Python love I".</p><div class="ht">Hint: split → [::-1] → join</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Initials Maker</h4><p>"naresh gupta" → "N.G."</p><div class="ht">Hint: split + first chars + upper</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Anagram Check</h4><p>"listen" vs "silent" → True.</p><div class="ht">Hint: sorted(a) == sorted(b)</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Caesar Cipher</h4><p>Shift each letter by k positions.</p><div class="ht">Hint: ord(), chr(), % 26</div></div>
+  </div>
+
+  <h3 class="g" style="margin:1.8rem 0 .8rem;">🟢 Level 4 — Lists, dicts &amp; sets</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-e lc-diff">EASY</span><h4>Min-Max-Sum (no built-ins)</h4><p>One loop, no min()/max()/sum().</p><div class="ht">Hint: track three variables</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Second Largest</h4><p>Find it in ONE pass.</p><div class="ht">Hint: update (big, second) together</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Frequency Dictionary</h4><p>Word counts of a paragraph, top 3 by count.</p><div class="ht">Hint: get(w, 0) + 1, sort by value</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Two Sum</h4><p>Find the pair summing to target — O(n).</p><div class="ht">Hint: dict of seen numbers</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Duplicate Finder</h4><p>Return items appearing more than once.</p><div class="ht">Hint: seen set + dupes set</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Matrix Transpose</h4><p>Rows ↔ columns with a nested comprehension.</p><div class="ht">Hint: zip(*matrix) is the pro move</div></div>
+  </div>
+
+  <h3 class="r" style="margin:1.8rem 0 .8rem;">🔴 Level 5 — Functions &amp; OOP</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Flexible Calculator</h4><p>average(*nums) handling any count, empty too.</p><div class="ht">Hint: *args, guard len == 0</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Recursive Trio</h4><p>factorial, fibonacci, sum-of-digits — recursively.</p><div class="ht">Hint: base case FIRST</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>BankAccount Class</h4><p>deposit/withdraw, block overdraft, __str__.</p><div class="ht">Hint: raise ValueError on bad amount</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Shape Hierarchy</h4><p>Shape → Circle/Rect, each with own area().</p><div class="ht">Hint: polymorphism in a loop</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Money Class with Dunders</h4><p>Support +, ==, print, and len of a Wallet.</p><div class="ht">Hint: __add__, __eq__, __str__</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Student Manager</h4><p>Class holding dict of students; add/search/top-scorer.</p><div class="ht">Hint: dict inside a class</div></div>
+  </div>
+
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--indigo);">🔵 Level 6 — Files &amp; robustness</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Crash-proof Input</h4><p>Keep asking until a valid int 1–10 arrives.</p><div class="ht">Hint: while True + try/except</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Score File</h4><p>Write name,score lines; read back; print average.</p><div class="ht">Hint: with open, split(",")</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Word Frequency of a File</h4><p>Most common word in any .txt file.</p><div class="ht">Hint: read → lower → split → dict</div></div>
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Safe Division Function</h4><p>divide(a, b) that never crashes, returns None on error.</p><div class="ht">Hint: except ZeroDivisionError</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Log Appender</h4><p>Append timestamped lines; never overwrite old logs.</p><div class="ht">Hint: mode "a", datetime.now()</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Custom Exception</h4><p>class LowBalanceError; raise it from BankAccount.</p><div class="ht">Hint: class X(Exception): pass</div></div>
+  </div>
+
+  <h3 style="margin:1.8rem 0 .8rem;color:var(--orange);">🟠 Boss level — master features</h3>
+  <div class="g3">
+    <div class="pc"><span class="dif lc-m lc-diff">MED</span><h4>Comprehension Sprint</h4><p>Squares dict, evens list, unique-firsts set — one line each.</p><div class="ht">Hint: {n: n*n ...}, [...], {...}</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Infinite Even Generator</h4><p>Generator yielding 0, 2, 4, … forever; take first 10.</p><div class="ht">Hint: while True: yield n</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>@timer Decorator</h4><p>Print how long any function took.</p><div class="ht">Hint: time.time() before/after, *args passthrough</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>@memoize Decorator</h4><p>Cache fib results — then check the DP page 😉.</p><div class="ht">Hint: dict in the closure</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Counter Factory</h4><p>make_counter() closures with independent counts.</p><div class="ht">Hint: nonlocal</div></div>
+    <div class="pc"><span class="dif lc-h lc-diff">HARD</span><h4>Mini Contact Book App</h4><p>Menu loop + dict + file save/load + error handling. Everything combined!</p><div class="ht">Hint: this IS the final exam</div></div>
+  </div>
+
+  <div class="alert ag" style="margin-top:2rem;">
+    <div class="alert-ico">🏆</div>
+    <div><b>Completion promise</b>Finish these 42 and you're ahead of 90% of placement candidates in Python. Next stops on CoddingBuddY: the <a href="dsa_learn.html" style="color:var(--cyan)">DSA course</a> and the <a href="dp_complete.html" style="color:var(--cyan)">Dynamic Programming — Zero to Master</a> page (you'll recognize memoization instantly now). 💪</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-brand">CoddingBuddY</div>
+  <div class="footer-by">by Mr. Naresh G. · Technical Trainer &amp; DSA Coach</div>
+  <p>Python — Zero to Master · For placement preparation</p>
+  <div class="links">
+    <span>🧪 6 Live Labs</span><span>🎬 10 Line-by-Line Animations</span><span>🐍 40+ Code Examples</span><span>📝 42 Practice Problems</span><span>💬 Interview Q&amp;A</span>
+  </div>
+  <p style="margin-top:.8rem;">© 2026 CoddingBuddY · Designed &amp; Built by Mr. Naresh G. · All rights reserved.</p>
+</footer>
+<script>
+/* ═══════════ PYTHON SYNTAX HIGHLIGHTER ═══════════ */
+const PY_KW = new Set(['def','class','return','if','elif','else','for','while','in','not','and','or','None','True','False','lambda','nonlocal','global','break','continue','import','from','try','except','finally','raise','with','as','yield','pass','del','is','assert']);
+const PY_FN = new Set(['range','len','max','min','sum','set','float','int','str','list','dict','tuple','bool','enumerate','abs','print','sorted','reversed','input','type','zip','map','filter','isinstance','super','open','next','iter','id','round','ord','chr','randint','Counter','sqrt','format']);
+function hiPy(raw){
+  let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return t.replace(/(#.*$)|('[^'\n]*'|"[^"\n]*")|\b([A-Za-z_][A-Za-z_0-9]*)\b|(\d+\.?\d*)/gm, (m, cm, st, w, num) => {
+    if (cm)  return '<span class="cm">' + cm + '</span>';
+    if (st)  return '<span class="st2">' + st + '</span>';
+    if (w){
+      if (PY_KW.has(w)) return '<span class="kw">' + w + '</span>';
+      if (PY_FN.has(w)) return '<span class="fn">' + w + '</span>';
+      return m;
+    }
+    if (num) return '<span class="nm">' + num + '</span>';
+    return m;
+  });
+}
+document.querySelectorAll('pre.py').forEach(p => { p.innerHTML = hiPy(p.textContent); });
+
+/* ═══════════ EXEC ENGINE — line-by-line Python runner ═══════════ */
+const X = {};
+function regExec(id, cfg){
+  const host = document.getElementById(id);
+  let codeHtml = cfg.code.map((ln, i) =>
+    '<div class="xline" id="' + id + '-l' + i + '"><span class="ln">' + (i + 1) + '</span><span>' + (ln === '' ? ' ' : hiPy(ln)) + '</span></div>'
+  ).join('');
+  host.innerHTML =
+    '<div class="exec-grid">' +
+      '<div class="exec-code">' + codeHtml + '</div>' +
+      '<div>' +
+        '<div class="exec-vars"><div class="exec-vt">📦 Variables in memory</div><div id="' + id + '-vars"><span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span></div></div>' +
+        '<div class="exec-out"><div class="exec-vt">🖥️ Output</div><pre id="' + id + '-out"></pre></div>' +
+      '</div>' +
+    '</div>';
+  X[id] = { cfg, i: 0, timer: null };
+  resetExec(id);
+}
+function renderVars(id, v){
+  const box = document.getElementById(id + '-vars');
+  const keys = Object.keys(v || {});
+  if (!keys.length){ box.innerHTML = '<span style="color:var(--muted);font-size:12px;font-style:italic;">— empty —</span>'; return; }
+  box.innerHTML = keys.map(k => {
+    const item = v[k];
+    const val = Array.isArray(item) ? item[0] : item;
+    const cls = Array.isArray(item) && item[1] ? ' ' + item[1] : '';
+    const esc = String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<span class="vbox' + cls + '"><span class="vn">' + k + '</span><span class="vv">' + esc + '</span></span>';
+  }).join('');
+}
+function resetExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; }
+  x.i = 0;
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  renderVars(id, {});
+  document.getElementById(id + '-out').textContent = '';
+  document.getElementById(id + '-cap').textContent = 'Press ▶ Step or ⏩ Auto to run this program';
+}
+function stepExec(id){
+  const x = X[id];
+  if (x.i >= x.cfg.steps.length){
+    document.getElementById(id + '-cap').textContent = '✅ Program finished! Press ↺ Reset to replay.';
+    return;
+  }
+  const s = x.cfg.steps[x.i++];
+  x.cfg.code.forEach((_, i) => document.getElementById(id + '-l' + i).classList.remove('on'));
+  if (s.l >= 0) document.getElementById(id + '-l' + s.l).classList.add('on');
+  if (s.v !== undefined) renderVars(id, s.v);
+  if (s.o !== undefined) document.getElementById(id + '-out').textContent = s.o;
+  document.getElementById(id + '-cap').textContent = s.c;
+}
+function autoExec(id){
+  const x = X[id];
+  if (x.timer){ clearInterval(x.timer); x.timer = null; return; }
+  if (x.i >= x.cfg.steps.length) resetExec(id);
+  stepExec(id);
+  x.timer = setInterval(() => {
+    stepExec(id);
+    if (x.i >= x.cfg.steps.length){ clearInterval(x.timer); x.timer = null; }
+  }, x.cfg.ms || 2000);
+}
+
+/* ─── 00 · Bill splitter ─── */
+regExec('exec-bill', { code: [
+'bill = 1250',
+'friends = 4',
+'tip = bill * 0.10',
+'total = bill + tip',
+'share = total / friends',
+'print("Each pays ₹", share)'
+], steps: [
+{l:0, v:{bill:['1250 · int']}, c:'Python creates an int object 1250 and sticks the label "bill" on it.'},
+{l:1, v:{bill:['1250 · int'], friends:['4 · int']}, c:'Second label: friends → 4. Two objects now live in memory.'},
+{l:2, v:{bill:['1250 · int'], friends:['4 · int'], tip:['125.0 · float','chg']}, c:'RIGHT side runs first: 1250 × 0.10 = 125.0. int × float gives float. Then the label "tip" is attached.'},
+{l:3, v:{bill:['1250 · int'], friends:['4 · int'], tip:['125.0 · float'], total:['1375.0 · float','chg']}, c:'total = 1250 + 125.0 = 1375.0 — again computed first, named second.'},
+{l:4, v:{bill:['1250 · int'], friends:['4 · int'], tip:['125.0 · float'], total:['1375.0 · float'], share:['343.75 · float','chg']}, c:'1375.0 / 4 = 343.75. The / operator ALWAYS produces a float.'},
+{l:5, o:'Each pays ₹ 343.75', c:'print() writes to the screen. The comma automatically inserts one space between the items.'}
+]});
+
+/* ─── 02 · Dynamic typing ─── */
+regExec('exec-dyn', { code: [
+'x = 10',
+'print(type(x))',
+'x = "ten"',
+'print(type(x))',
+'x = 3.14',
+'print(type(x))'
+], steps: [
+{l:0, v:{x:['10 · int']}, c:'x is a label stuck on the int object 10.'},
+{l:1, o:"<class 'int'>", c:'type(x) asks: "what is x pointing at RIGHT NOW?" → int.'},
+{l:2, v:{x:['"ten" · str','chg']}, o:"<class 'int'>", c:'The label MOVES to a new string object. The old 10 is garbage-collected. No error — this is dynamic typing.'},
+{l:3, o:"<class 'int'>\n<class 'str'>", c:'Same question, new answer: str. The NAME x never had a type — only objects do.'},
+{l:4, v:{x:['3.14 · float','chg']}, o:"<class 'int'>\n<class 'str'>", c:'Label moves again, now to a float object.'},
+{l:5, o:"<class 'int'>\n<class 'str'>\n<class 'float'>", c:'Three different types for one name in six lines. Powerful — and why you must name variables clearly!'}
+]});
+
+/* ─── 05 · if/elif/else ─── */
+regExec('exec-if', { code: [
+'marks = 67',
+'if marks >= 75:',
+'    grade = "A"',
+'elif marks >= 60:',
+'    grade = "B"',
+'else:',
+'    grade = "C"',
+'print("Grade:", grade)'
+], steps: [
+{l:0, v:{marks:['67 · int']}, c:'marks = 67 goes into memory.'},
+{l:1, v:{marks:['67 · int']}, c:'Test #1: is 67 >= 75? ❌ False → the "A" line is SKIPPED entirely.'},
+{l:3, v:{marks:['67 · int']}, c:'Test #2: is 67 >= 60? ✅ True → enter THIS branch.'},
+{l:4, v:{marks:['67 · int'], grade:['"B" · str','chg']}, c:'grade = "B". The else branch below will never even be looked at.'},
+{l:7, o:'Grade: B', c:'Jump straight past the whole chain to print. Exactly ONE branch ran — that is the if/elif/else guarantee.'}
+]});
+
+/* ─── 05 · for loop ─── */
+regExec('exec-for', { code: [
+'total = 0',
+'for i in range(1, 5):',
+'    total = total + i',
+'print("Sum =", total)'
+], ms: 1500, steps: [
+{l:0, v:{total:['0 · int']}, c:'The accumulator starts at 0.'},
+{l:1, v:{total:['0'], i:['1','chg']}, c:'range(1, 5) produces 1, 2, 3, 4 — the 5 is EXCLUDED. First value: i = 1.'},
+{l:2, v:{total:['1','chg'], i:['1']}, c:'total = 0 + 1 = 1.'},
+{l:1, v:{total:['1'], i:['2','chg']}, c:'Back to the for line. Next value: i = 2.'},
+{l:2, v:{total:['3','chg'], i:['2']}, c:'total = 1 + 2 = 3.'},
+{l:1, v:{total:['3'], i:['3','chg']}, c:'i = 3.'},
+{l:2, v:{total:['6','chg'], i:['3']}, c:'total = 3 + 3 = 6.'},
+{l:1, v:{total:['6'], i:['4','chg']}, c:'i = 4 — the LAST value range will give.'},
+{l:2, v:{total:['10','chg'], i:['4']}, c:'total = 6 + 4 = 10.'},
+{l:1, v:{total:['10'], i:['4']}, c:'range has nothing left → the loop ENDS.'},
+{l:3, o:'Sum = 10', c:'1+2+3+4 = 10. This "accumulator pattern" solves hundreds of problems — sums, counts, products.'}
+]});
+
+/* ─── 05 · while loop ─── */
+regExec('exec-while', { code: [
+'n = 3',
+'while n > 0:',
+'    print(n)',
+'    n = n - 1',
+'print("Liftoff!")'
+], ms: 1400, steps: [
+{l:0, v:{n:['3 · int']}, c:'Countdown starts at 3.'},
+{l:1, v:{n:['3']}, c:'Check: 3 > 0? ✅ True → enter the loop body.'},
+{l:2, v:{n:['3']}, o:'3', c:'Print the current value.'},
+{l:3, v:{n:['2','chg']}, o:'3', c:'n = 3 − 1 = 2. THIS line pushes the condition toward False — without it: infinite loop!'},
+{l:1, v:{n:['2']}, o:'3', c:'Check again: 2 > 0? ✅ True.'},
+{l:2, v:{n:['2']}, o:'3\n2', c:'Print 2.'},
+{l:3, v:{n:['1','chg']}, o:'3\n2', c:'n becomes 1.'},
+{l:1, v:{n:['1']}, o:'3\n2', c:'1 > 0? ✅ still True.'},
+{l:2, v:{n:['1']}, o:'3\n2\n1', c:'Print 1.'},
+{l:3, v:{n:['0','chg']}, o:'3\n2\n1', c:'n becomes 0.'},
+{l:1, v:{n:['0']}, o:'3\n2\n1', c:'0 > 0? ❌ FALSE → the loop is over. Jump below it.'},
+{l:4, o:'3\n2\n1\nLiftoff!', c:'🚀 The while loop ran exactly while its condition stayed True.'}
+]});
+
+/* ─── 08 · function call ─── */
+regExec('exec-func', { code: [
+'def greet(name):',
+'    msg = "Hi " + name + "!"',
+'    return msg',
+'',
+'m = greet("Asha")',
+'print(m)'
+], steps: [
+{l:0, v:{greet:['<function>']}, c:'def only STORES the recipe under the name "greet". Lines 2–3 do NOT run yet!'},
+{l:4, v:{greet:['<function>']}, c:'The call greet("Asha") — Python jumps INTO the function, carrying "Asha".'},
+{l:1, v:{greet:['<function>'], 'name (local)':['"Asha"','fr'], 'msg (local)':['"Hi Asha!"','fr']}, c:'A LOCAL frame appears: name = "Asha", and msg is built inside it. These exist only during this call.'},
+{l:2, v:{greet:['<function>'], 'name (local)':['"Asha"','fr'], 'msg (local)':['"Hi Asha!"','fr']}, c:'return msg — the value "Hi Asha!" is sent back to whoever called.'},
+{l:4, v:{greet:['<function>'], m:['"Hi Asha!"','chg']}, c:'💥 The local frame is DESTROYED — name and msg are gone. Only the returned value survives, caught by m.'},
+{l:5, o:'Hi Asha!', c:'print(m) shows it. Data in → work inside → value out. That is a function.'}
+]});
+
+/* ─── 09 · class & object ─── */
+regExec('exec-class', { code: [
+'class Dog:',
+'    def __init__(self, name):',
+'        self.name = name',
+'    def speak(self):',
+'        return self.name + " says Woof!"',
+'',
+'d = Dog("Rex")',
+'print(d.speak())'
+], steps: [
+{l:0, v:{Dog:['<class> blueprint']}, c:'The class statement stores a BLUEPRINT named Dog. No dog exists yet.'},
+{l:6, v:{Dog:['<class>']}, c:'Dog("Rex") — Python builds an empty object, then automatically calls __init__ with it.'},
+{l:1, v:{Dog:['<class>'], 'self (local)':['the new object','fr'], 'name (local)':['"Rex"','fr']}, c:'Inside __init__: self IS the new empty object, name carries "Rex".'},
+{l:2, v:{Dog:['<class>'], 'self (local)':['the new object','fr'], 'self.name':['"Rex"','chg']}, c:'self.name = name writes "Rex" INSIDE the object permanently. This is the whole job of a constructor.'},
+{l:6, v:{Dog:['<class>'], d:['Dog(name="Rex")','chg']}, c:'__init__ ends, the frame vanishes, and d now points to a fully-built Dog object.'},
+{l:7, v:{Dog:['<class>'], d:['Dog(name="Rex")']}, c:'d.speak() — Python finds speak in the blueprint and passes d as self automatically.'},
+{l:4, v:{Dog:['<class>'], d:['Dog(name="Rex")'], 'self (local)':['→ d','fr']}, c:'self.name is "Rex", so it returns "Rex says Woof!".'},
+{l:7, o:'Rex says Woof!', c:'A second dog — Dog("Tomy") — would carry its OWN name. One blueprint, many objects.'}
+]});
+
+/* ─── 10 · try/except ─── */
+regExec('exec-try', { code: [
+'try:',
+'    x = int("abc")',
+'    print("this never runs")',
+'except ValueError:',
+'    print("Bad number!")',
+'finally:',
+'    print("Cleanup done")'
+], steps: [
+{l:0, c:'Enter the try block — Python is now WATCHING for explosions.'},
+{l:1, c:'💥 int("abc") raises ValueError! x is never created. Execution of the try block STOPS instantly.'},
+{l:3, c:'Line 3 was SKIPPED. Python hunts for a matching except… ValueError — match found! ✅'},
+{l:4, o:'Bad number!', c:'The handler runs. The program did NOT crash — we chose what happens instead.'},
+{l:6, o:'Bad number!\nCleanup done', c:'finally runs ALWAYS — error or no error. Perfect for closing files and connections.'}
+]});
+
+/* ─── 11 · generator ─── */
+regExec('exec-gen', { code: [
+'def counter():',
+'    yield 1',
+'    yield 2',
+'',
+'g = counter()',
+'print(next(g))',
+'print(next(g))'
+], steps: [
+{l:0, v:{counter:['<generator fn>']}, c:'A def containing "yield" is a GENERATOR function — a different species.'},
+{l:4, v:{counter:['<generator fn>'], g:['<generator> ⏸ not started','chg']}, c:'Calling it runs NOTHING! It just hands back a paused generator object.'},
+{l:5, v:{counter:['<generator fn>'], g:['<generator> ▶ running','chg']}, c:'next(g) — NOW the body starts executing from the top…'},
+{l:1, v:{counter:['<generator fn>'], g:['<generator> ⏸ at line 2','chg']}, o:'1', c:'yield 1 hands over the value 1 and FREEZES right here. All local state is preserved.'},
+{l:6, v:{counter:['<generator fn>'], g:['<generator> ▶ resumed','chg']}, o:'1', c:'Second next(g) — it wakes up exactly where it froze, NOT from the top.'},
+{l:2, v:{counter:['<generator fn>'], g:['<generator> ⏸ exhausted','chg']}, o:'1\n2', c:'yield 2 → value 2, freeze again. One more next() would raise StopIteration. This laziness = huge data, tiny memory.'}
+]});
+
+/* ─── 11 · decorator ─── */
+regExec('exec-deco', { code: [
+'def shout(func):',
+'    def wrapper():',
+'        return func().upper() + "!!!"',
+'    return wrapper',
+'',
+'@shout',
+'def hello():',
+'    return "hello"',
+'',
+'print(hello())'
+], steps: [
+{l:0, v:{shout:['<function>']}, c:'shout is a function that TAKES a function and will return an upgraded one.'},
+{l:6, v:{shout:['<function>'], hello:['<function> original']}, c:'hello is defined normally… but the @shout above it triggers immediately:'},
+{l:5, v:{shout:['<function>'], hello:['<function> original']}, c:'@shout means: hello = shout(hello). The original hello is passed IN as func.'},
+{l:3, v:{shout:['<function>'], hello:['wrapper (upgraded!)','chg']}, c:'shout returns wrapper — and the NAME hello now points to wrapper. The original survives only inside the closure as func.'},
+{l:9, v:{shout:['<function>'], hello:['wrapper (upgraded!)']}, c:'Calling hello() actually runs wrapper()…'},
+{l:2, v:{shout:['<function>'], hello:['wrapper (upgraded!)']}, c:'wrapper calls the ORIGINAL via func() → "hello", upgrades it → "HELLO" + "!!!"'},
+{l:9, o:'HELLO!!!', c:'Same call syntax, upgraded behavior. That is a decorator: a function wrapped in extra powers.'}
+]});
+
+/* ═══════════ TYPE LAB ═══════════ */
+function runTypeLab(){
+  const raw = document.getElementById('tl-in').value.trim();
+  let type = '?', mut = '—', msg = '', val = raw;
+  if (raw === '') { type = '—'; msg = 'Type something first!'; }
+  else if (/^-?\d+$/.test(raw)) { type = 'int'; mut = 'immutable'; msg = raw + ' has no decimal point and no quotes → Python creates an int object.'; }
+  else if (/^-?(\d+\.\d*|\.\d+)([eE]-?\d+)?$/.test(raw) || /^-?\d+[eE]-?\d+$/.test(raw)) { type = 'float'; mut = 'immutable'; msg = 'A decimal point (or e-notation) makes it a float.'; }
+  else if (raw === 'True' || raw === 'False') { type = 'bool'; mut = 'immutable'; msg = 'Capital T/F with no quotes → the boolean ' + raw + '. Lowercase "true" would be a NameError!'; }
+  else if (raw === 'None') { type = 'NoneType'; mut = 'immutable'; msg = 'None is Python\'s "nothing here" object — the default return of every function.'; }
+  else if (/^["'].*["']$/.test(raw)) { type = 'str'; mut = 'immutable'; msg = 'Quotes make it a string — even "123" in quotes is text, not a number!'; }
+  else if (raw.startsWith('[')) { type = 'list'; mut = '✏️ MUTABLE'; msg = 'Square brackets → a list. Ordered, indexable, and changeable in place.'; }
+  else if (raw.startsWith('(')) { type = 'tuple'; mut = 'immutable'; msg = 'Parentheses → a tuple. Like a list, but frozen forever.'; }
+  else if (raw.startsWith('{') && raw.includes(':')) { type = 'dict'; mut = '✏️ MUTABLE'; msg = 'Braces WITH colons → a dict of key: value pairs.'; }
+  else if (raw.startsWith('{')) { type = 'set'; mut = '✏️ MUTABLE'; msg = 'Braces without colons → a set. Duplicates will be silently removed!'; }
+  else { type = 'NameError!'; mut = '—'; msg = 'A bare word without quotes is a variable NAME. If no variable "' + raw + '" exists → NameError. Wrap it in quotes to make it a string.'; }
+  document.getElementById('tl-type').textContent = type;
+  document.getElementById('tl-val').textContent = val || '—';
+  const mutEl = document.getElementById('tl-mut');
+  mutEl.textContent = mut;
+  mutEl.style.color = mut.includes('MUTABLE') ? 'var(--green)' : 'var(--rose)';
+  document.getElementById('tl-msg').textContent = msg;
+}
+
+/* ═══════════ OPERATOR LAB ═══════════ */
+let curOp = '+';
+function pickOp(btn){
+  document.querySelectorAll('#ol-chips .opchip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  curOp = btn.dataset.op;
+  runOpLab();
+}
+function fmtNum(x){
+  if (typeof x === 'boolean') return x ? 'True' : 'False';
+  if (Number.isInteger(x)) return String(x);
+  return String(Math.round(x * 1e6) / 1e6);
+}
+function runOpLab(){
+  const a = parseFloat(document.getElementById('ol-a').value) || 0;
+  const b = parseFloat(document.getElementById('ol-b').value) || 0;
+  let res, msg;
+  const E = { }; // explanations
+  switch (curOp){
+    case '+': res = a + b; msg = '+ adds the two numbers.'; break;
+    case '-': res = a - b; msg = '- subtracts b from a.'; break;
+    case '*': res = a * b; msg = '* multiplies. (Fun: "ab" * 3 repeats strings!)'; break;
+    case '/':
+      if (b === 0){ res = '💥 ZeroDivisionError'; msg = 'Dividing by zero crashes the program — guard it with an if or try/except!'; }
+      else { const r = a / b; res = Number.isInteger(r) ? r.toFixed(1) : fmtNum(r); msg = '/ is TRUE division — the answer is ALWAYS a float, even ' + fmtNum(a) + ' / 1.'; }
+      break;
+    case '//':
+      if (b === 0){ res = '💥 ZeroDivisionError'; msg = 'Floor division by zero also crashes.'; }
+      else { res = Math.floor(a / b); msg = '// keeps only the whole part, rounding DOWN toward −∞. ' + fmtNum(a) + ' / ' + fmtNum(b) + ' = ' + fmtNum(a / b) + ' → floor → ' + fmtNum(Math.floor(a / b)) + '.'; }
+      break;
+    case '%':
+      if (b === 0){ res = '💥 ZeroDivisionError'; msg = 'No remainder exists when dividing by zero.'; }
+      else { res = ((a % b) + b) % b; msg = '% gives ONLY the remainder: ' + fmtNum(a) + ' = ' + fmtNum(b) + ' × ' + fmtNum(Math.floor(a / b)) + ' + ' + fmtNum(((a % b) + b) % b) + '. Classic uses: even check (n % 2), last digit (n % 10).'; }
+      break;
+    case '**': res = Math.pow(a, b); msg = '** is power: ' + fmtNum(a) + ' raised to ' + fmtNum(b) + '. Python ints can hold 2**1000 easily — no overflow!'; break;
+    case '==': res = a === b; msg = '== asks "same VALUE?" and answers True or False. (One = assigns, two == compare!)'; break;
+    case '!=': res = a !== b; msg = '!= asks "different values?"'; break;
+    case '>': res = a > b; msg = 'Comparison operators return booleans — you can store them: is_adult = age >= 18.'; break;
+    case '<': res = a < b; msg = 'Comparison operators return booleans.'; break;
+    case '>=': res = a >= b; msg = '>= means greater OR equal.'; break;
+  }
+  document.getElementById('ol-expr').textContent = fmtNum(a) + ' ' + curOp + ' ' + fmtNum(b);
+  const resEl = document.getElementById('ol-res');
+  resEl.textContent = typeof res === 'string' ? res : fmtNum(res);
+  resEl.style.color = typeof res === 'string' ? 'var(--rose)' : (typeof res === 'boolean' ? 'var(--purple)' : 'var(--green)');
+  document.getElementById('ol-msg').textContent = msg;
+}
+
+/* ═══════════ SLICE LAB ═══════════ */
+function pySlice(str, a, b, c){
+  const n = str.length;
+  const step = (c === null) ? 1 : c;
+  if (step === 0) return null;
+  let start, end;
+  const norm = (x, forNeg) => { let v = x < 0 ? x + n : x; return v; };
+  if (step > 0){
+    start = a === null ? 0 : Math.min(Math.max(norm(a), 0), n);
+    end   = b === null ? n : Math.min(Math.max(norm(b), 0), n);
+  } else {
+    start = a === null ? n - 1 : Math.min(Math.max(norm(a), -1), n - 1);
+    end   = b === null ? -1 : Math.min(Math.max(norm(b), -1), n - 1);
+  }
+  const idx = [];
+  if (step > 0) for (let i = start; i < end; i += step) idx.push(i);
+  else for (let i = start; i > end; i += step) idx.push(i);
+  return idx;
+}
+function presetSlice(a, b, c){
+  document.getElementById('sl-a').value = a;
+  document.getElementById('sl-b').value = b;
+  document.getElementById('sl-c').value = c;
+  runSliceLab();
+}
+function runSliceLab(){
+  const s = document.getElementById('sl-s').value || 'PYTHON';
+  const ra = document.getElementById('sl-a').value.trim();
+  const rb = document.getElementById('sl-b').value.trim();
+  const rc = document.getElementById('sl-c').value.trim();
+  const a = ra === '' ? null : parseInt(ra, 10);
+  const b = rb === '' ? null : parseInt(rb, 10);
+  const c = rc === '' ? null : parseInt(rc, 10);
+  const bad = (ra !== '' && isNaN(a)) || (rb !== '' && isNaN(b)) || (rc !== '' && isNaN(c));
+  const idx = bad ? [] : pySlice(s, isNaN(a) ? null : a, isNaN(b) ? null : b, isNaN(c) ? null : c);
+  const n = s.length;
+  // draw cells
+  const cells = document.getElementById('sl-cells');
+  cells.innerHTML = '';
+  for (let i = 0; i < n; i++){
+    const col = document.createElement('div'); col.className = 'cellcol';
+    const top = document.createElement('div'); top.className = 'cidx'; top.textContent = i;
+    const ch  = document.createElement('div'); ch.className = 'cchar' + (idx && idx.includes(i) ? ' hit' : ''); ch.textContent = s[i];
+    const bot = document.createElement('div'); bot.className = 'cidx neg'; bot.textContent = i - n;
+    col.appendChild(top); col.appendChild(ch); col.appendChild(bot);
+    cells.appendChild(col);
+  }
+  const expr = '"' + s + '"[' + ra + ':' + rb + (rc !== '' ? ':' + rc : '') + ']';
+  document.getElementById('sl-expr').textContent = expr;
+  let msg;
+  if (idx === null){ msg = '💥 ValueError: slice step cannot be zero.'; document.getElementById('sl-res').textContent = '—'; }
+  else {
+    const out = idx.map(i => s[i]).join('');
+    document.getElementById('sl-res').textContent = '"' + out + '"';
+    if (c !== null && c < 0) msg = 'Negative step walks BACKWARDS' + (ra === '' && rb === '' ? ' through the whole string — the famous one-line reverse!' : ', from start toward end in reverse.');
+    else if (out === '') msg = 'Empty result — the start never reaches the end in this direction.';
+    else if (ra !== '' && a < 0 || rb !== '' && b < 0) msg = 'Negative indices count from the END: -1 is the last character, -' + n + ' is the first.';
+    else if (c !== null && c > 1) msg = 'Step ' + c + ' takes every ' + c + (c === 2 ? 'nd' : c === 3 ? 'rd' : 'th') + ' character.';
+    else msg = 'Start at index ' + (ra === '' ? 0 : a) + ', stop BEFORE index ' + (rb === '' ? n : b) + '. The end index is always excluded!';
+  }
+  document.getElementById('sl-msg').textContent = msg;
+}
+
+/* ═══════════ LIST LAB ═══════════ */
+let LL = [10, 20, 30, 40];
+function drawList(marks){
+  marks = marks || {};
+  const wrap = document.getElementById('ll-cells');
+  wrap.innerHTML = '';
+  if (!LL.length){
+    wrap.innerHTML = '<div style="color:var(--muted);font-style:italic;font-size:13px;padding:.8rem;">[] — empty list</div>';
+    return;
+  }
+  LL.forEach((v, i) => {
+    const col = document.createElement('div'); col.className = 'cellcol';
+    const top = document.createElement('div'); top.className = 'cidx'; top.textContent = i;
+    const ch  = document.createElement('div');
+    ch.className = 'cchar' + (marks[i] === 'new' ? ' new' : '') + (marks[i] === 'dead' ? ' dead' : '') + (marks[i] === 'hit' ? ' hit' : '');
+    ch.textContent = v;
+    const bot = document.createElement('div'); bot.className = 'cidx neg'; bot.textContent = i - LL.length;
+    col.appendChild(top); col.appendChild(ch); col.appendChild(bot);
+    wrap.appendChild(col);
+  });
+}
+function listOp(op){
+  const v = parseInt(document.getElementById('ll-v').value, 10);
+  const iRaw = parseInt(document.getElementById('ll-i').value, 10);
+  const msg = document.getElementById('ll-msg');
+  const badV = isNaN(v), badI = isNaN(iRaw);
+  switch (op){
+    case 'append':
+      if (badV) { msg.textContent = 'Enter a value first.'; return; }
+      LL.push(v); drawList({[LL.length - 1]: 'new'});
+      msg.textContent = 'nums.append(' + v + ') → added at the END. Fast: O(1). This is THE most-used list method.';
+      break;
+    case 'insert': {
+      if (badV || badI) { msg.textContent = 'Enter value and index.'; return; }
+      const i = Math.min(Math.max(iRaw, 0), LL.length);
+      LL.splice(i, 0, v); drawList({[i]: 'new'});
+      msg.textContent = 'nums.insert(' + iRaw + ', ' + v + ') → squeezed in at index ' + i + '. Everything after shifted right → O(n), slower than append.';
+      break;
+    }
+    case 'pop': {
+      if (!LL.length) { msg.textContent = '💥 IndexError: pop from empty list'; return; }
+      drawList({[LL.length - 1]: 'dead'});
+      const gone = LL[LL.length - 1];
+      setTimeout(() => { LL.pop(); drawList(); }, 450);
+      msg.textContent = 'nums.pop() → removed AND returned ' + gone + ' from the end. O(1). (This is how stacks work!)';
+      break;
+    }
+    case 'popi': {
+      if (badI || iRaw < 0 || iRaw >= LL.length) { msg.textContent = '💥 IndexError: pop index out of range (list has ' + LL.length + ' items)'; return; }
+      drawList({[iRaw]: 'dead'});
+      const gone2 = LL[iRaw];
+      setTimeout(() => { LL.splice(iRaw, 1); drawList(); }, 450);
+      msg.textContent = 'nums.pop(' + iRaw + ') → removed ' + gone2 + ' by INDEX. Later items shift left → O(n).';
+      break;
+    }
+    case 'remove': {
+      if (badV) { msg.textContent = 'Enter a value to remove.'; return; }
+      const j = LL.indexOf(v);
+      if (j === -1){ msg.textContent = '💥 ValueError: list.remove(' + v + '): value not in list. (Check with "in" first!)'; return; }
+      drawList({[j]: 'dead'});
+      setTimeout(() => { LL.splice(j, 1); drawList(); }, 450);
+      msg.textContent = 'nums.remove(' + v + ') → searches by VALUE, deletes the FIRST match (index ' + j + ').';
+      break;
+    }
+    case 'sort':
+      LL.sort((x, y) => x - y); drawList(Object.fromEntries(LL.map((_, i) => [i, 'hit'])));
+      msg.textContent = 'nums.sort() → sorted IN PLACE and returned None — never write x = nums.sort()! (Use sorted(nums) for a new list.)';
+      break;
+    case 'reverse':
+      LL.reverse(); drawList(Object.fromEntries(LL.map((_, i) => [i, 'hit'])));
+      msg.textContent = 'nums.reverse() → flipped in place. (nums[::-1] would give a NEW reversed copy instead.)';
+      break;
+    case 'reset':
+      LL = [10, 20, 30, 40]; drawList();
+      msg.textContent = 'Back to [10, 20, 30, 40]. Try a sequence: insert → sort → pop!';
+      break;
+  }
+}
+
+/* ═══════════ DICT LAB ═══════════ */
+let DD = new Map([['apple', '40'], ['banana', '10']]);
+function drawDict(hitKey, cls){
+  const el2 = document.getElementById('dl-view');
+  if (!DD.size){ el2.innerHTML = '<span style="color:var(--muted);font-style:italic;font-size:13px;">{} — empty dict</span>'; return; }
+  el2.innerHTML = [...DD.entries()].map(([k, v]) =>
+    '<span class="sitem' + (k === hitKey ? ' hit' : '') + '"><span style="color:var(--rose)">"' + k + '"</span>: <span style="color:var(--cyan)">' + v + '</span></span>'
+  ).join('');
+}
+function dictOp(op){
+  const k = document.getElementById('dl-k').value.trim();
+  const v = document.getElementById('dl-v').value.trim();
+  const msg = document.getElementById('dl-msg');
+  if (op !== 'reset' && !k){ msg.textContent = 'Type a key first.'; return; }
+  switch (op){
+    case 'set': {
+      const existed = DD.has(k);
+      DD.set(k, v || '0'); drawDict(k);
+      msg.textContent = existed
+        ? 'd["' + k + '"] = ' + v + ' → key existed, so its value was UPDATED. Keys are unique!'
+        : 'd["' + k + '"] = ' + v + ' → new pair added. Python hashes "' + k + '" to know exactly where to store it — no searching.';
+      break;
+    }
+    case 'get':
+      if (DD.has(k)){ drawDict(k); msg.textContent = 'd.get("' + k + '") → ' + DD.get(k) + ' — found in ONE jump via the hash, O(1), even among a million keys.'; }
+      else { drawDict(); msg.textContent = 'd.get("' + k + '") → None — safe! (d["' + k + '"] with brackets would crash: KeyError.)'; }
+      break;
+    case 'del':
+      if (DD.has(k)){ const old = DD.get(k); DD.delete(k); drawDict(); msg.textContent = 'd.pop("' + k + '") → removed the pair and returned ' + old + '.'; }
+      else { msg.textContent = '💥 KeyError: "' + k + '" — can\'t remove what isn\'t there. Guard with: if "' + k + '" in d:'; }
+      break;
+    case 'reset':
+      DD = new Map([['apple', '40'], ['banana', '10']]); drawDict();
+      msg.textContent = 'Back to {"apple": 40, "banana": 10}.';
+      break;
+  }
+}
+
+/* ═══════════ SET LAB ═══════════ */
+const SA = [1, 2, 3, 4], SB = [3, 4, 5, 6];
+let curSop = '|';
+function setOp(btn){
+  if (btn){
+    document.querySelectorAll('[data-sop]').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    curSop = btn.dataset.sop;
+  }
+  let res, msg;
+  switch (curSop){
+    case '|': res = [...new Set([...SA, ...SB])]; msg = 'Union: every item that appears in A or B (or both). Duplicates impossible — 3 and 4 appear once.'; break;
+    case '&': res = SA.filter(x => SB.includes(x)); msg = 'Intersection: only items in BOTH sets. Perfect for "common friends / common skills" problems.'; break;
+    case '-': res = SA.filter(x => !SB.includes(x)); msg = 'Difference: items in A that are NOT in B. Note: A - B ≠ B - A!'; break;
+    case '^': res = [...SA.filter(x => !SB.includes(x)), ...SB.filter(x => !SA.includes(x))]; msg = 'Symmetric difference: in exactly ONE of the two sets — the union minus the overlap.'; break;
+  }
+  const draw = (arr, host, hits) => {
+    document.getElementById(host).innerHTML = arr.map(x =>
+      '<span class="sitem' + (hits.includes(x) ? ' hit' : ' dim') + '">' + x + '</span>').join('');
+  };
+  draw(SA, 'st-a', res); draw(SB, 'st-b', res);
+  document.getElementById('st-r').innerHTML = res.sort((a, b) => a - b).map(x => '<span class="sitem hit">' + x + '</span>').join('') || '<span class="sitem dim">∅ empty</span>';
+  document.getElementById('st-msg').textContent = 'A ' + curSop + ' B → {' + res.sort((a, b) => a - b).join(', ') + '}  ·  ' + msg;
+}
+
+/* ═══════════ INIT ═══════════ */
+runTypeLab();
+runOpLab();
+runSliceLab();
+drawList();
+drawDict();
+setOp(null);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>
